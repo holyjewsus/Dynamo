@@ -1,4 +1,4 @@
-<Workspace Version="0.6.3.27582" X="203.190211232692" Y="158.938015484729" zoom="0.748751552431217" Description="" Category="Analyze.Solar" Name="solarradopt" ID="d9380158-c69d-4ea8-b6eb-ae495afb90d0">
+<Workspace Version="0.6.3.16451" X="-629.869719483018" Y="207.475715170425" zoom="0.727895399766597" Description="" Category="Analyze.Solar" Name="solarradopt" ID="9508fdab-5e4b-44f7-a57e-f9ae1077c192">
   <Elements>
     <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="2a85adcd-37f6-4f62-a3dd-314335d11499" nickname="Variable" x="0" y="-107.766877615701" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="family_instance" />
@@ -6,19 +6,19 @@
     <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="ec04eddd-f849-4f85-b749-30c98db9ebbf" nickname="Variable" x="0" y="-52.3168776157013" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="parameter" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d03bba4d-1326-45ad-aa63-f50cd8403972" nickname="Variable" x="-94.5635402554913" y="63.5751979417429" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d03bba4d-1326-45ad-aa63-f50cd8403972" nickname="Variable" x="-94.5635402554913" y="57.1014919511724" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="amount_to_increment_by" />
     </Dynamo.Nodes.Symbol>
     <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="4388788e-55aa-4521-905c-75b257423c7e" nickname="Variable" x="-93.3979606002744" y="121.706357252177" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="maximum(base_case)" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="587e0168-4d93-4c14-9f0a-49f315b88ffd" nickname="Variable" x="-91.9610688987316" y="191.601490864518" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="587e0168-4d93-4c14-9f0a-49f315b88ffd" nickname="Variable" x="-98.4347748893021" y="214.259461831515" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="current_parameter_value" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="ed2a7545-3592-448d-8f49-f8bdb4608959" nickname="Variable" x="-91.9610688987316" y="252.801490864518" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="ed2a7545-3592-448d-8f49-f8bdb4608959" nickname="Variable" x="-100.053201386945" y="286.788447315013" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="accumulated_parameter_values_and_solar_data" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Conditional type="Dynamo.Nodes.Conditional" guid="73101aca-85b0-4720-898c-65d6030a7c9e" nickname="if" x="1417.44800722042" y="42.558712526225" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Conditional type="Dynamo.Nodes.Conditional" guid="73101aca-85b0-4720-898c-65d6030a7c9e" nickname="if" x="1413.32653591979" y="52.175478894366" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f500e100-e1b7-48e0-ba40-6782add9f521" nickname="solarradopt" x="647.692814719298" y="449.24756894197" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <ID value="d9380158-c69d-4ea8-b6eb-ae495afb90d0" />
       <Name value="solarradopt" />
@@ -35,17 +35,16 @@
       </Inputs>
       <Outputs>
         <Output value="result" />
-        <Output value="OUT" />
       </Outputs>
     </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.Addition type="Dynamo.Nodes.Addition" guid="c6851694-afd1-4b9c-bde8-643b15d81338" nickname="+" x="336.870291698927" y="510.960360606479" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="a87b210e-0eba-41ee-9e81-a824c49c0b5d" nickname="Variable" x="-178.370718774555" y="561.455110942222" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Addition type="Dynamo.Nodes.Addition" guid="c6851694-afd1-4b9c-bde8-643b15d81338" nickname="+" x="312.763464162971" y="532.875658366439" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="a87b210e-0eba-41ee-9e81-a824c49c0b5d" nickname="Variable" x="-176.962759000417" y="582.574507554287" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="path_to_solar_data" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="16836de2-31aa-4a27-80e4-d2f9bdeb4c50" nickname="Variable" x="-178.370718774555" y="615.560374100117" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="16836de2-31aa-4a27-80e4-d2f9bdeb4c50" nickname="Variable" x="-179.778678548693" y="659.207127098384" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="file_watcher_object" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="389b73e8-b53c-48a1-b505-f8587ff09111" nickname="solarradcomp" x="360.362633104808" y="742.813576189981" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="389b73e8-b53c-48a1-b505-f8587ff09111" nickname="solarradcomp" x="358.95467333067" y="786.460329188248" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <ID value="b8e990e3-a480-4118-9f81-0e02af495e72" />
       <Name value="solarradcomp" />
       <Description value="" />
@@ -58,17 +57,17 @@
         <Output value="result" />
       </Outputs>
     </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.FileWatcherReset type="Dynamo.Nodes.FileWatcherReset" guid="b6ad5942-c9c3-4f3f-8100-0a2e00358be6" nickname="Reset File Watcher" x="494.651406308959" y="-255.074452796138" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.FileReader type="Dynamo.Nodes.FileReader" guid="11e4ce01-f413-44f8-88b6-0a898e4a4cfc" nickname="Read File" x="-55.3348868351695" y="761.832743220451" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.ComputeSolarRadiationValue type="Dynamo.Nodes.ComputeSolarRadiationValue" guid="576c3d1f-caf0-4999-bd0a-c5ea87c4f163" nickname="Extract Solar Radiation Value" x="142.261267010983" y="799.318640656348" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.FileWatcherWait type="Dynamo.Nodes.FileWatcherWait" guid="d6fbe273-7532-431a-a700-1dca796b628f" nickname="Wait for Change" x="498.453375621397" y="-14.1184321413267" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.FileWatcherReset type="Dynamo.Nodes.FileWatcherReset" guid="b6ad5942-c9c3-4f3f-8100-0a2e00358be6" nickname="Reset File Watcher" x="493.757150025723" y="-471.457838716706" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.FileReader type="Dynamo.Nodes.FileReader" guid="11e4ce01-f413-44f8-88b6-0a898e4a4cfc" nickname="Read File" x="-56.7428466093072" y="836.454611249747" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.ComputeSolarRadiationValue type="Dynamo.Nodes.ComputeSolarRadiationValue" guid="576c3d1f-caf0-4999-bd0a-c5ea87c4f163" nickname="Extract Solar Radiation Value" x="140.853307236845" y="842.965393654615" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.FileWatcherWait type="Dynamo.Nodes.FileWatcherWait" guid="d6fbe273-7532-431a-a700-1dca796b628f" nickname="Wait for Change" x="488.216140812206" y="-12.8304391918416" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="5d6e4f1a-211a-4486-a547-33321d942981" nickname="Number" x="121.981638214556" y="-201.311513935819" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <System.Double value="4000" />
     </Dynamo.Nodes.DoubleInput>
-    <Dynamo.Nodes.Transaction type="Dynamo.Nodes.Transaction" guid="205b0194-2a19-41e5-a47d-a998b7750b89" nickname="Transaction" x="679.923686337675" y="-164.000107302528" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Transaction type="Dynamo.Nodes.Transaction" guid="205b0194-2a19-41e5-a47d-a998b7750b89" nickname="Transaction" x="678.035069847805" y="-288.044832579915" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.GreaterThanEquals type="Dynamo.Nodes.GreaterThanEquals" guid="2304fb27-6106-421f-b358-604eca47f251" nickname="≥" x="1268.50233684163" y="150.418541601317" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.Pause type="Dynamo.Nodes.Pause" guid="722140e8-bcb3-4d50-82a9-addcb57082b3" nickname="Pause" x="627.69660927087" y="78.9367298080657" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="8918e42a-750a-493c-88d5-cf19704935e1" nickname="Number" x="494.34133029468" y="81.7572053426755" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Pause type="Dynamo.Nodes.Pause" guid="722140e8-bcb3-4d50-82a9-addcb57082b3" nickname="Pause" x="627.69660927087" y="121.282855840392" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="8918e42a-750a-493c-88d5-cf19704935e1" nickname="Number" x="494.34133029468" y="124.103331375002" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <System.Double value="100" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.Begin type="Dynamo.Nodes.Begin" guid="a4383c65-f2f2-411a-86c3-1631d422c040" nickname="Perform All" x="1062.34294220588" y="-122.438361440707" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
@@ -78,29 +77,10 @@
       <Input name="expr4" />
       <Input name="expr5" />
     </Dynamo.Nodes.Begin>
-    <Dynamo.Nodes.FamilyInstanceParameterSetter type="Dynamo.Nodes.FamilyInstanceParameterSetter" guid="30bb6ae4-cd8c-42e3-a2e6-d45ba4c1f8cf" nickname="Set Element Parameter" x="493.286349196839" y="-162.738445845306" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
-    <Dynamo.Nodes.Python type="Dynamo.Nodes.Python" guid="9fdb12c7-c927-4c17-9615-5e006da5af51" nickname="Python Script" x="670.040188557987" y="777.91202737547" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <Script># Default imports
-import clr
-clr.AddReference('RevitAPI')
-clr.AddReference('RevitAPIUI')
-from Autodesk.Revit.DB import *
-import Autodesk
-import sys
-import clr
-path = r'C:\Autodesk\Dynamo\Core'
-exec_path = r'C:\Autodesk\Dynamo\Core\dll'
-sys.path.append(path)
-sys.path.append(exec_path)
-clr.AddReference('LibGNet')
-from Autodesk.LibG import *
-
-#The input to this node will be stored in the IN variable.
-dataEnteringNode = IN
-
-#Assign your output to the OUT variable
-OUT = 0</Script>
-    </Dynamo.Nodes.Python>
+    <Dynamo.Nodes.FamilyInstanceParameterSetter type="Dynamo.Nodes.FamilyInstanceParameterSetter" guid="30bb6ae4-cd8c-42e3-a2e6-d45ba4c1f8cf" nickname="Set Element Parameter" x="491.397732706969" y="-286.783171122693" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="8312e4f6-094a-4d9d-91be-1d243555120a" nickname="Output" x="1659.16796108222" y="49.1240778892393" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="result" />
+    </Dynamo.Nodes.Output>
   </Elements>
   <Connectors>
     <Dynamo.Models.ConnectorModel start="2a85adcd-37f6-4f62-a3dd-314335d11499" start_index="0" end="f500e100-e1b7-48e0-ba40-6782add9f521" end_index="0" portType="0" />
@@ -117,6 +97,7 @@ OUT = 0</Script>
     <Dynamo.Models.ConnectorModel start="587e0168-4d93-4c14-9f0a-49f315b88ffd" start_index="0" end="30bb6ae4-cd8c-42e3-a2e6-d45ba4c1f8cf" end_index="2" portType="0" />
     <Dynamo.Models.ConnectorModel start="ed2a7545-3592-448d-8f49-f8bdb4608959" start_index="0" end="389b73e8-b53c-48a1-b505-f8587ff09111" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="ed2a7545-3592-448d-8f49-f8bdb4608959" start_index="0" end="73101aca-85b0-4720-898c-65d6030a7c9e" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="73101aca-85b0-4720-898c-65d6030a7c9e" start_index="0" end="8312e4f6-094a-4d9d-91be-1d243555120a" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="f500e100-e1b7-48e0-ba40-6782add9f521" start_index="0" end="a4383c65-f2f2-411a-86c3-1631d422c040" end_index="4" portType="0" />
     <Dynamo.Models.ConnectorModel start="c6851694-afd1-4b9c-bde8-643b15d81338" start_index="0" end="f500e100-e1b7-48e0-ba40-6782add9f521" end_index="4" portType="0" />
     <Dynamo.Models.ConnectorModel start="a87b210e-0eba-41ee-9e81-a824c49c0b5d" start_index="0" end="f500e100-e1b7-48e0-ba40-6782add9f521" end_index="6" portType="0" />
@@ -137,5 +118,16 @@ OUT = 0</Script>
     <Dynamo.Models.ConnectorModel start="a4383c65-f2f2-411a-86c3-1631d422c040" start_index="0" end="73101aca-85b0-4720-898c-65d6030a7c9e" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="30bb6ae4-cd8c-42e3-a2e6-d45ba4c1f8cf" start_index="0" end="205b0194-2a19-41e5-a47d-a998b7750b89" end_index="0" portType="0" />
   </Connectors>
-  <Notes />
+  <Notes>
+    <Dynamo.Models.NoteModel text="time in milliseconds that we wait for the solar analysis to complete, if you get errors in the console &quot;file watcher timed out&quot; then try increasing this time.  This is machine dependent." x="7.45199981270929" y="-283.791286058094" />
+    <Dynamo.Models.NoteModel text="first thing, we need to reset the file watcher for this iteration so we can tell when the solar calculation is done." x="416.943740852038" y="-542.260155890203" />
+    <Dynamo.Models.NoteModel text="next update the revit model to the current state of the variable &quot;parameter_value&quot; you'll see that we increment this on each iteration by amount to increment by" x="496.775505473833" y="-377.550771688652" />
+    <Dynamo.Models.NoteModel text="Now, we need to make sure that the solar analysis from Vasari has actualiy completed and saved our new solar data to the CSV where we are looking for it. When this node detects the file being resaved, it will fire and we can move to the next expression in&quot;Perform All&quot;&#xD;&#xA;" x="449.163344648189" y="-141.844480615703" />
+    <Dynamo.Models.NoteModel text="Finally, we start doing some actual work, this is a recursive call, where the increment variable is incremented by adding and then this node is called again with that incremented value" x="463.334550933913" y="366.922558949075" />
+    <Dynamo.Models.NoteModel text="this custom node is basically a simple if statement, if the new solar data was greater than the last one, we replace our last max data with this new one, if the solar data was less, we just keep our old data." x="315.101165509992" y="696.799151915452" />
+    <Dynamo.Models.NoteModel text="These nodes just parse the exported solar data from vasari and sum all of the data inside to get the total solar radiation for the current run" x="-33.7654018331028" y="752.173926542013" />
+    <Dynamo.Models.NoteModel text="this addition node actually increments the parameter variable" x="215.967918262397" y="474.583749988916" />
+    <Dynamo.Models.NoteModel text="All of these operations are completed in order, before the next one fires, this is how to control flow in Dynamo" x="1000.75903094198" y="-195.009789396787" />
+    <Dynamo.Models.NoteModel text="This is the comparison that ends our chain of recursive calls, when the parameter value is greater than our maximum value that we input, this test goes false, and instead of returning the next recursive call we return the accumulated list of&#xD;&#xA;results follow the graph back to see that this is true" x="1335.46685391618" y="-66.9948665189002" />
+  </Notes>
 </Workspace>
