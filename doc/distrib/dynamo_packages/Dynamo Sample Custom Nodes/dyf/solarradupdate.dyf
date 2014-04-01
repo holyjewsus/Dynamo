@@ -1,19 +1,19 @@
-<Workspace Version="0.6.3.27582" X="-23.3939314119872" Y="112.933235029698" zoom="0.97676875" Description="" Category="Analyze.Solar" Name="solarradupdate" ID="3ad2dee3-f815-4afa-8372-3f580b01c748">
+<Workspace Version="0.6.3.31046" X="395.341649644615" Y="167.714373938883" zoom="1.130842140625" Description="" Category="Analyze.Solar" Name="solarradupdate" ID="3ad2dee3-f815-4afa-8372-3f580b01c748">
   <Elements>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="080c41ad-eff1-41b6-bb1a-277bec2b0e77" nickname="Variable" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="080c41ad-eff1-41b6-bb1a-277bec2b0e77" nickname="Variable" x="0" y="-52.2129726201826" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="family_instance" />
     </Dynamo.Nodes.Symbol>
     <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="448c2dc1-c21b-4ceb-be29-1a4720a947f8" nickname="Variable" x="0" y="57.0375" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="parameter" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d46738a1-8d53-4225-89ad-56ee9fc0c672" nickname="Variable" x="13.3091890992623" y="254.216148669401" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="d46738a1-8d53-4225-89ad-56ee9fc0c672" nickname="Variable" x="20.4756755373265" y="336.118850818707" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="result" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="b8b44e1b-2840-4056-88ea-ff58b6daf2be" nickname="Number" x="95.1999999999999" y="169.3" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="b8b44e1b-2840-4056-88ea-ff58b6daf2be" nickname="Number" x="25.5827031730898" y="205.132432190321" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <System.Double value="1" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.Transaction type="Dynamo.Nodes.Transaction" guid="7d85c47a-4abd-491b-ac0f-58145743d8a6" nickname="Transaction" x="698.3" y="86.7" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.Begin type="Dynamo.Nodes.Begin" guid="3bac1999-6eda-4e94-b688-286e05c1e391" nickname="Perform All" x="815.5" y="193.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Begin type="Dynamo.Nodes.Begin" guid="3bac1999-6eda-4e94-b688-286e05c1e391" nickname="Perform All" x="815.5" y="224.21351330599" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Input name="expr1" />
       <Input name="expr2" />
     </Dynamo.Nodes.Begin>
@@ -32,5 +32,8 @@
     <Dynamo.Models.ConnectorModel start="010a4e7d-b30e-4251-8d74-4d839967094e" start_index="0" end="3bac1999-6eda-4e94-b688-286e05c1e391" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="173d22a0-a580-42e5-ba91-6af52eca5374" start_index="0" end="7d85c47a-4abd-491b-ac0f-58145743d8a6" end_index="0" portType="0" />
   </Connectors>
-  <Notes />
+  <Notes>
+    <Dynamo.Models.NoteModel text="The index 1 in our list points to the second item [0,1] this is the parameter value, we extract this, and set the family instance to this value" x="151.23032592104" y="95.6110542749265" />
+    <Dynamo.Models.NoteModel text="result is the final list [solar data, param value], since we held on to this, this is the best solution we found." x="-64.2399427582147" y="279.416458573539" />
+  </Notes>
 </Workspace>
