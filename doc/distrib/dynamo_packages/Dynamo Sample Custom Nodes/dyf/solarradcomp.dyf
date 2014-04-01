@@ -1,34 +1,34 @@
-<Workspace Version="0.6.3.27582" X="-8.58480203010006" Y="210.938893747025" zoom="0.608772931697611" Description="" Category="Analyze.Solar" Name="solarradcomp" ID="b8e990e3-a480-4118-9f81-0e02af495e72">
+<Workspace Version="0.6.3.31046" X="559.001680892961" Y="74.1450746190176" zoom="0.752987929891297" Description="" Category="Analyze.Solar" Name="solarradcomp" ID="b8e990e3-a480-4118-9f81-0e02af495e72">
   <Elements>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="b744d305-0928-4af0-86d3-ce6034125e7b" nickname="Variable" x="-18" y="-10" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="b744d305-0928-4af0-86d3-ce6034125e7b" nickname="Variable" x="-36.0597111419941" y="243.250508786592" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="old" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="989f4130-71ef-4bda-971a-b1b6d7b82e66" nickname="Variable" x="-4" y="154.671052631579" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="989f4130-71ef-4bda-971a-b1b6d7b82e66" nickname="Variable" x="-41.0903379938875" y="346.720919955382" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="data" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="c942d95b-b105-4aad-9898-bccd438a4fe9" nickname="Variable" x="-5" y="237.986842105263" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="c942d95b-b105-4aad-9898-bccd438a4fe9" nickname="Variable" x="-46.0744656019264" y="500.422963837753" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="newAmt" />
     </Dynamo.Nodes.Symbol>
-    <Dynamo.Nodes.Conditional type="Dynamo.Nodes.Conditional" guid="a869308d-9162-47b6-bcfa-9e57fe87895e" nickname="if" x="589.447368421054" y="81.6316062435914" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.NewList type="Dynamo.Nodes.NewList" guid="388d6681-5978-4fa7-b136-87487ce5bcdf" nickname="list" x="227.026315789474" y="184.184210526316" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Conditional type="Dynamo.Nodes.Conditional" guid="a869308d-9162-47b6-bcfa-9e57fe87895e" nickname="if" x="818.789333171693" y="222.089723591317" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.NewList type="Dynamo.Nodes.NewList" guid="388d6681-5978-4fa7-b136-87487ce5bcdf" nickname="list" x="188.607935259574" y="405.451013642404" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Input name="index0" />
       <Input name="index1" />
     </Dynamo.Nodes.NewList>
-    <Dynamo.Nodes.GreaterThan type="Dynamo.Nodes.GreaterThan" guid="dedd30e3-c010-4ff3-ba49-170d207cad37" nickname="Greater Than" x="334.5" y="-7.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.First type="Dynamo.Nodes.First" guid="17e8a563-18b7-4ff4-a84c-e73cbf24d56c" nickname="First of List" x="139.5" y="-63.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="b2cd593b-5cd0-40da-8779-22633be9c6f1" nickname="String" x="87.974574163743" y="-419.703344520474" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <System.String value="comparing old data: " />
+    <Dynamo.Nodes.GreaterThan type="Dynamo.Nodes.GreaterThan" guid="dedd30e3-c010-4ff3-ba49-170d207cad37" nickname="Greater Than" x="277.972902931495" y="-10.322598528906" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.First type="Dynamo.Nodes.First" guid="17e8a563-18b7-4ff4-a84c-e73cbf24d56c" nickname="First of List" x="1.2211279167974" y="-5.40322044821608" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="b2cd593b-5cd0-40da-8779-22633be9c6f1" nickname="String" x="102.758411505037" y="-600.394689802953" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.String value="comparing old data:  " />
     </Dynamo.Nodes.StringInput>
-    <Dynamo.Nodes.ConcatStrings type="Dynamo.Nodes.ConcatStrings" guid="8273088e-1f8f-4b18-9336-e80f0535282e" nickname="Concat Strings" x="285.5" y="-366.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.ConcatStrings type="Dynamo.Nodes.ConcatStrings" guid="8273088e-1f8f-4b18-9336-e80f0535282e" nickname="Concat Strings" x="300.283837341294" y="-547.191345282479" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Input name="s3" />
       <Input name="s4" />
     </Dynamo.Nodes.ConcatStrings>
-    <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="a81c4ab1-2905-4e19-96bf-2d1de79240c8" nickname="String" x="90.974574163743" y="-336.703344520474" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="a81c4ab1-2905-4e19-96bf-2d1de79240c8" nickname="String" x="105.758411505037" y="-517.394689802953" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <System.String value="to new data : " />
     </Dynamo.Nodes.StringInput>
-    <Dynamo.Nodes.ToString type="Dynamo.Nodes.ToString" guid="4fd41568-df93-4525-b983-feb048b9d026" nickname="To String" x="96.974574163743" y="-257.703344520474" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.ToString type="Dynamo.Nodes.ToString" guid="4d9ee86f-b5f4-4fbe-b5a6-a51ec76e9c3b" nickname="To String" x="94.974574163743" y="-194.703344520474" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="e4103d6d-5d69-4dbc-bebc-95ff0882d1a4" nickname="DynamoLogger.Log()" x="449.028124973778" y="-182.196639143522" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.ToString type="Dynamo.Nodes.ToString" guid="4fd41568-df93-4525-b983-feb048b9d026" nickname="To String" x="111.758411505037" y="-438.394689802953" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.ToString type="Dynamo.Nodes.ToString" guid="4d9ee86f-b5f4-4fbe-b5a6-a51ec76e9c3b" nickname="To String" x="109.758411505037" y="-375.394689802953" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="e4103d6d-5d69-4dbc-bebc-95ff0882d1a4" nickname="DynamoLogger.Log()" x="463.811962315072" y="-362.887984426001" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <ID value="0f6367da-a34f-4965-a2b6-99a9af40e364" />
       <Name value="DynamoLogger.Log()" />
       <Description value="Uses the DynamoLogger and FSchemeInterop Utils class to print to the console" />
@@ -39,26 +39,63 @@
         <Output value="object" />
       </Outputs>
     </Dynamo.Nodes.Function>
-    <Dynamo.Nodes.Begin type="Dynamo.Nodes.Begin" guid="dccaad9b-77c5-433f-bef2-a9ea2771d365" nickname="Perform All" x="542.859551885803" y="-86.8595518858029" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Begin type="Dynamo.Nodes.Begin" guid="dccaad9b-77c5-433f-bef2-a9ea2771d365" nickname="Perform All" x="583.422774064384" y="-215.189652165431" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Input name="expr1" />
       <Input name="expr2" />
     </Dynamo.Nodes.Begin>
-    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="7d24c494-44de-4572-94e9-26af1039f91c" nickname="Watch" x="246.441994225409" y="341.001267123989" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="bcd319d8-4424-45a3-8bbe-17058a9653d4" nickname="Output" x="760.887162917458" y="106.252774581875" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="7d24c494-44de-4572-94e9-26af1039f91c" nickname="Watch" x="208.023613695509" y="562.268070240077" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="bcd319d8-4424-45a3-8bbe-17058a9653d4" nickname="Output" x="1055.43386920695" y="342.432493689274" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="result" />
     </Dynamo.Nodes.Output>
+    <Dynamo.Nodes.Breakpoint type="Dynamo.Nodes.Breakpoint" guid="28f3ddb0-0e0a-495e-afa9-794d58451987" nickname="Debug Breakpoint" x="438.106714299212" y="-90.8650566353739" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="dec7eb2b-e615-4b19-9a41-17b90764ac49" nickname="String" x="208.116124911091" y="155.651471658514" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.String value="Previous data was greater, keeping previous data " />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="f0a996c7-b35c-4702-ab5c-81d9d63f389c" nickname="DynamoLogger.Log()" x="438.967294430308" y="154.103760714683" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="0f6367da-a34f-4965-a2b6-99a9af40e364" />
+      <Name value="DynamoLogger.Log()" />
+      <Description value="Uses the DynamoLogger and FSchemeInterop Utils class to print to the console" />
+      <Inputs>
+        <Input value="input" />
+      </Inputs>
+      <Outputs>
+        <Output value="object" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Begin type="Dynamo.Nodes.Begin" guid="448c01a8-d756-48c1-8e99-6ecd8d45fdce" nickname="Perform All" x="571.958999469818" y="239.168702063602" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Input name="expr1" />
+      <Input name="expr2" />
+    </Dynamo.Nodes.Begin>
+    <Dynamo.Nodes.Begin type="Dynamo.Nodes.Begin" guid="9eeb114e-1374-42a0-aec0-7ef612868f3d" nickname="Perform All" x="607.461515304365" y="470.024840152089" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Input name="expr1" />
+      <Input name="expr2" />
+    </Dynamo.Nodes.Begin>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="ee64a764-2163-4c35-8a06-f46addcefaa2" nickname="DynamoLogger.Log()" x="556.118791437968" y="677.283065476134" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="0f6367da-a34f-4965-a2b6-99a9af40e364" />
+      <Name value="DynamoLogger.Log()" />
+      <Description value="Uses the DynamoLogger and FSchemeInterop Utils class to print to the console" />
+      <Inputs>
+        <Input value="input" />
+      </Inputs>
+      <Outputs>
+        <Output value="object" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="7b31b537-37a0-43bc-aff4-509955856b2f" nickname="String" x="293.00421380736" y="680.204068161866" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.String value="Previous data was less than new data, keeping new data" />
+    </Dynamo.Nodes.StringInput>
   </Elements>
   <Connectors>
-    <Dynamo.Models.ConnectorModel start="b744d305-0928-4af0-86d3-ce6034125e7b" start_index="0" end="a869308d-9162-47b6-bcfa-9e57fe87895e" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="b744d305-0928-4af0-86d3-ce6034125e7b" start_index="0" end="17e8a563-18b7-4ff4-a84c-e73cbf24d56c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b744d305-0928-4af0-86d3-ce6034125e7b" start_index="0" end="448c01a8-d756-48c1-8e99-6ecd8d45fdce" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="989f4130-71ef-4bda-971a-b1b6d7b82e66" start_index="0" end="388d6681-5978-4fa7-b136-87487ce5bcdf" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="989f4130-71ef-4bda-971a-b1b6d7b82e66" start_index="0" end="dedd30e3-c010-4ff3-ba49-170d207cad37" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="989f4130-71ef-4bda-971a-b1b6d7b82e66" start_index="0" end="4fd41568-df93-4525-b983-feb048b9d026" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="989f4130-71ef-4bda-971a-b1b6d7b82e66" start_index="0" end="7d24c494-44de-4572-94e9-26af1039f91c" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="c942d95b-b105-4aad-9898-bccd438a4fe9" start_index="0" end="388d6681-5978-4fa7-b136-87487ce5bcdf" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="a869308d-9162-47b6-bcfa-9e57fe87895e" start_index="0" end="bcd319d8-4424-45a3-8bbe-17058a9653d4" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="388d6681-5978-4fa7-b136-87487ce5bcdf" start_index="0" end="a869308d-9162-47b6-bcfa-9e57fe87895e" end_index="2" portType="0" />
-    <Dynamo.Models.ConnectorModel start="dedd30e3-c010-4ff3-ba49-170d207cad37" start_index="0" end="dccaad9b-77c5-433f-bef2-a9ea2771d365" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="388d6681-5978-4fa7-b136-87487ce5bcdf" start_index="0" end="9eeb114e-1374-42a0-aec0-7ef612868f3d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dedd30e3-c010-4ff3-ba49-170d207cad37" start_index="0" end="28f3ddb0-0e0a-495e-afa9-794d58451987" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="17e8a563-18b7-4ff4-a84c-e73cbf24d56c" start_index="0" end="dedd30e3-c010-4ff3-ba49-170d207cad37" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="17e8a563-18b7-4ff4-a84c-e73cbf24d56c" start_index="0" end="4d9ee86f-b5f4-4fbe-b5a6-a51ec76e9c3b" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="b2cd593b-5cd0-40da-8779-22633be9c6f1" start_index="0" end="8273088e-1f8f-4b18-9336-e80f0535282e" end_index="0" portType="0" />
@@ -68,6 +105,21 @@
     <Dynamo.Models.ConnectorModel start="4d9ee86f-b5f4-4fbe-b5a6-a51ec76e9c3b" start_index="0" end="8273088e-1f8f-4b18-9336-e80f0535282e" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="e4103d6d-5d69-4dbc-bebc-95ff0882d1a4" start_index="0" end="dccaad9b-77c5-433f-bef2-a9ea2771d365" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="dccaad9b-77c5-433f-bef2-a9ea2771d365" start_index="0" end="a869308d-9162-47b6-bcfa-9e57fe87895e" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="28f3ddb0-0e0a-495e-afa9-794d58451987" start_index="0" end="dccaad9b-77c5-433f-bef2-a9ea2771d365" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="dec7eb2b-e615-4b19-9a41-17b90764ac49" start_index="0" end="f0a996c7-b35c-4702-ab5c-81d9d63f389c" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f0a996c7-b35c-4702-ab5c-81d9d63f389c" start_index="0" end="448c01a8-d756-48c1-8e99-6ecd8d45fdce" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="448c01a8-d756-48c1-8e99-6ecd8d45fdce" start_index="0" end="a869308d-9162-47b6-bcfa-9e57fe87895e" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9eeb114e-1374-42a0-aec0-7ef612868f3d" start_index="0" end="a869308d-9162-47b6-bcfa-9e57fe87895e" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ee64a764-2163-4c35-8a06-f46addcefaa2" start_index="0" end="9eeb114e-1374-42a0-aec0-7ef612868f3d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7b31b537-37a0-43bc-aff4-509955856b2f" start_index="0" end="ee64a764-2163-4c35-8a06-f46addcefaa2" end_index="0" portType="0" />
   </Connectors>
-  <Notes />
+  <Notes>
+    <Dynamo.Models.NoteModel text="This comparison is the important part of this node, we check if the first of list [solar data, param val] is greater than the data we just got back in our newest run." x="107.819872115094" y="-110.473584206767" />
+    <Dynamo.Models.NoteModel text="These perform all flow controls let us print to the console before continuing with graph execution, they output their last input" x="635.132120872051" y="-291.008007144726" />
+    <Dynamo.Models.NoteModel text="This if statement executes one of two branches depending on if the greater than test was true or false" x="794.497225193608" y="139.277774523478" />
+    <Dynamo.Models.NoteModel text="In addition to passing the correct data out of this node, we also print a different message to the console" x="734.81467303283" y="561.67466293541" />
+    <Dynamo.Models.NoteModel text="The old list we have been accumulating" x="-201.375952896514" y="201.854497635699" />
+    <Dynamo.Models.NoteModel text="The new data [solar data]" x="-202.624633472721" y="312.161390084581" />
+    <Dynamo.Models.NoteModel text="The new parameter value[param value] for the current data" x="-227.778079697162" y="439.732835501632" />
+  </Notes>
 </Workspace>
