@@ -1,4 +1,4 @@
-<Workspace Version="0.6.3.16451" X="160.929393824765" Y="205.383953832452" zoom="0.548590301478039" Description="" Category="" Name="Home">
+<Workspace Version="0.6.3.31046" X="216.641428443475" Y="-157.880399626258" zoom="0.818865791623831" Description="" Category="" Name="Home">
   <Elements>
     <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="c223c0ca-50bf-4a36-852d-340e4645cfd1" nickname="String" x="-117.039343871308" y="-106.150449719903" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <System.String value="increment" />
@@ -7,14 +7,12 @@
       <System.Double value="9" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="49c62c74-0706-47b4-ae79-ac6a0ec269c1" nickname="Number" x="-102.638003245122" y="146.856671029712" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <System.Double value="100" />
+      <System.Double value="90" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.StringFilename type="Dynamo.Nodes.StringFilename" guid="656038e2-c46d-4f71-9df9-e7dbbf749046" nickname="Filename" x="-122.051994669764" y="291.252391719128" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <System.String value="C:\Users\Mike\Desktop\testsolarNYC.csv" />
+      <System.String value="C:\Users\Mike\Desktop\test.csv" />
     </Dynamo.Nodes.StringFilename>
-    <Dynamo.Nodes.FamilyInstanceCreatorSelection type="Dynamo.Nodes.FamilyInstanceCreatorSelection" guid="265e747c-bcee-41ed-aae2-e5e1f9c260e3" nickname="Select Family Instance" x="-124.616899272181" y="-265.385903333596" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <instance id="2462e2a0-c45d-435a-a4c5-397a4dfaeace-00039b21" />
-    </Dynamo.Nodes.FamilyInstanceCreatorSelection>
+    <Dynamo.Nodes.FamilyInstanceCreatorSelection type="Dynamo.Nodes.FamilyInstanceCreatorSelection" guid="265e747c-bcee-41ed-aae2-e5e1f9c260e3" nickname="Select Family Instance" x="-124.616899272181" y="-265.385903333596" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.FunctionWithRevit type="Dynamo.Nodes.FunctionWithRevit" guid="186acd89-b457-4234-819d-2353384d190e" nickname="solarradupdate" x="922.087025356777" y="-16.517271350714" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <ID value="3ad2dee3-f815-4afa-8372-3f580b01c748" />
       <Name value="solarradupdate" />
@@ -33,7 +31,7 @@
       </InnerNode>
     </Dynamo.Nodes.FunctionWithRevit>
     <Dynamo.Nodes.FunctionWithRevit type="Dynamo.Nodes.FunctionWithRevit" guid="a6b5cb5e-bcc2-49ea-80aa-c1adbf5b0170" nickname="solarradopt" x="524.92714494421" y="125.95524522605" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <ID value="d9380158-c69d-4ea8-b6eb-ae495afb90d0" />
+      <ID value="9508fdab-5e4b-44f7-a57e-f9ae1077c192" />
       <Name value="solarradopt" />
       <Description value="" />
       <Inputs>
@@ -72,10 +70,20 @@
         <Run />
         <Run />
         <Run />
-        <Run />
-        <Run />
       </InnerNode>
       <InnerNode id="173d22a0-a580-42e5-ba91-6af52eca5374">
+        <Run />
+      </InnerNode>
+      <InnerNode id="8f25365f-97d9-40a9-9fd6-0702ffc22204">
+        <Run />
+        <Run />
+        <Run />
+        <Run />
+        <Run />
+        <Run />
+        <Run />
+        <Run />
+        <Run />
         <Run />
       </InnerNode>
     </Dynamo.Nodes.FunctionWithRevit>
@@ -85,7 +93,10 @@
     </Dynamo.Nodes.NewList>
     <Dynamo.Nodes.FileWatcher type="Dynamo.Nodes.FileWatcher" guid="795380b0-617e-47a4-bf4b-1186959d24b4" nickname="Watch File" x="253.850306734124" y="388.564632008798" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="34d83385-1a98-4b26-b3b2-d68c220cf448" nickname="Number" x="-130.087894707" y="466.014472248053" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <System.Double value="1" />
+      <System.Double value="5" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="2b14e328-c5ae-4be3-a511-e572ce0da966" nickname="Number" x="-189.98510772603" y="599.082810866727" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0.001" />
     </Dynamo.Nodes.DoubleInput>
   </Elements>
   <Connectors>
@@ -101,8 +112,8 @@
     <Dynamo.Models.ConnectorModel start="d6b13621-86b8-49b0-815b-7c90d7210c70" start_index="0" end="a6b5cb5e-bcc2-49ea-80aa-c1adbf5b0170" end_index="5" portType="0" />
     <Dynamo.Models.ConnectorModel start="795380b0-617e-47a4-bf4b-1186959d24b4" start_index="0" end="a6b5cb5e-bcc2-49ea-80aa-c1adbf5b0170" end_index="7" portType="0" />
     <Dynamo.Models.ConnectorModel start="34d83385-1a98-4b26-b3b2-d68c220cf448" start_index="0" end="a6b5cb5e-bcc2-49ea-80aa-c1adbf5b0170" end_index="4" portType="0" />
-    <Dynamo.Models.ConnectorModel start="34d83385-1a98-4b26-b3b2-d68c220cf448" start_index="0" end="d6b13621-86b8-49b0-815b-7c90d7210c70" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="34d83385-1a98-4b26-b3b2-d68c220cf448" start_index="0" end="d6b13621-86b8-49b0-815b-7c90d7210c70" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="2b14e328-c5ae-4be3-a511-e572ce0da966" start_index="0" end="d6b13621-86b8-49b0-815b-7c90d7210c70" end_index="0" portType="0" />
   </Connectors>
   <Notes>
     <Dynamo.Models.NoteModel text="family instance to change parameters on" x="-123.587965808602" y="-315.548432721714" />
