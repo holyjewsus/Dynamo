@@ -1,0 +1,1140 @@
+<Workspace Version="0.6.3.19262" X="-296.239598517521" Y="-274.455705675444" zoom="0.722090522686649" Description="" Category="" Name="Home">
+  <Elements>
+    <Dynamo.Nodes.SurfaceDomain type="Dynamo.Nodes.SurfaceDomain" guid="d81bcc39-c0b8-4412-baab-5ca5e39b4156" nickname="Get Surface Domain" x="63.3689953818962" y="19.0266993037043" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.UvGrid type="Dynamo.Nodes.UvGrid" guid="b2d1eb90-bf50-447e-ad8e-6acba14b0ea1" nickname="UV Grid" x="76.4125849232094" y="194.313802891607" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="4fe05a2d-eed9-4e62-9e2f-3252f59f832b" nickname="Number" x="-338.278850046356" y="606.912535371776" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="5" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="d510f6c6-796c-4119-8ebc-b6dc5093f0af" nickname="Number" x="-340.834591280715" y="676.943357115026" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="5" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.XyzEvaluate type="Dynamo.Nodes.XyzEvaluate" guid="5e992552-0b22-41e0-a44f-d668ee15810a" nickname="Evaluate Surface" x="340.626688384484" y="123.376373614755" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.FamilyTypeSelector type="Dynamo.Nodes.FamilyTypeSelector" guid="20236cc4-8b5e-460a-a74c-95a83364a821" nickname="Select Family Type" x="628.403054925155" y="426.473962464768" isVisible="true" isUpstreamVisible="true" lacing="Disabled" index="7" />
+    <Dynamo.Nodes.AdaptiveComponentByPoints type="Dynamo.Nodes.AdaptiveComponentByPoints" guid="f445e782-e2bd-4779-a65d-ec5ebd1a52bf" nickname="Adaptive Component by XYZs" x="1016.86733151689" y="347.913092760584" isVisible="true" isUpstreamVisible="true" lacing="Longest">
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bedd</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bee4</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001beeb</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bef1</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bef7</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001befd</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf03</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf09</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf0f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf15</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf1b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf21</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf27</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf2d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf33</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf39</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf3f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf45</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf4b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf51</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf57</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf5d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf63</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf69</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf6f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf75</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf7b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf82</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf88</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf8e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf94</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bf9a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfa0</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfa6</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfac</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfb2</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfb8</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfbe</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfc4</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfca</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfd0</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfd6</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfdc</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfe2</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfe8</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bfee</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bff4</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001bffa</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c000</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c006</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c00c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c012</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c019</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c01f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c025</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c02b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c031</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c037</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c03d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c043</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c049</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c04f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c055</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c05b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c061</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c067</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c06d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c073</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c079</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c07f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c085</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c08b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c091</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c097</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c09d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0a3</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0a9</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0b0</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0b6</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0bc</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0c2</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0c8</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0ce</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0d4</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0da</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0e0</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0e6</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0ec</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0f2</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0f8</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c0fe</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c104</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c10a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c110</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c116</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c11c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c122</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c128</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c12e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c134</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c13a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c140</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c147</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c14d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c153</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c159</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c15f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c165</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c16b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c171</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c177</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c17d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c183</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c189</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c18f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c195</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c19b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1a1</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1a7</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1ad</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1b3</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1b9</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1bf</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1c5</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1cb</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1d1</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1d7</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1de</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1e4</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1ea</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1f0</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1f6</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c1fc</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c202</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c208</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c20e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c214</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c21a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c220</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c226</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c22c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c232</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c238</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c23e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c244</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c24a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c250</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c256</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c25c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c262</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c268</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c26e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c275</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c27b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c281</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c287</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c28d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c293</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c299</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c29f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2a5</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2ab</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2b1</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2b7</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2bd</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2c3</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2c9</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2cf</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2d5</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2db</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2e1</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2e7</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2ed</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2f3</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2f9</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c2ff</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c305</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c30c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c312</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c318</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c31e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c324</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c32a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c330</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c336</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c33c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c342</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c348</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c34e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c354</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c35a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c360</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c366</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c36c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c372</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c378</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c37e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c384</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c38a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c390</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c396</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c39c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3a3</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3a9</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3af</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3b5</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3bb</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3c1</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3c7</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3cd</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3d3</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3d9</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3df</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3e5</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3eb</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3f1</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3f7</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c3fd</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c403</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c409</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c40f</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c415</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c41b</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c421</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c427</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c42d</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c433</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c43a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c440</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c446</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c44c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c452</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c458</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c45e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c464</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c46a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c470</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c476</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c47c</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c482</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c488</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c48e</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c494</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c49a</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c4a0</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c4a6</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c4ac</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c4b2</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c4b8</Element>
+      </Run>
+      <Run>
+        <Element>6e1cc0b8-82c3-48d8-abe0-127717ef60a1-0001c4be</Element>
+      </Run>
+    </Dynamo.Nodes.AdaptiveComponentByPoints>
+    <Dynamo.Nodes.FamilyInstanceParameterSetter type="Dynamo.Nodes.FamilyInstanceParameterSetter" guid="d37d849c-a8d0-4800-a9ac-ecc53a72bb14" nickname="Set Element Parameter" x="1125.83281199177" y="564.377529972218" isVisible="true" isUpstreamVisible="true" lacing="Longest">
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+      <Run />
+    </Dynamo.Nodes.FamilyInstanceParameterSetter>
+    <Dynamo.Nodes.First type="Dynamo.Nodes.First" guid="e940fb11-3c66-456e-a990-d54aedbdf3b1" nickname="First of List" x="736.922105364918" y="632.595062220977" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="b8c38720-a9ac-4830-b811-a3903cbedeb2" nickname="Number" x="990.644636091709" y="644.180565907132" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0.3" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.ModelElementSelection type="Dynamo.Nodes.ModelElementSelection" guid="9b33058d-4bad-4e43-93f2-0ef8d3dbabda" nickname="Select Model Element" x="-887.782699558254" y="-153.556526050345" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <instance id="6333c70f-4d5d-437c-a3c3-9537586ecdbc-0000d1e7" />
+    </Dynamo.Nodes.ModelElementSelection>
+    <Dynamo.Nodes.GeometryObjectsFromRoot type="Dynamo.Nodes.GeometryObjectsFromRoot" guid="e9d176a2-1a2d-4672-8fd7-3bc51fba9b25" nickname="Explode" x="-551.629503164889" y="-154.885194810793" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.ElementSolid type="Dynamo.Nodes.ElementSolid" guid="681bae7c-1db7-4681-a150-51c5762ad01a" nickname="Solid from Element" x="-713.727091939556" y="-154.885194810793" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.UvGrid type="Dynamo.Nodes.UvGrid" guid="79de981a-e0f5-4e2b-81fe-29c0eb746b7a" nickname="UV Grid" x="-1007.66857813385" y="49.4294275963332" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.SurfaceDomain type="Dynamo.Nodes.SurfaceDomain" guid="cefd922a-80a7-417f-b17d-18690c52e981" nickname="Get Surface Domain" x="-800.404612265226" y="-40.0944276915305" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="b5abe4a2-aadd-4c86-acec-6c433e04d16d" nickname="Number" x="-1162.40426719578" y="35.4683188975342" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="061a3c96-197c-48ed-87b1-ec34c82c896e" nickname="Number" x="-1164.29415279869" y="120.13787011909" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.PythonVarIn type="Dynamo.Nodes.PythonVarIn" guid="1d40ea6a-4c69-45b5-9d30-6f4f0d4be7d3" nickname="Python Script With Variable Number of Inputs" x="-431.422475091569" y="50.3917032542108" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputs="2">
+      <Script># Default imports
+import clr
+clr.AddReference('RevitAPI')
+clr.AddReference('RevitAPIUI')
+from Autodesk.Revit.DB import *
+import Autodesk
+import sys
+import clr
+path = r'C:\Autodesk\Dynamo\Core'
+exec_path = r'C:\Autodesk\Dynamo\Core\dll'
+sys.path.append(path)
+sys.path.append(exec_path)
+clr.AddReference('LibGNet')
+from Autodesk.LibG import *
+
+#The input to this node will be stored in the IN0...INX variable(s).
+normlist = IN0
+faces= IN1
+filtered = []
+
+
+
+for i in range(len(normlist)):
+	if normlist[i][0][2] == 0:
+		filtered.append(faces[i])
+	
+
+#Assign your output to the OUT variable
+OUT = filtered</Script>
+    </Dynamo.Nodes.PythonVarIn>
+    <Dynamo.Nodes.Map type="Dynamo.Nodes.Map" guid="17231147-4239-4aa3-a765-b84a2d82cbaa" nickname="Map" x="-821.409748518988" y="52.342136044371" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.NormalEvaluate type="Dynamo.Nodes.NormalEvaluate" guid="949a974e-0cf2-41d9-b514-d35012d3ca45" nickname="Surface Normal" x="-631.671257230754" y="60.3592553945781" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.Watch3D type="Dynamo.Nodes.Watch3D" guid="a2b66345-53f7-4c42-9b96-4d1c274399b3" nickname="Watch 3D" x="-42.3177899230548" y="-587.104464972147" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <view width="260" height="542">
+        <camera pos_x="25.9213031788598" pos_y="-4.30780674146547" pos_z="25.2038294769936" look_x="-29.5321447311758" look_y="3.32342322998533" look_z="-20.0493258394843" />
+      </view>
+    </Dynamo.Nodes.Watch3D>
+    <Dynamo.Nodes.FamilyInstanceParameterSelector type="Dynamo.Nodes.FamilyInstanceParameterSelector" guid="ac5b7a28-5052-4714-8286-e99ba6f62287" nickname="Get Family Parameter" x="767.244863065843" y="759.349456826404" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <familyid value="114397" />
+      <index value="16" />
+    </Dynamo.Nodes.FamilyInstanceParameterSelector>
+    <Dynamo.Nodes.Slice type="Dynamo.Nodes.Slice" guid="17b8611f-a415-4c57-8f9d-b25ad2fa1cd4" nickname="Partition List" x="-132.382738829027" y="385.3824620505" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Addition type="Dynamo.Nodes.Addition" guid="5d1fbd97-d645-4045-8292-a600af095fe6" nickname="Add" x="-270.677049254502" y="476.524238161369" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="9ed44be3-3e1b-40a4-a9a6-2b6fdd85c350" nickname="Number" x="-441.500552610826" y="492.934440341695" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.Map type="Dynamo.Nodes.Map" guid="4a562bb1-840a-474b-871c-c561749f1527" nickname="Map" x="247.620067595576" y="28.5147822057077" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Map type="Dynamo.Nodes.Map" guid="1f72ca98-2881-402f-ad33-92092b5538f2" nickname="Map" x="33.3967020978822" y="394.236307722037" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Map type="Dynamo.Nodes.Map" guid="a101a836-4895-4480-943f-55fd47e8a06d" nickname="Map" x="292.775963759254" y="356.191479948518" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.FlattenListAmt type="Dynamo.Nodes.FlattenListAmt" guid="b1d9cb85-b00e-4d71-99b9-e16dd5af8a58" nickname="Flatten" x="544.600201344708" y="359.775337220386" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="7960b08c-4a4e-458e-821d-cd31636312e7" nickname="Number" x="439.2178301131" y="483.335472183454" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="820ec6f9-2510-4899-8207-292d64cc9e40" nickname="applyCorrectQuadPanelization Based UV dir" x="-33.1489146401056" y="610.374178673963" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="8a721abd-cf9a-48da-ab44-8e73fbf3d806" />
+      <Name value="applyCorrectQuadPanelization Based UV dir" />
+      <Description value="" />
+      <Inputs>
+        <Input value="Row Number" />
+        <Input value="seq" />
+      </Inputs>
+      <Outputs>
+        <Output value="result" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="d81bcc39-c0b8-4412-baab-5ca5e39b4156" start_index="0" end="4a562bb1-840a-474b-871c-c561749f1527" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b2d1eb90-bf50-447e-ad8e-6acba14b0ea1" start_index="0" end="4a562bb1-840a-474b-871c-c561749f1527" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4fe05a2d-eed9-4e62-9e2f-3252f59f832b" start_index="0" end="b2d1eb90-bf50-447e-ad8e-6acba14b0ea1" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d510f6c6-796c-4119-8ebc-b6dc5093f0af" start_index="0" end="b2d1eb90-bf50-447e-ad8e-6acba14b0ea1" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d510f6c6-796c-4119-8ebc-b6dc5093f0af" start_index="0" end="5d1fbd97-d645-4045-8292-a600af095fe6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="d510f6c6-796c-4119-8ebc-b6dc5093f0af" start_index="0" end="820ec6f9-2510-4899-8207-292d64cc9e40" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5e992552-0b22-41e0-a44f-d668ee15810a" start_index="0" end="1f72ca98-2881-402f-ad33-92092b5538f2" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="20236cc4-8b5e-460a-a74c-95a83364a821" start_index="0" end="f445e782-e2bd-4779-a65d-ec5ebd1a52bf" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f445e782-e2bd-4779-a65d-ec5ebd1a52bf" start_index="0" end="e940fb11-3c66-456e-a990-d54aedbdf3b1" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f445e782-e2bd-4779-a65d-ec5ebd1a52bf" start_index="0" end="d37d849c-a8d0-4800-a9ac-ecc53a72bb14" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e940fb11-3c66-456e-a990-d54aedbdf3b1" start_index="0" end="ac5b7a28-5052-4714-8286-e99ba6f62287" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b8c38720-a9ac-4830-b811-a3903cbedeb2" start_index="0" end="d37d849c-a8d0-4800-a9ac-ecc53a72bb14" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9b33058d-4bad-4e43-93f2-0ef8d3dbabda" start_index="0" end="681bae7c-1db7-4681-a150-51c5762ad01a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e9d176a2-1a2d-4672-8fd7-3bc51fba9b25" start_index="0" end="cefd922a-80a7-417f-b17d-18690c52e981" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e9d176a2-1a2d-4672-8fd7-3bc51fba9b25" start_index="0" end="1d40ea6a-4c69-45b5-9d30-6f4f0d4be7d3" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="e9d176a2-1a2d-4672-8fd7-3bc51fba9b25" start_index="0" end="949a974e-0cf2-41d9-b514-d35012d3ca45" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="681bae7c-1db7-4681-a150-51c5762ad01a" start_index="0" end="e9d176a2-1a2d-4672-8fd7-3bc51fba9b25" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="79de981a-e0f5-4e2b-81fe-29c0eb746b7a" start_index="0" end="17231147-4239-4aa3-a765-b84a2d82cbaa" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="cefd922a-80a7-417f-b17d-18690c52e981" start_index="0" end="17231147-4239-4aa3-a765-b84a2d82cbaa" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b5abe4a2-aadd-4c86-acec-6c433e04d16d" start_index="0" end="79de981a-e0f5-4e2b-81fe-29c0eb746b7a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="061a3c96-197c-48ed-87b1-ec34c82c896e" start_index="0" end="79de981a-e0f5-4e2b-81fe-29c0eb746b7a" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1d40ea6a-4c69-45b5-9d30-6f4f0d4be7d3" start_index="0" end="a2b66345-53f7-4c42-9b96-4d1c274399b3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1d40ea6a-4c69-45b5-9d30-6f4f0d4be7d3" start_index="0" end="5e992552-0b22-41e0-a44f-d668ee15810a" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1d40ea6a-4c69-45b5-9d30-6f4f0d4be7d3" start_index="0" end="d81bcc39-c0b8-4412-baab-5ca5e39b4156" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="17231147-4239-4aa3-a765-b84a2d82cbaa" start_index="0" end="949a974e-0cf2-41d9-b514-d35012d3ca45" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="949a974e-0cf2-41d9-b514-d35012d3ca45" start_index="0" end="1d40ea6a-4c69-45b5-9d30-6f4f0d4be7d3" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="ac5b7a28-5052-4714-8286-e99ba6f62287" start_index="0" end="d37d849c-a8d0-4800-a9ac-ecc53a72bb14" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="17b8611f-a415-4c57-8f9d-b25ad2fa1cd4" start_index="0" end="1f72ca98-2881-402f-ad33-92092b5538f2" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="5d1fbd97-d645-4045-8292-a600af095fe6" start_index="0" end="17b8611f-a415-4c57-8f9d-b25ad2fa1cd4" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="9ed44be3-3e1b-40a4-a9a6-2b6fdd85c350" start_index="0" end="5d1fbd97-d645-4045-8292-a600af095fe6" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4a562bb1-840a-474b-871c-c561749f1527" start_index="0" end="5e992552-0b22-41e0-a44f-d668ee15810a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="1f72ca98-2881-402f-ad33-92092b5538f2" start_index="0" end="a101a836-4895-4480-943f-55fd47e8a06d" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a101a836-4895-4480-943f-55fd47e8a06d" start_index="0" end="b1d9cb85-b00e-4d71-99b9-e16dd5af8a58" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="b1d9cb85-b00e-4d71-99b9-e16dd5af8a58" start_index="0" end="f445e782-e2bd-4779-a65d-ec5ebd1a52bf" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="7960b08c-4a4e-458e-821d-cd31636312e7" start_index="0" end="b1d9cb85-b00e-4d71-99b9-e16dd5af8a58" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="820ec6f9-2510-4899-8207-292d64cc9e40" start_index="0" end="a101a836-4895-4480-943f-55fd47e8a06d" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
