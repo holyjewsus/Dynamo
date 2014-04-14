@@ -1,0 +1,38 @@
+<Workspace Version="0.6.3.38003" X="-293.515077386281" Y="164.570873871385" zoom="0.722078659900077" Description="divides the gross surface area by the solar value" Category="Analyze.Solar" Name="Surface Area_dividedby_Solar Value" ID="b0404e1d-faa5-413c-acc6-d7a52d2392e7">
+  <Elements>
+    <Dynamo.Nodes.StringInput type="Dynamo.Nodes.StringInput" guid="b4e0d75e-b1b8-45f7-9246-dc6a997e3b49" nickname="String" x="250" y="86.9365105210036" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.String value="Gross Surface Area" />
+    </Dynamo.Nodes.StringInput>
+    <Dynamo.Nodes.FamilyInstanceParameterGetter type="Dynamo.Nodes.FamilyInstanceParameterGetter" guid="8f25365f-97d9-40a9-9fd6-0702ffc22204" nickname="Get Element Parameter Value" x="435.284480126557" y="0" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.LengthInput type="Dynamo.Nodes.LengthInput" guid="845ddbf8-e5b1-43b7-a73b-52d66120fe3e" nickname="Length" x="479.32226564446" y="127.205508701448" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0.304800000001219" />
+    </Dynamo.Nodes.LengthInput>
+    <Dynamo.Nodes.LengthInput type="Dynamo.Nodes.LengthInput" guid="60dd66d8-b7be-4bf5-a9ff-18554ca4d8ff" nickname="Length" x="607.936562194396" y="194.233784129698" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="0.304800000001219" />
+    </Dynamo.Nodes.LengthInput>
+    <Dynamo.Nodes.Division type="Dynamo.Nodes.Division" guid="a5e72126-0069-4f31-9a7e-85090a704791" nickname="Divide" x="650.069448844385" y="74.201271696278" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.Division type="Dynamo.Nodes.Division" guid="05962e3a-e60e-445f-998a-2f597ead7511" nickname="Divide" x="778.683745394321" y="141.229547124538" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.Division type="Dynamo.Nodes.Division" guid="a011804f-7fc2-438d-a9b8-8fddea977441" nickname="Divide" x="927.318590481364" y="138.033287718407" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="569e92d1-e3e6-4016-b112-6f235ee67723" nickname="Input" x="0" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="element to get surface area from" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="f2a7c2b8-ff81-4023-97ac-5d122d7bb330" nickname="Input" x="0" y="150" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="solar value" />
+    </Dynamo.Nodes.Symbol>
+    <Dynamo.Nodes.Output type="Dynamo.Nodes.Output" guid="cb444cfa-2571-41d5-957d-e610cd5acdf6" nickname="Output" x="1052.61719833031" y="86.1158220933599" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <Symbol value="x÷y" />
+    </Dynamo.Nodes.Output>
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="b4e0d75e-b1b8-45f7-9246-dc6a997e3b49" start_index="0" end="8f25365f-97d9-40a9-9fd6-0702ffc22204" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="8f25365f-97d9-40a9-9fd6-0702ffc22204" start_index="0" end="a5e72126-0069-4f31-9a7e-85090a704791" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="845ddbf8-e5b1-43b7-a73b-52d66120fe3e" start_index="0" end="a5e72126-0069-4f31-9a7e-85090a704791" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="60dd66d8-b7be-4bf5-a9ff-18554ca4d8ff" start_index="0" end="05962e3a-e60e-445f-998a-2f597ead7511" end_index="1" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a5e72126-0069-4f31-9a7e-85090a704791" start_index="0" end="05962e3a-e60e-445f-998a-2f597ead7511" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="05962e3a-e60e-445f-998a-2f597ead7511" start_index="0" end="a011804f-7fc2-438d-a9b8-8fddea977441" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="a011804f-7fc2-438d-a9b8-8fddea977441" start_index="0" end="cb444cfa-2571-41d5-957d-e610cd5acdf6" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="569e92d1-e3e6-4016-b112-6f235ee67723" start_index="0" end="8f25365f-97d9-40a9-9fd6-0702ffc22204" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="f2a7c2b8-ff81-4023-97ac-5d122d7bb330" start_index="0" end="a011804f-7fc2-438d-a9b8-8fddea977441" end_index="1" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
