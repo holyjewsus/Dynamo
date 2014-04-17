@@ -1,4 +1,4 @@
-<Workspace Version="0.6.3.38003" X="-1361.59592115389" Y="-95.6026454173744" zoom="0.926685151163368" Description="" Category="" Name="Home">
+<Workspace Version="0.6.3.38003" X="86.5245430106288" Y="-126.458352325872" zoom="0.594075262544091" Description="" Category="" Name="Home">
   <Elements>
     <Dynamo.Nodes.CloudDaylightingJob type="Dynamo.Nodes.CloudDaylightingJob" guid="ba2a8d00-8782-4e59-bb68-791312445255" nickname="Cloud Daylighting Job" x="589.789054966447" y="266.345207636633" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
     <Dynamo.Nodes.CloudRender type="Dynamo.Nodes.CloudRender" guid="d0174e82-9635-4f35-920a-3abbb3f2aeb3" nickname="Cloud Render" x="797.526619675957" y="267.80989001778" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
@@ -69,7 +69,7 @@
       <PortInfo index="2" default="True" />
     </Dynamo.Nodes.Xyz>
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="081d2a0e-7b67-487e-a0af-b54d89c0d94c" nickname="Number" x="8.15566727554011" y="724.842372314026" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <System.Double value="21" />
+      <System.Double value="220.0000" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="26c97dd4-936e-429e-b689-5a1d1c5899d0" nickname="Number" x="8.56335221231859" y="662.241488560001" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <System.Double value="-384" />
@@ -99,11 +99,11 @@
     <Dynamo.Nodes.GetDaylightingIlluminanceValues type="Dynamo.Nodes.GetDaylightingIlluminanceValues" guid="a7e2f465-11bc-48de-ae93-935f1bf30318" nickname="Get Daylighting Grid Illuminance Values" x="1316.03327096044" y="457.103599298248" isVisible="true" isUpstreamVisible="true" lacing="Longest">
       <PortInfo index="1" default="True" />
     </Dynamo.Nodes.GetDaylightingIlluminanceValues>
-    <Dynamo.Nodes.IntegerSliderInput type="Dynamo.Nodes.IntegerSliderInput" guid="542a3ba1-99dc-43ef-b1a4-67654bb4802b" nickname="Integer Slider" x="1241.90146657835" y="197.228382519074" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <System.Int32 value="11548" min="0" max="60000" />
+    <Dynamo.Nodes.IntegerSliderInput type="Dynamo.Nodes.IntegerSliderInput" guid="542a3ba1-99dc-43ef-b1a4-67654bb4802b" nickname="Integer Slider" x="1236.09703192083" y="156.597339916423" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Int32 value="14232" min="0" max="60000" />
     </Dynamo.Nodes.IntegerSliderInput>
-    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="e05b0dd3-4bc2-488e-b160-bc837d2fb4b0" nickname="Watch" x="1615.36773130538" y="653.858288217146" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.WatchImage type="Dynamo.Nodes.WatchImage" guid="3fd735ac-265b-43c9-8545-30786cff86fb" nickname="Watch Image" x="1750.44277047898" y="228.423756755072" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="e05b0dd3-4bc2-488e-b160-bc837d2fb4b0" nickname="Watch" x="1616.5387029544" y="663.226061409305" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.WatchImage type="Dynamo.Nodes.WatchImage" guid="3fd735ac-265b-43c9-8545-30786cff86fb" nickname="Watch Image" x="1750.69277047898" y="228.423756755072" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="bf46da36-50a3-4f18-b79c-adbaa30a95a2" nickname="Parse Weather Data" x="319.091833631679" y="1392.1777954428" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <ID value="ef2af89d-0ece-4af2-a4b9-013b6bf0e474" />
       <Name value="Parse Weather Data" />

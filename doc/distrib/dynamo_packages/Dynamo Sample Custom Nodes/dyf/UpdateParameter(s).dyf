@@ -1,4 +1,4 @@
-<Workspace Version="0.6.3.19516" X="-937.581272381029" Y="-273.225911660269" zoom="0.798825425049558" Description="[familyinstance, [parameter1,val][parameter2,val] iteration number]" Category="Misc" Name="UpdateParameter(s)" ID="8cd6ead4-fd74-4139-b901-24914cfba5e3">
+<Workspace Version="0.6.3.38003" X="-804.855184981916" Y="-81.484361979544" zoom="0.691676179653714" Description="[familyinstance, [parameter1,val][parameter2,val] iteration number]" Category="Misc" Name="UpdateParameter(s)" ID="8cd6ead4-fd74-4139-b901-24914cfba5e3">
   <Elements>
     <Dynamo.Nodes.First type="Dynamo.Nodes.First" guid="bf771af0-f599-4eb6-9e49-d6afebeedd0f" nickname="First of List" x="540.194362474674" y="120.649229122294" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.Last type="Dynamo.Nodes.Last" guid="a7b36d3e-340f-47bd-9515-776e4045148a" nickname="Last of List" x="727.742043313028" y="156.694729725795" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
@@ -48,11 +48,12 @@ OUT = listOfLists
     <Dynamo.Nodes.Transaction type="Dynamo.Nodes.Transaction" guid="c8632950-8551-4951-b845-779efb06e939" nickname="Transaction" x="1900.87792023905" y="687.741674302072" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.LaceLongest type="Dynamo.Nodes.LaceLongest" guid="5c5f5098-e10f-4647-9084-305b27706332" nickname="Lace Longest" x="1628.51996636928" y="611.917315649189" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputs="2" />
     <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="67c14467-8aac-4ab4-8a37-4307e952001a" nickname="Watch" x="1902.41657591431" y="474.250514912955" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.FamilyTypeParameterSetter type="Dynamo.Nodes.FamilyTypeParameterSetter" guid="4ebd903a-7094-47e2-86af-964190a01c83" nickname="Set Family Type Parameter" x="1301.56320585441" y="734.30138297795" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
   </Elements>
   <Connectors>
     <Dynamo.Models.ConnectorModel start="bf771af0-f599-4eb6-9e49-d6afebeedd0f" start_index="0" end="e8ff939b-c4fb-4e4c-9c7a-a9e8a314267d" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="bf771af0-f599-4eb6-9e49-d6afebeedd0f" start_index="0" end="4ebd903a-7094-47e2-86af-964190a01c83" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="a7b36d3e-340f-47bd-9515-776e4045148a" start_index="0" end="a68d107d-10be-4fd1-8517-8bc6571855a8" end_index="0" portType="0" />
-    <Dynamo.Models.ConnectorModel start="e8ff939b-c4fb-4e4c-9c7a-a9e8a314267d" start_index="0" end="5c5f5098-e10f-4647-9084-305b27706332" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="8f1f8b73-cb78-496f-b3fc-a883ac6002ad" start_index="0" end="1e0bbf89-4d77-4cd9-a1e3-ee6b2fb07e67" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="a8ac2ec3-6e49-48cb-821a-cb8f95b2cbed" start_index="0" end="58273740-5c85-443e-a0cc-43c7ee2a2ceb" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="58273740-5c85-443e-a0cc-43c7ee2a2ceb" start_index="0" end="5c5f5098-e10f-4647-9084-305b27706332" end_index="2" portType="0" />
@@ -67,6 +68,7 @@ OUT = listOfLists
     <Dynamo.Models.ConnectorModel start="0b1f8c72-d65e-4384-a699-0620ee01f476" start_index="0" end="1e0bbf89-4d77-4cd9-a1e3-ee6b2fb07e67" end_index="1" portType="0" />
     <Dynamo.Models.ConnectorModel start="5c5f5098-e10f-4647-9084-305b27706332" start_index="0" end="c8632950-8551-4951-b845-779efb06e939" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="5c5f5098-e10f-4647-9084-305b27706332" start_index="0" end="67c14467-8aac-4ab4-8a37-4307e952001a" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4ebd903a-7094-47e2-86af-964190a01c83" start_index="0" end="5c5f5098-e10f-4647-9084-305b27706332" end_index="0" portType="0" />
   </Connectors>
   <Notes>
     <Dynamo.Models.NoteModel text="family instance" x="544.829478138323" y="81.132188494426" />

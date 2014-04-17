@@ -1,12 +1,15 @@
-<Workspace Version="0.6.3.18002" X="85.960280085611" Y="-76.9954059646124" zoom="0.582741384903387" Description="" Category="" Name="Home">
+<Workspace Version="0.6.3.38003" X="1587.65781127288" Y="-159.926765911102" zoom="0.874067794781837" Description="" Category="" Name="Home">
   <Elements>
     <Dynamo.Nodes.FunctionWithRevit type="Dynamo.Nodes.FunctionWithRevit" guid="4cdc3603-e657-4379-8611-8ab93cb2153b" nickname="RenderWithWeatherData_Return List of data" x="410.827856881008" y="-88.5209149910124" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <ID value="06b90774-4fd6-460e-9b34-88ba28be36a7" />
+      <ID value="4dac969f-c00e-4d1b-b65c-00bb7d4e80b1" />
       <Name value="RenderWithWeatherData_Return List of data" />
       <Description value="" />
       <Inputs>
         <Input value="iteration" />
         <Input value="weatherDataFilePath" />
+        <Input value="bottom left" />
+        <Input value="bottom right" />
+        <Input value="top left" />
       </Inputs>
       <Outputs>
         <Output value="Render Data" />
@@ -17,7 +20,7 @@
       <System.Double value="5..20..10" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.GetFamilyInstancesByType type="Dynamo.Nodes.GetFamilyInstancesByType" guid="dbe5ce1b-dc79-4320-8689-34d54a2aee8e" nickname="Get Family Instances by Type" x="-699.236377043528" y="466.41976455714" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.FamilyTypeSelector type="Dynamo.Nodes.FamilyTypeSelector" guid="eb340086-d1c8-429a-bc49-a1822104dbc7" nickname="Select Family Type" x="-1056.35419515256" y="377.415016043812" isVisible="true" isUpstreamVisible="true" lacing="Disabled" index="66" />
+    <Dynamo.Nodes.FamilyTypeSelector type="Dynamo.Nodes.FamilyTypeSelector" guid="eb340086-d1c8-429a-bc49-a1822104dbc7" nickname="Select Family Type" x="-1056.35419515256" y="377.415016043812" isVisible="true" isUpstreamVisible="true" lacing="Disabled" index="7" />
     <Dynamo.Nodes.CartProd type="Dynamo.Nodes.CartProd" guid="c595773d-4510-4c8b-b99e-ab11d0026d7e" nickname="Cartesian Product" x="-371.329186105372" y="530.740232509925" isVisible="true" isUpstreamVisible="true" lacing="Disabled" inputs="2" />
     <Dynamo.Nodes.ComposeFunctions type="Dynamo.Nodes.ComposeFunctions" guid="79a77113-667f-4573-9680-f5a076fa1c4b" nickname="Compose Functions" x="870.749488812576" y="-43.1206392695838" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="ff6c2b54-de99-4469-885d-a42fd940666f" nickname="GetDataFromRender_WriteImage" x="497.093177154892" y="93.4114589285253" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
@@ -101,7 +104,7 @@ OUT = listoflists</Script>
       </Outputs>
     </Dynamo.Nodes.FunctionWithRevit>
     <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="c3818178-ff80-4c3a-865c-1ba554340bd2" nickname="Watch" x="114.123442886444" y="625.752573062402" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.FormElementBySelection type="Dynamo.Nodes.FormElementBySelection" guid="c25a27c1-febc-4e48-962f-b0513bdbe477" nickname="Select Face" x="459.580869960074" y="412.318624411015" isVisible="true" isUpstreamVisible="true" lacing="Disabled" faceRef="f15a6d1b-7a26-4d34-99c2-7bb21568145a-0002e02a:1:SURFACE" />
+    <Dynamo.Nodes.FormElementBySelection type="Dynamo.Nodes.FormElementBySelection" guid="c25a27c1-febc-4e48-962f-b0513bdbe477" nickname="Select Face" x="459.580869960074" y="412.318624411015" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.ComposeFunctions type="Dynamo.Nodes.ComposeFunctions" guid="56d93341-1f1a-4f35-90ff-02714a1f0f45" nickname="Compose Functions" x="851.031333336786" y="119.338810210917" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.FunctionWithRevit type="Dynamo.Nodes.FunctionWithRevit" guid="9be876a9-b536-4855-bb25-992ebbe3e1d1" nickname="displayDataCall" x="703.986010940532" y="345.198674691953" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <ID value="46d45665-a464-4ebd-91ed-ee3aad224289" />
