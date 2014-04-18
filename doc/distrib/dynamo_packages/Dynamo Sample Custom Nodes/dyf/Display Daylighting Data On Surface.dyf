@@ -1,4 +1,4 @@
-<Workspace Version="0.6.3.19516" X="82.9315099165967" Y="73.456846250149" zoom="0.583013016209201" Description="Displays daylighting data on a surface, requires manually setting up surface analysis display style through revit.  Also requires wrapping with a transaction node." Category="Daylight" Name="Display Daylighting Data On Surface" ID="6ae8b9a9-99e9-4e45-90f4-783a5d9f131c">
+<Workspace Version="0.6.3.38003" X="-529.353378076567" Y="36.7566307282662" zoom="0.915562285281227" Description="Displays daylighting data on a surface, requires manually setting up surface analysis display style through revit.  Also requires wrapping with a transaction node." Category="Daylight" Name="Display Daylighting Data On Surface" ID="6ae8b9a9-99e9-4e45-90f4-783a5d9f131c">
   <Elements>
     <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="ef95600c-83c1-4659-9646-66a5cd5903fb" nickname="Input" x="-100" y="0" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="face" />
@@ -55,6 +55,7 @@ OUT = outpairs</Script>
     <Dynamo.Nodes.Map type="Dynamo.Nodes.Map" guid="e54f56f9-5c26-4230-a915-905ed1638569" nickname="Map" x="492.446948642682" y="556.234807276001" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.SpatialFieldManager type="Dynamo.Nodes.SpatialFieldManager" guid="fe06f590-e64f-4ce5-95d4-0440795d5dad" nickname="Analysis Display Manager" x="766.915428600268" y="32.5392681236031" isVisible="true" isUpstreamVisible="true" lacing="Longest" />
     <Dynamo.Nodes.SpatialFieldFace type="Dynamo.Nodes.SpatialFieldFace" guid="6444dbb0-736d-4ce2-8e65-afb7d713a6c4" nickname="Display Analysis Surface" x="933.50979485286" y="150.15414205706" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="d5c2b0f7-044f-4ca1-b9a9-2876fc0f684a" nickname="Watch" x="1009.54043696168" y="-9.62562503727634" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
   </Elements>
   <Connectors>
     <Dynamo.Models.ConnectorModel start="ef95600c-83c1-4659-9646-66a5cd5903fb" start_index="0" end="c6d8253a-ecd9-4e67-a662-b3891d132a03" end_index="0" portType="0" />
@@ -71,6 +72,7 @@ OUT = outpairs</Script>
     <Dynamo.Models.ConnectorModel start="6d05f0c6-309a-4f95-bffb-dc82218eb831" start_index="0" end="fe06f590-e64f-4ce5-95d4-0440795d5dad" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="e54f56f9-5c26-4230-a915-905ed1638569" start_index="0" end="6444dbb0-736d-4ce2-8e65-afb7d713a6c4" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="fe06f590-e64f-4ce5-95d4-0440795d5dad" start_index="0" end="6444dbb0-736d-4ce2-8e65-afb7d713a6c4" end_index="2" portType="0" />
+    <Dynamo.Models.ConnectorModel start="fe06f590-e64f-4ce5-95d4-0440795d5dad" start_index="0" end="d5c2b0f7-044f-4ca1-b9a9-2876fc0f684a" end_index="0" portType="0" />
   </Connectors>
   <Notes />
 </Workspace>
