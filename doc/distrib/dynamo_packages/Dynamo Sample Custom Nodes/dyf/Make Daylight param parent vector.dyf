@@ -1,4 +1,4 @@
-<Workspace Version="0.6.3.16460" X="249.814368754188" Y="-237.544600671525" zoom="0.789531730130974" Description="" Category="Misc" Name="Make Daylight param parent vector" ID="4bff147b-45a2-43ea-9d87-25e98d7294da">
+<Workspace Version="0.6.3.38003" X="190.799273391852" Y="-32.3738292598126" zoom="0.562844058201268" Description="" Category="Misc" Name="Make Daylight param parent vector" ID="4bff147b-45a2-43ea-9d87-25e98d7294da">
   <Elements>
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="aa10a4e7-e39d-4001-b376-3c5fe588f6c3" nickname="Number" x="-189.215633892568" y="309.799784866211" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <System.Double value="0" />
@@ -149,5 +149,11 @@ OUT = num</Script>
     <Dynamo.Models.ConnectorModel start="97f5f3c4-9b27-49ef-9564-e78cbc0fc506" start_index="0" end="eb382f0c-5c53-4c0f-b377-6e96ccf84e51" end_index="0" portType="0" />
     <Dynamo.Models.ConnectorModel start="1aa3231c-a553-4c2f-8f7b-447b0b4537db" start_index="0" end="bb57737a-3c24-4afc-b72d-0cc0cada3f8f" end_index="1" portType="0" />
   </Connectors>
-  <Notes />
+  <Notes>
+    <Dynamo.Models.NoteModel text="extract the ranges" x="98.8579667764118" y="487.313467979257" />
+    <Dynamo.Models.NoteModel text="get each range and generate a ranndom number from 0 to 1" x="304.103844989176" y="691.506812793085" />
+    <Dynamo.Models.NoteModel text=" add it the the start of the list of each range" x="736.69693737215" y="780.974017122872" />
+    <Dynamo.Models.NoteModel text="for each value we remap it within the range specified" x="545.137724185982" y="313.651053415431" />
+    <Dynamo.Models.NoteModel text="this selects a random item from a list...this is useful for changing a random family instance" x="2019.73701609554" y="274.707317654793" />
+  </Notes>
 </Workspace>
