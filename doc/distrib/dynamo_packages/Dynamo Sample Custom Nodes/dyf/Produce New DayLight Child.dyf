@@ -1,4 +1,4 @@
-<Workspace Version="0.6.3.38003" X="32.2704158450275" Y="2.84821150070179" zoom="0.541980139636017" Description="" Category="Misc" Name="Produce New DayLight Child" ID="8397f30a-e762-4283-b9e4-f82c3ad1465b">
+<Workspace Version="0.6.3.38003" X="310.085314073482" Y="97.0047055418474" zoom="0.818865791623831" Description="" Category="Misc" Name="Produce New DayLight Child" ID="8397f30a-e762-4283-b9e4-f82c3ad1465b">
   <Elements>
     <Dynamo.Nodes.Conditional type="Dynamo.Nodes.Conditional" guid="60aa2ce4-b5f8-40f5-af15-fce7e09dee90" nickname="If" x="1423.24791125374" y="300.409797308941" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <PortInfo index="1" default="True" />
@@ -23,7 +23,7 @@
       </Outputs>
     </Dynamo.Nodes.FunctionWithRevit>
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="e7f8f4da-ea03-4afb-908d-3db8a1a631d5" nickname="Number" x="776.390767664137" y="487.234934364027" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <System.Double value="0.76" />
+      <System.Double value=".75" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="3543bb3d-90d4-4e3b-afc8-c2f4c22899d8" nickname="Mutate Parent Daylight" x="2.84420278775042" y="120.089811429493" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <ID value="b0625e59-4644-4eba-b6ad-ee736dbcb9e0" />
@@ -112,9 +112,9 @@
         <Output value="debug output" />
       </Outputs>
     </Dynamo.Nodes.FunctionWithRevit>
-    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="516de088-aa59-4ee0-9d66-6d72efd7836b" nickname="Watch" x="306.499926666265" y="10.3352648018152" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="516de088-aa59-4ee0-9d66-6d72efd7836b" nickname="Watch" x="313.105251251559" y="-30.9480138562728" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.Transaction type="Dynamo.Nodes.Transaction" guid="2442eb3f-f0c1-4ded-8708-c699ef34779d" nickname="Transaction" x="551.943663274651" y="492.097394213535" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
-    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="7f885119-868e-4041-96c5-c8ff78c97514" nickname="Watch" x="520.710086523267" y="632.465502769387" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="7f885119-868e-4041-96c5-c8ff78c97514" nickname="Watch" x="525.594891873443" y="578.732643917454" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
     <Dynamo.Nodes.Begin type="Dynamo.Nodes.Begin" guid="044cfaa4-7069-48b6-810b-83661f5fef66" nickname="Perform All" x="781.20188286829" y="318.1320063007" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Input name="expr1" />
       <Input name="expr2" />

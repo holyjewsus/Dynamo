@@ -1,4 +1,4 @@
-<Workspace Version="0.6.3.38003" X="-596.602003578983" Y="-561.743018689994" zoom="0.854359803413236" Description="" Category="Misc" Name="Evaluate Daylighting Solution" ID="da311742-57aa-46e8-a8fc-f7952aa285f3">
+<Workspace Version="0.6.3.38003" X="-549.20193632367" Y="-506.320639943859" zoom="0.718341732409784" Description="" Category="Misc" Name="Evaluate Daylighting Solution" ID="da311742-57aa-46e8-a8fc-f7952aa285f3">
   <Elements>
     <Dynamo.Nodes.Symbol type="Dynamo.Nodes.Symbol" guid="86431220-f24e-420b-94f4-ccbc4cad4270" nickname="Input" x="311.958388865886" y="144.165021613352" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <Symbol value="solution" />
@@ -25,7 +25,7 @@
       <System.Double value="6" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="65acdab8-2f5d-4b9d-be56-755f82c49f99" nickname="Number" x="888.642174643726" y="734.272713896831" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
-      <System.Double value="500" />
+      <System.Double value="300" />
     </Dynamo.Nodes.DoubleInput>
     <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="786e2f2b-d6b3-4446-9996-ebcc4c55201b" nickname="Number" x="889.282695014764" y="807.056772698158" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
       <System.Double value="5400" />
