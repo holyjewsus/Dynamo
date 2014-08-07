@@ -138,13 +138,13 @@ namespace Unfold
             double acxabDotNormalRefFace = secondCross.Dot(refFaceNormal);
            
           
-           Console.WriteLine(acxabDotNormalRefFace);
+           //Console.WriteLine(acxabDotNormalRefFace);
            
             if (Math.Abs(acxabDotNormalRefFace -1)<.0001)
            {
                refFaceNormalOK = 1.0;
            }
-
+            /*
             //debug section
 #if DEBUG
             Console.WriteLine(ABnorm);
@@ -169,7 +169,7 @@ namespace Unfold
             Console.WriteLine(referenceFace.SurfaceEntity.PerimeterCurves()[2]);
 #endif
 
-
+            */
            double result = refFaceNormalOK * rotFaceNormalOK;
 
            return result;

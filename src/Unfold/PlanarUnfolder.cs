@@ -260,6 +260,22 @@ namespace Unfold
         }
 
 
+        private static IEnumerable<object> SafeIntersect(this Surface surf1, Surface surf2)
+        {
+
+            try
+            {
+                var resultantGeo = surf1.Intersect(surf2);
+                return resultantGeo;
+            }
+            catch (Exception e)
+            {
+                Geometry.ExportToSAT((new List<Geometry>() { surf1, surf2 }), "C:\\Users\\t_kirsm\\Desktop\\testdebug.SAT");
+                return null;
+            }
+           
+        }
+
 
         /// <summary>
         /// method that performs the main planar unfolding
@@ -352,21 +368,7 @@ namespace Unfold
 
                 // perfrom the intersection test, from surfaces against all surfaces
 
-                bool overlapflag = false;
-                foreach (var surfaceToIntersect in srfList)
-                {
-                    foreach (var rotsubface in rotFaceSubSurfaces)
-                    {
-                        var resultantGeo = surfaceToIntersect.Intersect(rotsubface);
-                        foreach (var geo in resultantGeo)
-                        {
-                            if (geo is Surface)
-                            {
-                                overlapflag = true;
-                            }
-                        }
-                    }
-                }
+                bool overlapflag = !srfList.SelectMany(a => rotFaceSubSurfaces.SelectMany(a.SafeIntersect)).OfType<Surface>().Any();
 
                 if (overlapflag)
                 {
