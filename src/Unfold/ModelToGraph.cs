@@ -30,7 +30,6 @@ namespace Unfold
                 Start = edge.StartVertex.PointGeometry;
                 End = edge.EndVertex.PointGeometry;
                 Curve = edge.CurveGeometry;
-                // not sure I should be storing this here as well, but if so, then should eliminate edgewrapper class
                 RealEdge = edge;
 
             }
@@ -40,7 +39,6 @@ namespace Unfold
                 Start = curve.StartPoint;
                 End = curve.EndPoint;
                 Curve = curve;
-                // not sure I should be storing this here as well, but if so, then should eliminate edgewrapper class
                 RealEdge = null;
 
 
@@ -54,8 +52,8 @@ namespace Unfold
                     // start and end points are stored in the reverse fields.  Is there something better?
 
                     int hash = this.Start.ToString().GetHashCode() ^ this.End.ToString().GetHashCode();
-                    Console.WriteLine(this);
-                    Console.WriteLine(hash);
+                   // Console.WriteLine(this);
+                   // Console.WriteLine(hash);
                     return hash;
 
                 }
@@ -442,7 +440,7 @@ namespace Unfold
             /// <typeparam name="T"></typeparam>
             /// <param name="graph"></param>
             /// <returns></returns>
-            public List<Autodesk.DesignScript.Geometry.DesignScriptEntity> ProduceGeometryFromGraph<K, T>(List<GraphVertex<K, T>> graph)
+            public static List<Autodesk.DesignScript.Geometry.DesignScriptEntity> ProduceGeometryFromGraph<K, T>(List<GraphVertex<K, T>> graph)
 
                 where T : IUnfoldablePlanarFace<K>
                 where K : IUnfoldableEdge

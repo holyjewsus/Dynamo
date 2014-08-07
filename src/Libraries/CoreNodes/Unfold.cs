@@ -143,6 +143,20 @@ namespace DSCore
 
             return treegeo;
         }
+
+        public static object BFSTestNoGeometryGeneration(List<Surface> surfaces)
+        {
+
+            
+
+            var graph = GeneratePlanarUnfold.ModelTopology.GenerateTopologyFromSurfaces(surfaces);
+
+            //perform BFS on the graph and get back the tree
+            var nodereturn = GeneratePlanarUnfold.ModelGraph.BFS<GeneratePlanarUnfold.EdgeLikeEntity, GeneratePlanarUnfold.FaceLikeEntity>(graph);
+            return nodereturn["BFS finished"];
+        }
+
+
        // exposes node to tesselate surfaces in dynamo, returns triangular surfaces
        // Peter will hate this :)
        public static object TesselateSurfaces(List<Surface> surfaces){

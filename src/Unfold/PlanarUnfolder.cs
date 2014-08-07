@@ -357,7 +357,7 @@ namespace Unfold
                 {
                     foreach (var rotsubface in rotFaceSubSurfaces)
                     {
-                        var resultantGeo = surfaceToIntersect.Intersect(rotatedFace);
+                        var resultantGeo = surfaceToIntersect.Intersect(rotsubface);
                         foreach (var geo in resultantGeo)
                         {
                             if (geo is Surface)
