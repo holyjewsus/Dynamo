@@ -144,10 +144,15 @@ namespace DSCore
             return treegeo;
         }
 
+
+        public static object DebugGeoFromGraph(List<GeneratePlanarUnfold.GraphVertex<GeneratePlanarUnfold.EdgeLikeEntity, GeneratePlanarUnfold.FaceLikeEntity>> graph)
+        {
+            var output = GeneratePlanarUnfold.ModelGraph.ProduceGeometryFromGraph<GeneratePlanarUnfold.EdgeLikeEntity, GeneratePlanarUnfold.FaceLikeEntity>(graph);
+            return output;
+        } 
+
         public static object BFSTestNoGeometryGeneration(List<Surface> surfaces)
         {
-
-            
 
             var graph = GeneratePlanarUnfold.ModelTopology.GenerateTopologyFromSurfaces(surfaces);
 

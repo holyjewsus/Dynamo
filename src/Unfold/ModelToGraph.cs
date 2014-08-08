@@ -460,7 +460,7 @@ namespace Unfold
                     foreach (var CurrentEdge in CurrentVertex.GraphEdges)
                     {
 
-                        Point childCenter = Tessellate.MeshHelpers.SurfaceAsPolygonCenter(CurrentVertex.Face.SurfaceEntity);
+                        Point childCenter = Tessellate.MeshHelpers.SurfaceAsPolygonCenter(CurrentEdge.Head.Face.SurfaceEntity);
                         Line line = Line.ByStartPointEndPoint(center, childCenter);
                         OutputGeo.Add(line);
                     }
