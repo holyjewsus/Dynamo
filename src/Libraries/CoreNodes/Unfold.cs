@@ -139,7 +139,11 @@ namespace DSCore
 
             //perform BFS on the graph and get back the tree
             var nodereturn = GeneratePlanarUnfold.ModelGraph.BFS<GeneratePlanarUnfold.EdgeLikeEntity, GeneratePlanarUnfold.FaceLikeEntity>(graph);
-            object treegeo = nodereturn["tree geo"];
+            var tree = nodereturn["BFS finished"];
+            
+            var treegeo = GeneratePlanarUnfold.ModelGraph.ProduceGeometryFromGraph<GeneratePlanarUnfold.EdgeLikeEntity, GeneratePlanarUnfold.FaceLikeEntity>
+                (tree as  List<GeneratePlanarUnfold.GraphVertex<GeneratePlanarUnfold.EdgeLikeEntity,GeneratePlanarUnfold.FaceLikeEntity>>);
+
 
             return treegeo;
         }
