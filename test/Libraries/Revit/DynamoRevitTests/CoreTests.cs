@@ -148,5 +148,39 @@ namespace Dynamo.Tests
             excludes.Add("Dynamo.Nodes.FunctionWithRevit");
             return ViewModel.Model.BuiltInTypesByName.Where(x => !excludes.Contains(x.Key)).Select(kvp => kvp.Key).ToList();
         }
+
+
+        [Test]
+        [TestModel(@".\empty.rfa")]
+        public void NestedCustomNodesRunOnRevit()
+        {
+            var model = ViewModel.Model;
+
+            string samplePath = Path.Combine(_testPath, @".\custom_node_nested\");
+            string loadpath = Path.GetFullPath(samplePath);
+            string testpath = Path.Combine(loadpath, @"simplenestedcustomnodes.dyn");
+
+            Assert.AreEqual(testpath, @"Y:\Dynamo\test\System\revit\custom_node_nested\simplenestedcustomnodes.dyn");
+
+
+            Assert.IsTrue(
+               ViewModel.Model.CustomNodeManager.AddFileToPath(Path.Combine(loadpath, "innercustomnode.dyf"))
+               != null);
+
+            Assert.IsTrue(
+               ViewModel.Model.CustomNodeManager.AddFileToPath(Path.Combine(loadpath, "outercustomnode.dyf"))
+               != null);
+
+           
+            //Assert that there are some errors in the graph
+            ViewModel.OpenCommand.Execute(testpath);
+            ViewModel.Model.RunExpression();
+
+            var watchnode = model.CurrentWorkspace.FirstNodeFromWorkspace<Watch>();
+            Assert.AreEqual(watchnode.CachedValue,3);
+
+        }
+
+
     }
 }

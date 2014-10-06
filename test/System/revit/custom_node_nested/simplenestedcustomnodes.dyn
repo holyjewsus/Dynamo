@@ -1,0 +1,24 @@
+<Workspace Version="0.7.2.23480" X="0" Y="0" zoom="1" Description="" Category="" Name="Home">
+  <Elements>
+    <Dynamo.Nodes.DoubleInput type="Dynamo.Nodes.DoubleInput" guid="99765f2f-7829-41ea-ad78-b7e16d2ffc12" nickname="Number" x="482.5" y="197" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <System.Double value="1" />
+    </Dynamo.Nodes.DoubleInput>
+    <Dynamo.Nodes.Function type="Dynamo.Nodes.Function" guid="4974c77e-1d49-424b-ab85-8f3876684b24" nickname="outercustomnode" x="597.5" y="256.5" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ID value="0fbfedce-6e46-4b7b-b199-d57c9ae3f232" />
+      <Name value="outercustomnode" />
+      <Description value="outernode" />
+      <Inputs>
+        <Input value="x" />
+      </Inputs>
+      <Outputs>
+        <Output value="var[]..[]" />
+      </Outputs>
+    </Dynamo.Nodes.Function>
+    <Dynamo.Nodes.Watch type="Dynamo.Nodes.Watch" guid="3ee82809-79a5-4f53-b053-66d76e476721" nickname="Watch" x="792.5" y="311" isVisible="true" isUpstreamVisible="true" lacing="Disabled" />
+  </Elements>
+  <Connectors>
+    <Dynamo.Models.ConnectorModel start="99765f2f-7829-41ea-ad78-b7e16d2ffc12" start_index="0" end="4974c77e-1d49-424b-ab85-8f3876684b24" end_index="0" portType="0" />
+    <Dynamo.Models.ConnectorModel start="4974c77e-1d49-424b-ab85-8f3876684b24" start_index="0" end="3ee82809-79a5-4f53-b053-66d76e476721" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+</Workspace>
