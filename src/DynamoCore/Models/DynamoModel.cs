@@ -73,6 +73,14 @@ namespace Dynamo.Models
             if (RequestDesignOptionNamePrompt != null)
                 RequestDesignOptionNamePrompt(e);
         }
+
+        public event Action RequestDesignOptionEditorWindow;
+        public void OnRequestPresetStateEditorWindow()
+        {
+            if (RequestDesignOptionEditorWindow != null)
+                RequestDesignOptionEditorWindow();
+        }
+        
         public event WorkspaceHandler WorkspaceSaved;
         internal void OnWorkspaceSaved(WorkspaceModel model)
         {

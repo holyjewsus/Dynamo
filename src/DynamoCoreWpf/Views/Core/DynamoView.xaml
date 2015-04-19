@@ -347,6 +347,10 @@
                                       Name="newDesignOptions"
                                       Focusable="False"
                                       InputGestureText="Ctrl + T"/>
+                            <MenuItem Header="Edit States"
+                                      Command="{Binding ShowPresetStatesEditorCommand}"
+                                      Name="editStates"
+                                      Focusable="False"/>
                             <MenuItem Header="Restore State"
                                     MouseEnter="LoadStateMenus"
                                       Name="RestoreStateMenu"

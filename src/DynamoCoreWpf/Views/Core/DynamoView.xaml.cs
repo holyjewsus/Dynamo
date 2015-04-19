@@ -368,6 +368,7 @@ namespace Dynamo.Controls
 
             //DesignOptions Name Prompt
             dynamoViewModel.Model.RequestDesignOptionNamePrompt += DynamoViewModelRequestDesignOptionsNamePrompt;
+            dynamoViewModel.Model.RequestDesignOptionEditorWindow += ShowPresetStateEditorWindow;
 
             dynamoViewModel.RequestClose += DynamoViewModelRequestClose;
             dynamoViewModel.RequestSaveImage += DynamoViewModelRequestSaveImage;
@@ -745,6 +746,11 @@ namespace Dynamo.Controls
             e.Success = true;
         }
 
+        public void ShowPresetStateEditorWindow()
+        {
+
+        }
+
         private void WindowClosing(object sender, CancelEventArgs e)
         {
             // Test cases that make use of views (e.g. recorded tests) have 
@@ -788,6 +794,7 @@ namespace Dynamo.Controls
 
             //DesignOptions Name Prompt
             dynamoViewModel.Model.RequestDesignOptionNamePrompt -= DynamoViewModelRequestDesignOptionsNamePrompt;
+            dynamoViewModel.Model.RequestDesignOptionEditorWindow -= ShowPresetStateEditorWindow;
 
             dynamoViewModel.RequestClose -= DynamoViewModelRequestClose;
             dynamoViewModel.RequestSaveImage -= DynamoViewModelRequestSaveImage;

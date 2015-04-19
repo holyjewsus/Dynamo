@@ -2067,7 +2067,23 @@ namespace Dynamo.ViewModels
             //TODO return false if we're in a custom node
             return DynamoSelection.Instance.Selection.Count > 0;
         }
-        
+
+        private void ShowPresetStatesEditor(object parameter)
+        {
+            //trigger the event to request the display
+            //of the presets Editor
+            this.Model.OnRequestPresetStateEditorWindow();
+        }
+        private bool CanShowPresetStatesEditor(object parameter)
+        {
+            //only bring up the editor if there are some states...?
+            if (CurrentSpace.PresetsCollection.DesignStates.Count() > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public DynamoViewModel ViewModel { get { return this; } }
 
         #endregion
