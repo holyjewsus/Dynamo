@@ -9,7 +9,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:ViewModels="clr-namespace:Dynamo.ViewModels"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance ViewModels:PresetsViewModel, IsDesignTimeCreatable=False}">
+        d:DataContext="{d:DesignInstance Type=ViewModels:PresetsViewModel, IsDesignTimeCreatable=False}">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -32,7 +32,7 @@
         <ScrollViewer HorizontalAlignment="Stretch" Margin="0" Name="ScrollView" VerticalAlignment="Stretch" Focusable="False"
                       VerticalScrollBarVisibility="Visible" Background="Black" BorderThickness="0" Grid.Column="0" Grid.ColumnSpan="1" Grid.Row="1" >
 
-            <ListBox Name="SearchResultsListBox" ItemsSource="{Binding Path=LocalPackages}" BorderThickness="0" Padding="0" Background="Black" >
+            <ListBox Name="CurrentStates" ItemsSource="{Binding Path=Model.DesignStates}" BorderThickness="0" Padding="0" Background="Black" >
 
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
@@ -51,63 +51,25 @@
                         <Border BorderBrush="#222" BorderThickness="0,0,0,1" Width="512" Background="#333">
                             <Border Name="ItemBG" BorderBrush="#444" BorderThickness="0,1,0,0">
 
-                                <StackPanel Name="SearchEle">
+                                <StackPanel Name="StateElement">
 
                                     <DockPanel>
 
                                         <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Margin="5,5,5,7">
-                                            <TextBlock Text="{Binding Path=Model.Name}" FontSize="15" MinWidth="200" Margin="10,0,10,0" Foreground="WhiteSmoke"></TextBlock>
+                                            <TextBlock Text="{Binding Path=Name}" FontSize="15" MinWidth="200" Margin="10,0,10,0" Foreground="WhiteSmoke"></TextBlock>
+                                            <TextBlock Text="{Binding Path=Description}" FontSize="11" MinWidth="200" Margin="10,0,10,0" Foreground="WhiteSmoke"></TextBlock>
                                         </StackPanel>
 
                                         <Button Name="MoreButton" HorizontalAlignment="Right" Content="⋮" FontWeight="Bold" Foreground="WhiteSmoke" Width="40" FontSize="17" IsEnabled="True" Style="{DynamicResource ResourceKey=SCustomizableBadgeButton}" Click="MoreButton_OnClick">
 
                                             <Button.ContextMenu>
                                                 <ContextMenu>
-
-                                                    <MenuItem Name="ContentsButton"  
-                                                              Command="{Binding Path=ToggleTypesVisibleInManagerCommand}" 
+                                                    <MenuItem Name="RestoreStateButton" 
+                                                              Tag= "{Binding}"
+                                                              Click="RestoreState_Click" 
                                                               Margin="3" 
-                                                              ToolTip="{x:Static p:Resources.InstalledPackageViewContextMenuShowContentTooltip}" 
-                                                              Header="{x:Static p:Resources.InstalledPackageViewContextMenuShowContent}" />
-                                                    <!--<MenuItem Name="GetLatestVersionButton"  Command="{Binding Path=GetLatestVersionCommand}" Margin="3" ToolTip="" Header="{x:Static p:Resources.InstalledPackageViewContextMenuGetLatest}" />-->
-                                                    <MenuItem Name="GoToRoot"  
-                                                              Command="{Binding Path=GoToRootDirectoryCommand}" 
-                                                              Margin="3" 
-                                                              ToolTip="{x:Static p:Resources.InstalledPackageViewContextMenuShowRootDirTooltip}" 
-                                                              Header="{x:Static p:Resources.InstalledPackageViewContextMenuShowRootDir}" />
-                                                    <Separator></Separator>
-                                                    <MenuItem Name="UninstallButton" 
-                                                              Command="{Binding Path=UninstallCommand}" 
-                                                              Margin="3" 
-                                                              ToolTip="{x:Static p:Resources.InstalledPackageViewContextMenuUninstallTooltip}" 
-                                                              Header="{x:Static p:Resources.InstalledPackageViewContextMenuUninstall}" />
-                                                    <MenuItem Name="UnmarkUninstallButton" 
-                                                              Command="{Binding Path=UnmarkForUninstallationCommand}" 
-                                                              Margin="3" 
-                                                              ToolTip="{x:Static p:Resources.InstalledPackageViewContextMenuCancelUninstallTooltip}" 
-                                                              Header="{x:Static p:Resources.InstalledPackageViewContextMenuCancelUninstall}" />
-                                                    <Separator></Separator>
-                                                    <MenuItem Name="MakePackageButton" 
-                                                              Command="{Binding Path=PublishNewPackageCommand}" 
-                                                              Margin="3" 
-                                                              ToolTip="{x:Static p:Resources.InstalledPackageViewContextMenuPublishTooltip}" 
-                                                              Header="{x:Static p:Resources.InstalledPackageViewContextMenuPublish}" />
-                                                    <MenuItem Name="MakeNewVersionButton" 
-                                                              Command="{Binding Path=PublishNewPackageVersionCommand}" 
-                                                              Margin="3" 
-                                                              ToolTip="{x:Static p:Resources.InstalledPackageViewContextMenuPublishVersionTooltip}" 
-                                                              Header="{x:Static p:Resources.InstalledPackageViewContextMenuPublishVersion}"  />
-                                                    <Separator></Separator>
-                                                    <MenuItem Name="DeprecateButton" 
-                                                              Command="{Binding Path=DeprecateCommand}" 
-                                                              Margin="3" 
-                                                              ToolTip="{x:Static p:Resources.InstalledPackageViewContextMenuDeprecateTooltip}" 
-                                                              Header="{x:Static p:Resources.InstalledPackageViewContextMenuDeprecate}" />
-                                                    <MenuItem Name="UndeprecateButton" 
-                                                              Command="{Binding Path=UndeprecateCommand}" 
-                                                              Margin="3" 
-                                                              ToolTip="{x:Static p:Resources.InstalledPackageViewContextMenuRemoveDeprecationTooltip}" 
-                                                              Header="{x:Static p:Resources.InstalledPackageViewContextMenuRemoveDeprecation}"  />
+                                                              Header="Restore State"       
+                                                        />
                                                 </ContextMenu>
 
                                             </Button.ContextMenu>

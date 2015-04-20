@@ -11,6 +11,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Dynamo.Controls;
+using Dynamo.Utilities;
+using Dynamo.ViewModels;
+using Dynamo.Models;
 
 namespace Dynamo.UI
 {
@@ -19,9 +23,16 @@ namespace Dynamo.UI
     /// </summary>
     public partial class PresetEditor : Window
     {
-        public PresetEditor()
+        private PresetsViewModel presetCollectionView;
+
+        public PresetEditor(PresetsViewModel presetCollectionView)
         {
             InitializeComponent();
+
+            this.Owner = WpfUtilities.FindUpVisualTree<DynamoView>(this);
+            this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            this.presetCollectionView = presetCollectionView;
+            this.DataContext = presetCollectionView;
         }
         private void MoreButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -29,6 +40,12 @@ namespace Dynamo.UI
             button.ContextMenu.DataContext = button.DataContext;
             button.ContextMenu.IsOpen = true;
         }
-    
+
+        private void RestoreState_Click(object sender, RoutedEventArgs e)
+        {
+            presetCollectionView.RestoreState(sender,e);
+        }
+
+       
     }
 }

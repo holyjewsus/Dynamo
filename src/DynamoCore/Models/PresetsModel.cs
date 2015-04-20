@@ -7,17 +7,18 @@ using Dynamo.Selection;
 using Dynamo.Nodes;
 using System.Xml;
 using Dynamo.Interfaces;
-
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 namespace Dynamo.Models
 {
     /// <summary>
     /// a class that holds a set of preset design options states
     /// there is one instance of this class per workspacemodel
     /// </summary>
-    public class PresetsModel:ILogSource
+    public class PresetsModel:ILogSource//,INotifyPropertyChanged
     {
         #region private members
-        private readonly List<PresetState> designStates;
+        private readonly ObservableCollection<PresetState> designStates;
 
         private void LoadStateFromXml(string name, string description, List<NodeModel> nodes, List<XmlElement> serializednodes, Guid id)
         {
@@ -27,13 +28,13 @@ namespace Dynamo.Models
         #endregion
 
         # region properties
-        public IEnumerable<PresetState> DesignStates { get { return designStates; } }
+        public ReadOnlyObservableCollection<PresetState> DesignStates { get { return new ReadOnlyObservableCollection<PresetState> (designStates);} }
         #endregion
 
         #region constructor
         public PresetsModel()
         {
-            designStates = new List<PresetState>();
+            designStates = new ObservableCollection<PresetState>();
         }
         #endregion
 
@@ -155,6 +156,7 @@ namespace Dynamo.Models
         public void RemoveState(PresetState state)
         {
             designStates.Remove(state);
+           // OnPropertyChange("DesignStates");
         }
 
         #endregion
@@ -187,5 +189,15 @@ namespace Dynamo.Models
         }
 
         #endregion
+
+        /*public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChange(string info)
+        {
+            if (PropertyChanged != null)
+            {
+               
+                PropertyChanged(this,new PropertyChangedEventArgs(info));
+            }
+        }*/
     }
 }

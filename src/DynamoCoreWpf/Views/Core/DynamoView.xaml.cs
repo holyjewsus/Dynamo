@@ -748,7 +748,9 @@ namespace Dynamo.Controls
 
         public void ShowPresetStateEditorWindow()
         {
-
+            var presetVM = new PresetsViewModel(dynamoViewModel.CurrentSpace.PresetsCollection,dynamoViewModel);
+            var dialog = new PresetEditor(presetVM);
+            dialog.Show();
         }
 
         private void WindowClosing(object sender, CancelEventArgs e)
