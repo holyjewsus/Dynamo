@@ -6,13 +6,14 @@ using Dynamo.Core;
 using Dynamo.Services;
 using System.Xml;
 using Dynamo.Nodes;
+using System.ComponentModel;
 
 namespace Dynamo.Models
 {
     /// <summary>
     /// a class that saves the state of a subset of a graph
     /// </summary>
-    public class PresetState
+    public class PresetState:INotifyPropertyChanged
     {
         private Guid guid;
         private readonly List<NodeModel> nodes;
@@ -104,6 +105,41 @@ namespace Dynamo.Models
             
         }
         #endregion
+
+        # region public methods
+        public void ReAssociateNodeData(Guid idtoReplace,NodeModel replaceWith )
+        {
+             foreach (var xmlnode in this.SerializedNodes)
+                {
+                    if (Guid.Parse(xmlnode.GetAttribute("guid")) == idtoReplace)
+                    {
+                        //and now replace this guid, with the replaced node
+                        xmlnode.SetAttribute("guid",replaceWith.GUID.ToString());
+
+                        //now if not there already, insert the nodemodel into the state nodes list
+                        if (!this.Nodes.Contains(replaceWith))
+                        {
+                            this.nodes.Add(replaceWith);
+                        }
+                     
+                    }
+                }
+               //make sure that the nodeModel with idtoReplace is actually gone   
+             nodes.Remove(nodes.Find(x=>x.GUID == idtoReplace));
+             OnPropertyChange("Nodes");
+             OnPropertyChange("SerializedNodes");
+        }
+        # endregion 
+    
+       
+       public event PropertyChangedEventHandler PropertyChanged;
+       public void OnPropertyChange(string info)
+       {
+           if (PropertyChanged != null)
+           {
+               PropertyChanged(this,new PropertyChangedEventArgs(info));
+           }
+       }
     }
 }
 

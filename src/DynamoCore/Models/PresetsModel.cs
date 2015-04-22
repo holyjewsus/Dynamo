@@ -9,16 +9,19 @@ using System.Xml;
 using Dynamo.Interfaces;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using Dynamo.Utilities;
+using System.Collections.Specialized;
+
 namespace Dynamo.Models
 {
     /// <summary>
     /// a class that holds a set of preset design options states
     /// there is one instance of this class per workspacemodel
     /// </summary>
-    public class PresetsModel:ILogSource//,INotifyPropertyChanged
+    public class PresetsModel : ILogSource, INotifyCollectionChanged
     {
         #region private members
-        private readonly ObservableCollection<PresetState> designStates;
+        private readonly TrulyObservableCollection<PresetState> designStates;
 
         private void LoadStateFromXml(string name, string description, List<NodeModel> nodes, List<XmlElement> serializednodes, Guid id)
         {
@@ -26,7 +29,7 @@ namespace Dynamo.Models
             designStates.Add(loadedState);
         }
         #endregion
-
+        
         # region properties
         public ReadOnlyObservableCollection<PresetState> DesignStates { get { return new ReadOnlyObservableCollection<PresetState> (designStates);} }
         #endregion
@@ -34,7 +37,8 @@ namespace Dynamo.Models
         #region constructor
         public PresetsModel()
         {
-            designStates = new ObservableCollection<PresetState>();
+            designStates = new TrulyObservableCollection<PresetState>(new List<PresetState>().AsEnumerable());
+            //designStates.CollectionChanged += new NotifyCollectionChangedEventHandler((o,e) => { OnCollectionChanged(o, e); });   
         }
         #endregion
 
@@ -190,14 +194,17 @@ namespace Dynamo.Models
 
         #endregion
 
-        /*public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChange(string info)
+
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        private void OnCollectionChanged(object o, NotifyCollectionChangedEventArgs args)
         {
-            if (PropertyChanged != null)
+            if (CollectionChanged != null)
             {
-               
-                PropertyChanged(this,new PropertyChangedEventArgs(info));
+                CollectionChanged(o, args);
             }
-        }*/
+         
+        }
+      
     }
 }
