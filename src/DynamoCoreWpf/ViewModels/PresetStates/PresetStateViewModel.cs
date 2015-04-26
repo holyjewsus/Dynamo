@@ -12,6 +12,7 @@ using System.Windows.Media;
 using Dynamo.Selection;
 using System.Reflection;
 using System.Collections;
+using Dynamo.Controls;
 
 namespace Dynamo.ViewModels
 {
@@ -20,18 +21,19 @@ namespace Dynamo.ViewModels
         private readonly DynamoViewModel dynamoViewModel;
         public PresetState Model { get; private set; }
         private PresetsModel ownerModel;
-        public ReadOnlyObservableCollection<Button> NodeListItems { get; private set; }
+        public ReadOnlyObservableCollection<NodeViewModel> NodeListItems { get; private set; }
 
         public PresetStateViewModel(PresetState state, DynamoViewModel dynamoViewModel, PresetsModel ownerCollectionModel)
         {
             Model = state;
             this.dynamoViewModel = dynamoViewModel;
             this.ownerModel= ownerCollectionModel;
-            var templist = new ObservableCollection<Button>();
+            var templist = new ObservableCollection<NodeViewModel>();
             foreach (var serializedNode in Model.SerializedNodes)
             {
                 //button representing the node, will allow reassociation
                 var button = new Button();
+                NodeViewModel nodeviewmodel = null;
                 //if the node id is missing from the nodes list or if the node is missing from the graph then make it red...
                 if (!Model.Nodes.Select(x => x.GUID).Contains(Guid.Parse(serializedNode.GetAttribute("guid"))) ||
                     (!this.dynamoViewModel.CurrentSpace.Nodes.Select(x => x.GUID).Contains(Guid.Parse(serializedNode.GetAttribute("guid"))))
@@ -39,18 +41,23 @@ namespace Dynamo.ViewModels
                 {
                     button.Background = Brushes.Red;
                 }
-
+                else
+                {
+                   //if the node was found in the state Nodes list then grab it's view
+                    nodeviewmodel = dynamoViewModel.CurrentSpaceViewModel.Nodes.ToList().Find
+                        (x => x.NodeModel.GUID == (Guid.Parse(serializedNode.GetAttribute("guid"))));
+                }
                 button.Content = serializedNode.GetAttribute("nickname") + " : " + "show value here!";
                 button.MinWidth = 200;
                 button.MinHeight = 20;
                 button.Tag = serializedNode;
-                templist.Add(button);
+                templist.Add(nodeviewmodel);
                 //TODO
                 //when the button is clicked we want to enter into a modal selection, for now we can just use the first selected node
                 //of the same type
                 button.Click += handleNodeButtonPress;
             }
-            NodeListItems = new ReadOnlyObservableCollection<Button>(templist);
+            NodeListItems = new ReadOnlyObservableCollection<NodeViewModel>(templist);
         }
 
         private void handleNodeButtonPress(object sender, RoutedEventArgs e)

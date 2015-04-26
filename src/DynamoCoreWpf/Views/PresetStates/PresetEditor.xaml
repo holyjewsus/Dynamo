@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:Dynamo.UI"
         xmlns:p="clr-namespace:Dynamo.Wpf.Properties"
+        xmlns:controls="clr-namespace:Dynamo.Controls"
         Title="States Editor"
         Height="450" Width="550" Background="#555" MinWidth="550" MaxWidth="550" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -122,7 +123,11 @@
                                              Padding="0" 
                                              Margin="10,0,0,0"
                                              Background="Transparent" >
-
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type ViewModels:NodeViewModel}">
+                                                <controls:NodeView></controls:NodeView>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
                                         <ListBox.ItemContainerStyle>
                                             <Style TargetType="ListBoxItem">
                                                 <Style.Resources>
