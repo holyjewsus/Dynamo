@@ -33,6 +33,13 @@ namespace Dynamo.UI
             this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             this.presetCollectionView = presetCollectionView;
             this.DataContext = presetCollectionView;
+            this.Closed += PresetEditor_Closed;
+          
+        }
+
+        void PresetEditor_Closed(object sender, EventArgs e)
+        {
+            presetCollectionView.Dispose();
         }
         private void MoreButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -46,6 +53,7 @@ namespace Dynamo.UI
             presetCollectionView.RestoreState(sender,e);
         }
 
+     
        
     }
 }

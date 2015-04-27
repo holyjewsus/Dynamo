@@ -12,11 +12,12 @@ using Dynamo.Utilities;
 
 namespace Dynamo.ViewModels
 {
-    public class PresetsViewModel
+    public class PresetsViewModel:IDisposable
     {
         private readonly DynamoViewModel dynamoViewModel;
         public PresetsModel Model { get; set; }
         public ObservableCollection<PresetStateViewModel> StateViewModels{get;private set;}
+        private  Action<NodeModel> collectionchange;
 
         public PresetsViewModel(PresetsModel presetCollection,DynamoViewModel dynamoViewModel)
         {
@@ -28,10 +29,12 @@ namespace Dynamo.ViewModels
             {
                 StateViewModels.Add(new PresetStateViewModel(state, dynamoViewModel,Model));
             }
-            ((INotifyCollectionChanged)Model.DesignStates).CollectionChanged += new NotifyCollectionChangedEventHandler(CollectionChangedHandler);
-            Model.CollectionChanged += new NotifyCollectionChangedEventHandler(CollectionChangedHandler);
-            dynamoViewModel.CurrentSpace.NodeAdded += new Action<NodeModel>((o)=> {CollectionChangedHandler(o,null);});
-            dynamoViewModel.CurrentSpace.NodeRemoved += new Action<NodeModel>((o) => { CollectionChangedHandler(o, null); });
+            collectionchange = new Action<NodeModel>((o)=> {CollectionChangedHandler(o,null);});
+
+            ((INotifyCollectionChanged)Model.DesignStates).CollectionChanged += CollectionChangedHandler;
+            Model.CollectionChanged += CollectionChangedHandler;
+            dynamoViewModel.CurrentSpace.NodeAdded += collectionchange;
+            dynamoViewModel.CurrentSpace.NodeRemoved += collectionchange;
       //this view also needs to watch for changes on the workspaceView so that if nodes are deleted the view is updated...
         }
 
@@ -58,6 +61,15 @@ namespace Dynamo.ViewModels
             var workspace = dynamoViewModel.CurrentSpace;
             workspace.HasUnsavedChanges = true;
             dynamoViewModel.Model.CurrentWorkspace.PresetsCollection.RemoveState(state);
+        }
+
+
+        public void Dispose()
+        {
+            ((INotifyCollectionChanged)Model.DesignStates).CollectionChanged -= CollectionChangedHandler;
+            Model.CollectionChanged-= CollectionChangedHandler;
+            dynamoViewModel.CurrentSpace.NodeAdded -= collectionchange;
+            dynamoViewModel.CurrentSpace.NodeRemoved -= collectionchange;
         }
     }
 }

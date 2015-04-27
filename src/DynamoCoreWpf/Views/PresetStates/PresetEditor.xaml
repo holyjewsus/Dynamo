@@ -125,7 +125,12 @@
                                              Background="Transparent" >
                                         <ListBox.ItemTemplate>
                                             <DataTemplate DataType="{x:Type ViewModels:NodeViewModel}">
-                                                <controls:NodeView></controls:NodeView>
+                                                <Grid>
+                                                    <Viewbox StretchDirection="Both" Stretch="Uniform" Height="80" Width="80">
+                                                        <controls:NodeView></controls:NodeView> 
+                                                    </Viewbox>
+                                                </Grid>
+                                              
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                         <ListBox.ItemContainerStyle>
