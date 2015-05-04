@@ -122,6 +122,7 @@ limitations under the License.
     <Compile Include="Models\PresetsModel.cs" />
     <Compile Include="Models\PresetsState.cs" />
     <Compile Include="Library\MemberDocumentNode.cs" />
+    <Compile Include="Models\PresetWorkSpaceModel.cs" />
     <Compile Include="Models\RunSettings.cs" />
     <Compile Include="Core\Threading\AsyncTaskExtensions.cs" />
     <Compile Include="Interfaces\IPathResolver.cs" />

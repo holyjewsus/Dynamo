@@ -9,13 +9,16 @@ using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Dynamo.Utilities;
+using System.Xml;
+using System.Reflection;
+using Dynamo.Selection;
 
 namespace Dynamo.ViewModels
 {
     public class PresetsViewModel:IDisposable
     {
         private readonly DynamoViewModel dynamoViewModel;
-        public PresetsModel Model { get; set; }
+        public PresetsModel Model { get; private set; }
         public ObservableCollection<PresetStateViewModel> StateViewModels{get;private set;}
         private  Action<NodeModel> collectionchange;
 
@@ -63,6 +66,53 @@ namespace Dynamo.ViewModels
             dynamoViewModel.Model.CurrentWorkspace.PresetsCollection.RemoveState(state);
         }
 
+        public void handleNodeButtonPress(object sender, RoutedEventArgs e)
+        {
+            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Type nodetype = null;
+            string typeName = ((sender as FrameworkElement).Tag as NodeModel).GetType().ToString();
+
+            foreach (var assembly in loadedAssemblies)
+            {
+                nodetype = assembly.GetType(typeName, false);
+                if (nodetype != null)
+                {
+                    break;
+                }
+            }
+            if (nodetype == null)
+            {
+                //TODO should log this, possibly alert the user we can't find this kind of node to replace
+                throw (new ArgumentException("Type " + typeName + " doesn't exist in the current app domain"));
+            }
+            MethodInfo method = typeof(Enumerable).GetMethod("OfType");
+            method = method.MakeGenericMethod(nodetype);
+            var nodes = method.Invoke(null, new object[1] { DynamoSelection.Instance.Selection }) as IEnumerable<NodeModel>;
+            var firstnode = nodes.First() as NodeModel;
+            var missingID =(((sender as FrameworkElement).Tag) as NodeModel).GUID;
+
+            //if we're attempting to replace some node with itself
+            //bail
+            if (missingID == firstnode.GUID)
+            {
+                return;
+            }
+
+            foreach (var state in this.Model.DesignStates)
+            {
+                foreach (var xmlnode in state.SerializedNodes)
+                {
+                    //now find all states where the old node GUID exists, 
+                    if (Guid.Parse(xmlnode.GetAttribute("guid")) == missingID)
+                    {
+                        //now call replace on this state
+                        state.ReAssociateNodeData(missingID, firstnode);
+
+                    }
+                }
+            }
+
+        }
 
         public void Dispose()
         {

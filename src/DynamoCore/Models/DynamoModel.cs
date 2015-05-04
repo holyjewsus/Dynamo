@@ -1137,6 +1137,17 @@ namespace Dynamo.Models
         }
 
         /// <summary>
+        ///     Add a new, nonvisible presetworkspace workspace to Dynamo
+        ///     this is used for editing a preset state's values
+        /// </summary>
+        /// <param name="workspace"></param>
+        public void AddPresetWorkspace(PresetWorkspaceModel workspace)
+        {
+            AddWorkspace(workspace);
+        }
+
+
+        /// <summary>
         ///     Remove a workspace from the dynamo model.
         /// </summary>
         /// <param name="workspace"></param>

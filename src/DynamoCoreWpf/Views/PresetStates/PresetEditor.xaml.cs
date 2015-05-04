@@ -15,6 +15,7 @@ using Dynamo.Controls;
 using Dynamo.Utilities;
 using Dynamo.ViewModels;
 using Dynamo.Models;
+using System.Reflection;
 
 namespace Dynamo.UI
 {
@@ -50,10 +51,14 @@ namespace Dynamo.UI
 
         private void RestoreState_Click(object sender, RoutedEventArgs e)
         {
-            presetCollectionView.RestoreState(sender,e);
+            presetCollectionView.RestoreState(sender, e);
         }
 
-     
-       
+        private void ReassociateNode_Click(object sender, RoutedEventArgs e)
+        {
+            presetCollectionView.handleNodeButtonPress(sender, e);
+        }
+
+
     }
 }

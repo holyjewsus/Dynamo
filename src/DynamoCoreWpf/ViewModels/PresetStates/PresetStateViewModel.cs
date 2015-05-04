@@ -23,17 +23,19 @@ namespace Dynamo.ViewModels
         public PresetState Model { get; private set; }
         private PresetsModel ownerModel;
         public ReadOnlyObservableCollection<NodeViewModel> NodeListItems { get; private set; }
-        public HomeWorkspaceModel tempmodel;
-      //  private List<NodeModel> tempnodes;
-      //  private List<NodeViewModel> tempviews;
+    
         public PresetStateViewModel(PresetState state, DynamoViewModel dynamoViewModel, PresetsModel ownerCollectionModel)
         {
             Model = state;
             this.dynamoViewModel = dynamoViewModel;
             this.ownerModel= ownerCollectionModel;
             var templist = new ObservableCollection<NodeViewModel>();
-           
-
+            //TODO, WE NEED TO REMOVE THESE WORKSPACES, or they should not check for unsaved changes....
+            var tempWorkSpace = new PresetWorkspaceModel(state, dynamoViewModel.Model.NodeFactory,
+                ownerCollectionModel, Enumerable.Empty<NodeModel>(), Enumerable.Empty<NoteModel>(), Enumerable.Empty<AnnotationModel>(), new WorkspaceInfo());
+            var tempWorkview = new WorkspaceViewModel(tempWorkSpace, dynamoViewModel);
+            dynamoViewModel.Model.AddPresetWorkspace(tempWorkSpace);
+            
             foreach (var serializedNode in Model.SerializedNodes)
             {
                 //button representing the node, will allow reassociation
@@ -42,8 +44,8 @@ namespace Dynamo.ViewModels
                 //create a nodemodel copy to show the nodes in the state
                  var newNodeModel = GetInstance(serializedNode.GetAttribute("type"),serializedNode);
                  ((NodeModel)newNodeModel).Deserialize(serializedNode, SaveContext.File);
-
-                 nodeviewmodel = new NodeViewModel(dynamoViewModel.CurrentSpaceViewModel, (NodeModel)newNodeModel);
+                
+                 nodeviewmodel = new NodeViewModel(tempWorkview, (NodeModel)newNodeModel);
                 //if the node id is missing from the nodes list or if the node is missing from the graph then make it red...
                 if (!Model.Nodes.Select(x => x.GUID).Contains(Guid.Parse(serializedNode.GetAttribute("guid"))) ||
                     (!this.dynamoViewModel.CurrentSpace.Nodes.Select(x => x.GUID).Contains(Guid.Parse(serializedNode.GetAttribute("guid"))))
@@ -61,60 +63,16 @@ namespace Dynamo.ViewModels
                 //TODO
                 //when the button is clicked we want to enter into a modal selection, for now we can just use the first selected node
                 //of the same type
-                button.Click += handleNodeButtonPress;
+                //button.Click += handleNodeButtonPress;
+                tempWorkSpace.AddNode(nodeviewmodel.NodeModel, false);
             }
+           
             NodeListItems = new ReadOnlyObservableCollection<NodeViewModel>(templist);
         }
 
-        private void handleNodeButtonPress(object sender, RoutedEventArgs e)
-        {
-            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            Type nodetype = null;
-            string typeName = ((sender as Button).Tag as XmlElement).GetAttribute("type");
+       
 
-            foreach (var assembly in loadedAssemblies)
-            {
-                nodetype = assembly.GetType(typeName, false);
-                if (nodetype != null)
-                {
-                    break;
-                }
-            }
-            if (nodetype == null)
-            {
-                //TODO should log this, possibly alert the user we can't find this kind of node to replace
-                throw (new ArgumentException("Type " + typeName + " doesn't exist in the current app domain"));
-            }
-            MethodInfo method = typeof(Enumerable).GetMethod("OfType");
-            method = method.MakeGenericMethod(nodetype);
-            var nodes = method.Invoke(null, new object[1] { DynamoSelection.Instance.Selection }) as IEnumerable<NodeModel>;
-            var firstnode = nodes.First() as NodeModel;
-            var missingID = Guid.Parse((((sender as Button).Tag) as XmlElement).GetAttribute("guid"));
-
-            //if we're attempting to replace some node with itself
-            //bail
-            if (missingID == firstnode.GUID)
-            {
-                return;
-            }
-
-            foreach (var state in ownerModel.DesignStates)
-            {
-                foreach (var xmlnode in state.SerializedNodes)
-                {
-                    //now find all states where the old node GUID exists, 
-                    if (Guid.Parse(xmlnode.GetAttribute("guid")) == missingID)
-                    {
-                        //now call replace on this state
-                        state.ReAssociateNodeData(missingID, firstnode);
-
-                    }
-                }
-            }
-
-        }
-
-
+        //TODO this is a broken version of what nodeFactory will do for us
         private object GetInstance(string strFullyQualifiedName,XmlElement existingNode)
         {
             Type type = Type.GetType(strFullyQualifiedName);

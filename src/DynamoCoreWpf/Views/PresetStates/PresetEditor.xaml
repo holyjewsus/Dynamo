@@ -124,13 +124,46 @@
                                              Margin="10,0,0,0"
                                              Background="Transparent" >
                                         <ListBox.ItemTemplate>
-                                            <DataTemplate DataType="{x:Type ViewModels:NodeViewModel}">
-                                                <Grid>
+                                            
+                                                <DataTemplate DataType="{x:Type ViewModels:NodeViewModel}">
+                                                <StackPanel>
+                                                    <Button Name="ContextButton" 
+                                            HorizontalAlignment="Stretch"
+                                            Content="..." 
+                                            FontWeight="Bold" 
+                                            Foreground="WhiteSmoke"
+                                            Height="10"
+                                            Width="80" 
+                                            FontSize="11" 
+                                            IsEnabled="True"
+                                           
+                                            Style="{DynamicResource ResourceKey=SCustomizableBadgeButton}" 
+                                            Click="MoreButton_OnClick">
+
+                                                        <Button.ContextMenu>
+                                                            <ContextMenu>
+                                                                <MenuItem Name="NodeButtonReas" 
+                                                              Tag="{Binding Path=NodeModel}"
+                                                              Click="ReassociateNode_Click" 
+                                                              Margin="3" 
+                                                              Header="ReassociateNode"       
+                                                        />
+                                                            </ContextMenu>
+
+                                                        </Button.ContextMenu>
+
+                                                    </Button>
                                                     <Viewbox StretchDirection="Both" Stretch="Uniform" Height="80" Width="80">
-                                                        <controls:NodeView></controls:NodeView> 
+                                                        
+                                                        <controls:NodeView>
+                                                          
+                                                        </controls:NodeView>
+                                                
                                                     </Viewbox>
-                                                </Grid>
+                                                    
+                                                </StackPanel>
                                               
+                                               
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                         <ListBox.ItemContainerStyle>

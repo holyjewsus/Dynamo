@@ -910,6 +910,13 @@ namespace Dynamo.ViewModels
                 // get updated.
                 RaisePropertyChanged("HomeSpaceViewModel");
             }
+                //if the item is a presetWorkspaceModel then do not add
+                //to the workspace collection, we dont want to bind this to a tab contorl
+            else if (item is PresetWorkspaceModel)
+            {
+                return;
+            }
+
             else
             {
                 var newVm = new WorkspaceViewModel(item, this);

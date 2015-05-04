@@ -744,7 +744,7 @@ namespace Dynamo.Models
                 {
                     //check that node still exists in this workspace, 
                     //otherwise bail on this node
-                    if (nodes.Contains(node))
+                    if (nodes.Select(x=>x.GUID).Any(x=>x == node.GUID))
                     {
                         var serializedNode = state.SerializedNodes.ToList().Find(x => Guid.Parse(x.GetAttribute("guid")) == node.GUID);
                         this.undoRecorder.RecordModificationForUndo(node);

@@ -163,6 +163,17 @@ namespace Dynamo.Models
            // OnPropertyChange("DesignStates");
         }
 
+        public void ReplaceState(PresetState oldstate, PresetState newstate)
+        {
+            if (oldstate.Guid != newstate.Guid)
+            {
+                throw new Exception("these states do not share the same GUID");
+            }
+            var oldindex = designStates.IndexOf(oldstate);
+            designStates.Remove(oldstate);
+            designStates.Insert(Math.Max(0,oldindex - 1),newstate);
+        }
+
         #endregion
 
         #region ILogSource implementation

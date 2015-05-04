@@ -750,6 +750,7 @@ namespace Dynamo.Controls
         {
             var presetVM = new PresetsViewModel(dynamoViewModel.CurrentSpace.PresetsCollection,dynamoViewModel);
             var dialog = new PresetEditor(presetVM);
+            dialog.Owner = this;
             dialog.Show();
         }
 
