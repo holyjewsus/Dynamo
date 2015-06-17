@@ -16,7 +16,7 @@ namespace DynamoCoreWpfTests
         {
             
             var vm = new PublishPackageViewModel(ViewModel);
-            ViewModel.OnRequestPackagePublishDialog(vm);
+           // ViewModel.OnRequestPackagePublishDialog(vm);
 
             //find a customnode to add to the package
             string packagedirectory = Path.Combine(TestDirectory, "pkgs");
@@ -29,10 +29,14 @@ namespace DynamoCoreWpfTests
             Console.WriteLine("add node at" + firstnode + "to package");
 
             var canExecuteChangedFired = 0;
-            vm.SubmitCommand.CanExecuteChanged += ((o, e) => { canExecuteChangedFired++; });
+            EventHandler handler = (o, e) =>
+    {
+        { canExecuteChangedFired++; }
+    };
+            vm.SubmitCommand.CanExecuteChanged += handler;
             //now add a customnode to the package
             vm.AddFile(firstnode);
-
+            vm.SubmitCommand.CanExecuteChanged -= handler;
             //assert that canExecute changed was fired one time 
             Assert.AreEqual(canExecuteChangedFired, 1);
 
