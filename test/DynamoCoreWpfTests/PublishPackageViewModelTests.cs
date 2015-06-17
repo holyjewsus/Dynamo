@@ -14,10 +14,7 @@ namespace DynamoCoreWpfTests
         [Test]
         public void AddingDyfRaisesCanExecuteChangeOnDelegateCommand()
         {
-            
             var vm = new PublishPackageViewModel(ViewModel);
-           // ViewModel.OnRequestPackagePublishDialog(vm);
-
             //find a customnode to add to the package
             string packagedirectory = Path.Combine(TestDirectory, "pkgs");
             var packages = Directory.EnumerateDirectories(packagedirectory);
@@ -29,11 +26,9 @@ namespace DynamoCoreWpfTests
             Console.WriteLine("add node at" + firstnode + "to package");
 
             var canExecuteChangedFired = 0;
-            EventHandler handler = (o, e) =>
-    {
-        { canExecuteChangedFired++; }
-    };
+            EventHandler handler = (o, e) =>{{ canExecuteChangedFired++; }};
             vm.SubmitCommand.CanExecuteChanged += handler;
+
             //now add a customnode to the package
             vm.AddFile(firstnode);
             vm.SubmitCommand.CanExecuteChanged -= handler;
