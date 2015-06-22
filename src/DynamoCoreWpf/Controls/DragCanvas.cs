@@ -195,6 +195,11 @@ namespace Dynamo.Controls
        
         protected override void OnIsKeyboardFocusWithinChanged(DependencyPropertyChangedEventArgs e)
         {
+            if (this.owningWorkspace == null)
+            {
+                return;
+            }
+
             // If the focus falls on a node's text box, or a slider's thumb, 
             // this method will be called with "e.NewValue" sets to "true". 
             // In such cases the state machine should be notified, and any 
@@ -212,12 +217,19 @@ namespace Dynamo.Controls
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
+            if (owningWorkspace == null)
+            {
+                return;
+            }
+
             // If we are snapping to a port when the mouse is clicked, the 
             // DragCanvas should not handle the event here (e.Handled should
             // be set to 'false') so that workspace view gets a chance of 
             // handling it.
-            // 
-            if (owningWorkspace.IsSnappedToPort)
+            //
+            // Or if Shift is pressed, Workspace also handles event.
+            // Shift modifier is used to show InCanvasSearch.
+            if (owningWorkspace.IsSnappedToPort || Keyboard.Modifiers == ModifierKeys.Shift)
             {
                 e.Handled = false; // Do not handle it here!
                 return;
@@ -231,7 +243,6 @@ namespace Dynamo.Controls
                 //capture the mouse input even if the mouse is dragged outside the canvas
                 this.CaptureMouse();
                 base.OnMouseLeftButtonDown(e);               
-                e.Handled = true;
             }
         }
 

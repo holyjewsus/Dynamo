@@ -15,7 +15,7 @@ using Dynamo.Nodes;
 using Dynamo.Properties;
 using Dynamo.Selection;
 using Dynamo.Utilities;
-
+using ProtoCore.AST;
 using ProtoCore.Namespace;
 
 using Utils = Dynamo.Nodes.Utilities;
@@ -62,7 +62,7 @@ namespace Dynamo.Models
         private readonly ObservableCollection<NodeModel> nodes;
         private readonly ObservableCollection<NoteModel> notes;
         private readonly ObservableCollection<AnnotationModel> annotations;
-        protected readonly PresetsModel presetsCollection;
+        private readonly List<PresetModel> presets;
         private readonly UndoRedoRecorder undoRecorder;
         private Guid guid;
 
@@ -223,7 +223,7 @@ namespace Dynamo.Models
         /// <summary>
         ///     A set of input parameter states, this can be used to set the graph to a serialized state.
         /// </summary>
-        public PresetsModel PresetsCollection { get { return presetsCollection;} }
+        public IEnumerable<PresetModel> Presets { get { return presets;} }
 
         /// <summary>
         ///     The date of the last save.
@@ -452,7 +452,7 @@ namespace Dynamo.Models
             IEnumerable<AnnotationModel> a,
             WorkspaceInfo info, 
             NodeFactory factory,
-            PresetsModel designOptions)
+            IEnumerable<PresetModel> presets)
         {
             guid = Guid.NewGuid();
 
@@ -476,7 +476,7 @@ namespace Dynamo.Models
 
             NodeFactory = factory;
 
-            presetsCollection = designOptions;
+            this.presets = new List<PresetModel>(presets);
             // Update ElementResolver from nodeGraph.Nodes (where node is CBN)
             ElementResolver = new ElementResolver();
             foreach (var node in nodes)
@@ -492,6 +492,8 @@ namespace Dynamo.Models
 
             foreach (var connector in Connectors)
                 RegisterConnector(connector);
+
+            SetModelEventOnAnnotation();
         }
 
         /// <summary>
@@ -560,14 +562,14 @@ namespace Dynamo.Models
         /// </summary>
         /// <param name="newPath">The path to save to</param>
         /// <param name="core"></param>
-        public virtual bool SaveAs(string newPath, ProtoCore.Core core)
+        public virtual bool SaveAs(string newPath, ProtoCore.RuntimeCore runtimeCore)
         {
             if (String.IsNullOrEmpty(newPath)) return false;
 
             Log(String.Format(Resources.SavingInProgress, newPath));
             try
             {
-                if (SaveInternal(newPath, core))
+                if (SaveInternal(newPath, runtimeCore))
                     OnWorkspaceSaved();
             }
             catch (Exception ex)
@@ -585,9 +587,7 @@ namespace Dynamo.Models
         /// <summary>
         ///     Adds a node to this workspace.
         /// </summary>
-        /// <param name="node"></param>
-        /// <param name="centered"></param>
-        public void AddNode(NodeModel node, bool centered)
+        public void AddNode(NodeModel node, bool centered = false)
         {
             if (nodes.Contains(node))
                 return;
@@ -669,6 +669,8 @@ namespace Dynamo.Models
 
         public void AddAnnotation(AnnotationModel annotationModel)
         {
+            annotationModel.ModelBaseRequested += annotationModel_GetModelBase;
+            annotationModel.Disposed += (_) => annotationModel.ModelBaseRequested -= annotationModel_GetModelBase;
             Annotations.Add(annotationModel);
         }
 
@@ -676,27 +678,84 @@ namespace Dynamo.Models
         {
             var selectedNodes = this.Nodes == null ? null:this.Nodes.Where(s => s.IsSelected);
             var selectedNotes = this.Notes == null ? null: this.Notes.Where(s => s.IsSelected);
-
-            var annotationModel = new AnnotationModel(selectedNodes, selectedNotes)
+           
+            if (!CheckIfModelExistsInSameGroup(selectedNodes, selectedNotes))
             {
-                GUID = id,
-                AnnotationText = text
-            };
+                var annotationModel = new AnnotationModel(selectedNodes, selectedNotes)
+                {
+                    GUID = id,
+                    AnnotationText = text                   
+                };
+                annotationModel.ModelBaseRequested += annotationModel_GetModelBase;
+                annotationModel.Disposed += (_) => annotationModel.ModelBaseRequested -= annotationModel_GetModelBase;
+                Annotations.Add(annotationModel);
+                HasUnsavedChanges = true;
+                return annotationModel;
+            }
+            return null;
+        }
 
-            var args = new ModelEventArgs(annotationModel, true);
-            OnRequestNodeCentered(this, args);
+        /// <summary>
+        //this sets the event on Annotation. This event return the model from the workspace.
+        //When a model is ungrouped from a group, that model will be deleted from that group.
+        //So, when UNDO execution, cannot get that model from that group, it has to get from the workspace.
+        //The below method will set the event on every annotation model, that will return the specific model
+        //from workspace.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        private void SetModelEventOnAnnotation()
+        {           
+            foreach (var model in this.Annotations)
+            {
+                model.ModelBaseRequested += annotationModel_GetModelBase;
+                model.Disposed += (_) => model.ModelBaseRequested -= annotationModel_GetModelBase;
+            }
+        }
 
-            Annotations.Add(annotationModel);
-            HasUnsavedChanges = true;
-            return annotationModel;
+        /// <summary>
+        /// Get the model from Workspace
+        /// </summary>
+        /// <param name="modelGuid">The model unique identifier.</param>
+        /// <returns></returns>
+        private ModelBase annotationModel_GetModelBase(Guid modelGuid)
+        {
+            ModelBase model = null;
+            model = this.Nodes.FirstOrDefault(x => x.GUID == modelGuid);
+            if (model == null) //Check if GUID is a Note instead.
+            {
+                model = this.Notes.FirstOrDefault(x => x.GUID == modelGuid);
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Checks if model exists in same group.
+        /// </summary>
+        /// <param name="selectNodes">The select nodes.</param>
+        /// <param name="selectNotes">The select notes.</param>
+        /// <returns>true if the models are already in the same group</returns>
+        private bool CheckIfModelExistsInSameGroup(IEnumerable<NodeModel> selectNodes, IEnumerable<NoteModel> selectNotes)
+        {
+            var selectedModels = selectNodes.Concat(selectNotes.Cast<ModelBase>()).ToList();
+            bool nodesInSameGroup = false;
+            foreach (var group in this.Annotations)
+            {
+                var groupModels = group.SelectedModels;
+                nodesInSameGroup = !selectedModels.Except(groupModels).Any();
+                if (nodesInSameGroup)
+                    break;
+            }
+
+            return nodesInSameGroup;
         }
 
         /// <summary>
         /// Save assuming that the Filepath attribute is set.
         /// </summary>
-        public virtual bool Save(ProtoCore.Core core)
+        public virtual bool Save(ProtoCore.RuntimeCore runtimeCore)
         {
-            return SaveAs(FileName, core);
+            return SaveAs(FileName, runtimeCore);
         }
 
         internal void ResetWorkspace()
@@ -735,8 +794,49 @@ namespace Dynamo.Models
             this.currentPasteOffset = (this.currentPasteOffset + PASTE_OFFSET_STEP) % PASTE_OFFSET_MAX;
         }
 
-        internal void SetWorkspaceToState(PresetState state)
-        {   //start an undoBeginGroup
+        #endregion
+
+        #region Presets
+        /// <summary>
+        ///  this method creates a new preset state from a set of NodeModels and adds this new state to this presets collection
+        /// </summary>
+        /// <param name="name">the name of preset state</param>
+        /// <param name="description">a description of what the state does</param>
+        /// <param name="currentSelection">a set of NodeModels that are to be serialized in this state</param>
+        /// <param name="id">a GUID id for the state, if not supplied, a new GUID will be generated, cannot be a duplicate</param>
+        private void AddPresetCore(string name, string description, IEnumerable<NodeModel> currentSelection, Guid id = new Guid())
+        {
+            if (currentSelection == null || currentSelection.Count() < 1)
+            {
+                throw new ArgumentException("currentSelection is empty or null");
+            }
+            var inputs = currentSelection;
+
+            if (Presets.Any(x => x.Guid == id))
+            {
+                throw new ArgumentException("duplicate id in collection");
+            }
+
+            var newstate = new PresetModel(name, description, inputs, id);
+            presets.Add(newstate);
+        }
+
+        public void RemoveState(PresetModel state)
+        {
+            if (Presets.Contains(state))
+            {
+                presets.Remove(state);
+            }
+        }
+
+        internal void ApplyPreset(PresetModel state)
+        {
+            if (state == null)
+            {
+                Log("Attempted to apply a PresetState that was null");
+                return;
+            }
+            //start an undoBeginGroup
             using (var undoGroup = this.undoRecorder.BeginActionGroup())
             {
                //reload each node, and record each each modification in the undogroup
@@ -746,32 +846,38 @@ namespace Dynamo.Models
                     //otherwise bail on this node
                     if (nodes.Contains(node))
                     {
+                        var originalpos = node.Position;
                         var serializedNode = state.SerializedNodes.ToList().Find(x => Guid.Parse(x.GetAttribute("guid")) == node.GUID);
+                        //overwrite the xy coords of the serialized node with the current position, so the node is not moved
+                        serializedNode.SetAttribute("x", originalpos.X.ToString());
+                        serializedNode.SetAttribute("y", originalpos.Y.ToString());
+
                         this.undoRecorder.RecordModificationForUndo(node);
                         this.ReloadModel(serializedNode);
                     }
                 }
                 //select all the modified nodes in the UI
                 DynamoSelection.Instance.ClearSelection();
-                state.Nodes.ToList().ForEach(x => DynamoSelection.Instance.Selection.Add(x));
-                
+                foreach(var node in state.Nodes)
+                {
+                    DynamoSelection.Instance.Selection.Add(node);
+                }
             }
-            
         }
-        internal void CreatePresetStateFromSelection(string name, string description, List<Guid> IDSToSave)
+        internal void AddPreset(string name, string description, IEnumerable<Guid> IDSToSave)
         {
             //lookup the nodes by their ID, can also check that we find all of them....
-            var nodesFromIDs = this.Nodes.Where(node => IDSToSave.Contains(node.GUID)).ToList();
+            var nodesFromIDs = this.Nodes.Where(node => IDSToSave.Contains(node.GUID));
  	        //access the presetsCollection and add a new state based on the current selection
-            presetsCollection.CreateNewState(name, description, nodesFromIDs);
+            this.AddPresetCore(name, description, nodesFromIDs);
             HasUnsavedChanges = true;
         }
-
+        
         #endregion
 
         #region private/internal methods
-        
-        private bool SaveInternal(string targetFilePath, ProtoCore.Core core)
+
+        private bool SaveInternal(string targetFilePath, ProtoCore.RuntimeCore runtimeCore)
         {
             // Create the xml document to write to.
             var document = new XmlDocument();
@@ -783,7 +889,7 @@ namespace Dynamo.Models
             if (!PopulateXmlDocument(document))
                 return false;
 
-            SerializeSessionData(document, core);
+            SerializeSessionData(document, runtimeCore);
 
 
             try
@@ -885,10 +991,15 @@ namespace Dynamo.Models
                     annotationList.AppendChild(annotation);                   
                 }
 
-                //save the presetsCollection into the dyn file as a seperate element on the root
-                var designOptions =  presetsCollection.Serialize(xmlDoc,SaveContext.File);
-                root.AppendChild(designOptions);
-               
+                //save the presets into the dyn file as a seperate element on the root
+                var presetsElement = xmlDoc.CreateElement("Presets");
+                root.AppendChild(presetsElement);
+                foreach (var preset in Presets)
+                {
+                    var presetState = preset.Serialize(xmlDoc, SaveContext.File);
+                    presetsElement.AppendChild(presetState);
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -901,7 +1012,7 @@ namespace Dynamo.Models
 
         // TODO(Ben): Documentation to come before pull request.
         // TODO(Steve): This probably only belongs on HomeWorkspaceModel. -- MAGN-5715
-        protected virtual void SerializeSessionData(XmlDocument document, ProtoCore.Core core)
+        protected virtual void SerializeSessionData(XmlDocument document, ProtoCore.RuntimeCore runtimeCore)
         {
             if (document.DocumentElement == null)
             {
@@ -911,7 +1022,7 @@ namespace Dynamo.Models
 
             try
             {
-                if (core == null) // No execution yet as of this point.
+                if (runtimeCore == null) // No execution yet as of this point.
                     return;
 
                 // Selecting all nodes that are either a DSFunction,
@@ -921,7 +1032,7 @@ namespace Dynamo.Models
                         n => n is DSFunction || n is DSVarArgFunction || n is CodeBlockNodeModel)
                         .Select(n => n.GUID);
 
-                var nodeTraceDataList = core.DSExecutable.RuntimeData.GetTraceDataForNodes(nodeGuids, core.DSExecutable);
+                var nodeTraceDataList = runtimeCore.RuntimeData.GetTraceDataForNodes(nodeGuids, runtimeCore.DSExecutable);
 
                 if (nodeTraceDataList.Any())
                     Utils.SaveTraceDataToXmlDocument(document, nodeTraceDataList);
@@ -981,152 +1092,140 @@ namespace Dynamo.Models
             if (modelGuids == null || (!modelGuids.Any()))
                 throw new ArgumentNullException("modelGuids");
 
-            var modelsToUpdate = GetModelsInternal(modelGuids).ToList();
-            if (!modelsToUpdate.Any())
+            var retrievedModels = GetModelsInternal(modelGuids);
+            if (!retrievedModels.Any())
                 throw new InvalidOperationException("UpdateModelValue: Model not found");
 
-            UpdateValueParams visibilityParams = null;
-            var nodesToShowOrHide = new List<NodeModel>();
-
-            var modelsToRecordForUndo = new List<ModelBase>();
-            if (propertyName.Equals("IsUpstreamVisible"))
-            {
-                visibilityParams = new UpdateValueParams("IsVisible", value);
-
-                // If the update is meant to turn upstream preview on/off, then the number of nodes 
-                // involved in this update will presumably be higher than "modelsToUpdate". Here we 
-                // gather all the upstream nodes that are affected, record all those nodes for undo.
-                // 
-                var nodesToUpdate = modelsToUpdate.OfType<NodeModel>().ToList();
-                foreach (var nodeToUpdate in nodesToUpdate)
-                {
-                    // Unconditionally retrieve all upstream nodes.
-                    WorkspaceUtilities.GatherAllUpstreamNodes(
-                        nodeToUpdate, nodesToShowOrHide, model => true);
-                }
-
-                // Remove those nodes that are in "nodesToUpdate".
-                nodesToShowOrHide.RemoveAll(modelsToUpdate.Contains);
-
-                // Record those directly affected, then those indirectly affected.
-                modelsToRecordForUndo.AddRange(modelsToUpdate);
-                modelsToRecordForUndo.AddRange(nodesToShowOrHide.Distinct());
-            }
-            else
-            {
-                // The update does not affect other nodes.
-                modelsToRecordForUndo.AddRange(modelsToUpdate);
-            }
-
             var updateValueParams = new UpdateValueParams(propertyName, value, ElementResolver);
-            using (new UndoRedoRecorder.ModelModificationUndoHelper(undoRecorder, modelsToRecordForUndo))
+            using (new UndoRedoRecorder.ModelModificationUndoHelper(undoRecorder, retrievedModels))
             {
-                foreach (var retrievedModel in modelsToUpdate)
+                foreach (var retrievedModel in retrievedModels)
                 {
                     retrievedModel.UpdateValue(updateValueParams);
-                }
-
-                if ((visibilityParams != null) && nodesToShowOrHide.Any())
-                {
-                    foreach (var nodeModel in nodesToShowOrHide)
-                    {
-                        nodeModel.UpdateValue(visibilityParams);
-                    }
                 }
             }
 
             HasUnsavedChanges = true;
         }
 
-        [Obsolete("Node to Code not enabled, API subject to change.")]
-        internal void ConvertNodesToCodeInternal(Guid nodeId, EngineController engineController, bool verboseLogging)
+        internal void ConvertNodesToCodeInternal(EngineController engineController)
         {
-            IEnumerable<NodeModel> selectedNodes =
-                DynamoSelection.Instance.Selection.OfType<NodeModel>().Where(n => n.IsConvertible);
-            
+            var selectedNodes = DynamoSelection.Instance
+                                               .Selection
+                                               .OfType<NodeModel>()
+                                               .Where(n => n.IsConvertible);
             if (!selectedNodes.Any())
                 return;
 
-            Dictionary<string, string> variableNameMap;
-            string code = engineController.ConvertNodesToCode(selectedNodes, out variableNameMap, verboseLogging);
-
-            CodeBlockNodeModel codeBlockNode;
+            var cliques = NodeToCodeUtils.GetCliques(selectedNodes).Where(c => !(c.Count == 1 && c.First() is CodeBlockNodeModel));
+            var codeBlockNodes = new List<CodeBlockNodeModel>();
 
             //UndoRedo Action Group----------------------------------------------
-            using (UndoRecorder.BeginActionGroup())
+            NodeToCodeUndoHelper undoHelper = new NodeToCodeUndoHelper();
+
+            // using (UndoRecorder.BeginActionGroup())
             {
-                #region Step I. Delete all nodes and their connections
-                //Create two dictionarys to store the details of the external connections that have to 
-                //be recreated after the conversion
-                var externalInputConnections = new Dictionary<ConnectorModel, string>();
-                var externalOutputConnections = new Dictionary<ConnectorModel, string>();
-
-                //Also collect the average X and Y co-ordinates of the different nodes
-                var nodeList = selectedNodes.ToList();
-                int nodeCount = nodeList.Count;
-                double totalX = 0, totalY = 0;
-                
-                foreach (var node in nodeList) 
+                foreach (var nodeList in cliques)
                 {
-                    #region Step I.A. Delete the connections for the node
+                    //Create two dictionarys to store the details of the external connections that have to 
+                    //be recreated after the conversion
+                    var externalInputConnections = new Dictionary<ConnectorModel, string>();
+                    var externalOutputConnections = new Dictionary<ConnectorModel, string>();
 
-                    foreach (var connector in node.AllConnectors.ToList())
+                    //Also collect the average X and Y co-ordinates of the different nodes
+                    int nodeCount = nodeList.Count;
+
+                    var nodeToCodeResult = engineController.ConvertNodesToCode(this.nodes, nodeList);
+
+                    #region Step I. Delete all nodes and their connections
+
+                    double totalX = 0, totalY = 0;
+
+                    foreach (var node in nodeList)
                     {
-                        if (!IsInternalNodeToCodeConnection(connector))
+                        #region Step I.A. Delete the connections for the node
+
+                        foreach (var connector in node.AllConnectors.ToList())
                         {
-                            //If the connector is an external connector, the save its details
-                            //for recreation later
-                            var startNode = connector.Start.Owner;
-                            int index = startNode.OutPorts.IndexOf(connector.Start);
-                            //We use the varibleName as the connection between the port of the old Node
-                            //to the port of the new node.
-                            var variableName = startNode.GetAstIdentifierForOutputIndex(index).Value;
-                            if (variableNameMap.ContainsKey(variableName))
-                                variableName = variableNameMap[variableName];
+                            if (!IsInternalNodeToCodeConnection(nodeList, connector))
+                            {
+                                //If the connector is an external connector, the save its details
+                                //for recreation later
+                                var startNode = connector.Start.Owner;
+                                int index = startNode.OutPorts.IndexOf(connector.Start);
+                                //We use the varibleName as the connection between the port of the old Node
+                                //to the port of the new node.
+                                var variableName = startNode.GetAstIdentifierForOutputIndex(index).Value;
 
-                            //Store the data in the corresponding dictionary
-                            if (startNode == node)
-                                externalOutputConnections.Add(connector, variableName);
-                            else
-                                externalInputConnections.Add(connector, variableName);
+                                //Store the data in the corresponding dictionary
+                                if (startNode == node)
+                                {
+                                    if (nodeToCodeResult.OutputMap.ContainsKey(variableName))
+                                        variableName = nodeToCodeResult.OutputMap[variableName];
+                                    externalOutputConnections.Add(connector, variableName);
+                                }
+                                else
+                                {
+                                    if (nodeToCodeResult.InputMap.ContainsKey(variableName))
+                                        variableName = nodeToCodeResult.InputMap[variableName];
+                                    externalInputConnections.Add(connector, variableName);
+                                }
+                            }
+
+                            //Delete the connector
+                            undoHelper.RecordDeletion(connector);
+                            connector.Delete();
                         }
+                        #endregion
 
-                        //Delete the connector
-                        UndoRecorder.RecordDeletionForUndo(connector);
-                        connector.Delete();
+                        #region Step I.B. Delete the node
+                        totalX += node.X;
+                        totalY += node.Y;
+                        undoHelper.RecordDeletion(node);
+                        Nodes.Remove(node);
+                        #endregion
                     }
                     #endregion
 
-                    #region Step I.B. Delete the node
-                    totalX += node.X;
-                    totalY += node.Y;
-                    UndoRecorder.RecordDeletionForUndo(node);
-                    Nodes.Remove(node);
+                    #region Step II. Create the new code block node
+                    var outputVariables = externalOutputConnections.Values;
+                    var newResult = NodeToCodeUtils.ConstantPropagationForTemp(nodeToCodeResult, outputVariables);
+                    NodeToCodeUtils.ReplaceWithUnqualifiedName(engineController.LibraryServices.LibraryManagementCore, newResult.AstNodes);
+                    var codegen = new ProtoCore.CodeGenDS(newResult.AstNodes);
+                    var code = codegen.GenerateCode();
+
+                    var codeBlockNode = new CodeBlockNodeModel(
+                        code,
+                        System.Guid.NewGuid(), 
+                        totalX / nodeCount,
+                        totalY / nodeCount, engineController.LibraryServices);
+                    undoHelper.RecordCreation(codeBlockNode);
+                    Nodes.Add(codeBlockNode);
+                    this.RegisterNode(codeBlockNode);
+
+                    codeBlockNodes.Add(codeBlockNode);
+                    #endregion
+
+                    #region Step III. Recreate the necessary connections
+                    var newInputConnectors = ReConnectInputConnections(externalInputConnections, codeBlockNode);
+                    foreach (var connector in newInputConnectors)
+                    {
+                        undoHelper.RecordCreation(connector);
+                    }
+
+                    var newOutputConnectors = ReConnectOutputConnections(externalOutputConnections, codeBlockNode);
+                    foreach (var connector in newOutputConnectors)
+                    {
+                        undoHelper.RecordCreation(connector);
+                    }
                     #endregion
                 }
-                #endregion
-
-                #region Step II. Create the new code block node
-                codeBlockNode = new CodeBlockNodeModel(
-                    code,
-                    nodeId,
-                    totalX/nodeCount,
-                    totalY/nodeCount, engineController.LibraryServices);
-                UndoRecorder.RecordCreationForUndo(codeBlockNode);
-                Nodes.Add(codeBlockNode);
-                #endregion
-
-                #region Step III. Recreate the necessary connections
-                ReConnectInputConnections(externalInputConnections, codeBlockNode);
-                ReConnectOutputConnections(externalOutputConnections, codeBlockNode);
-                #endregion
             }
-            //End UndoRedo Action Group------------------------------------------
 
-            // select node
-            
+            undoHelper.ApplyActions(UndoRecorder);
+
             DynamoSelection.Instance.ClearSelection();
-            DynamoSelection.Instance.Selection.Add(codeBlockNode);
+            DynamoSelection.Instance.Selection.AddRange(codeBlockNodes);
 
             RequestRun();
         }
@@ -1238,6 +1337,7 @@ namespace Dynamo.Models
         }
 
         internal void RecordAndDeleteModels(List<ModelBase> models)
+        
         {
             if (!ShouldProceedWithRecording(models))
                 return; // There's nothing for deletion.
@@ -1302,6 +1402,14 @@ namespace Dynamo.Models
             } // Conclude the deletion.
         }
 
+        internal void RecordGroupModelBeforeUngroup(AnnotationModel annotation)
+        {
+            using (undoRecorder.BeginActionGroup()) // Start a new action group.
+            {
+                undoRecorder.RecordModificationForUndo(annotation);
+            }
+        }
+
         private static bool ShouldProceedWithRecording(List<ModelBase> models)
         {
             if (null == models) 
@@ -1323,25 +1431,43 @@ namespace Dynamo.Models
 
         public void DeleteModel(XmlElement modelData)
         {
+            //When there is a Redo operation, model is removed from 
+            //the workspace but the model is "not disposed" from memory.
+            //Identified this when redo operation is performed on groups
             ModelBase model = GetModelForElement(modelData);
 
             if (model is NoteModel)
-                Notes.Remove(model as NoteModel);
+            {
+                var note = model as NoteModel;
+                Notes.Remove(note);                
+                note.Dispose();
+            }
             else if (model is AnnotationModel)
-                Annotations.Remove(model as AnnotationModel);
+            {
+                RemoveGroup(model);
+            }
             else if (model is ConnectorModel)
             {
                 var connector = model as ConnectorModel;
                 connector.Delete();
             }
             else if (model is NodeModel)
-                Nodes.Remove(model as NodeModel);
+            {
+                RemoveNode(model as NodeModel);
+            }
             else
             {
                 // If it gets here we obviously need to handle it.
                 throw new InvalidOperationException(string.Format(
                     "Unhandled type: {0}", model.GetType()));
             }
+        }
+
+        public void RemoveGroup(ModelBase model)
+        {
+            var annotation = model as AnnotationModel;
+            Annotations.Remove(annotation);
+            annotation.Dispose();
         }
 
         public void ReloadModel(XmlElement modelData)
@@ -1391,10 +1517,26 @@ namespace Dynamo.Models
             {
                 var noteModel = NodeGraph.LoadNoteFromXml(modelData);
                 Notes.Add(noteModel);
+
+                //check whether this note belongs to a group
+                foreach (var annotation in Annotations)
+                {
+                    //this note "was" in a group
+                    if (annotation.DeletedModelBases.Any(m => m.GUID == noteModel.GUID))
+                    {
+                        annotation.AddToSelectedModels(noteModel);
+                    }
+                }
             }
             else if (typeName.StartsWith("Dynamo.Models.AnnotationModel"))
             {
-                var annotationModel = NodeGraph.LoadAnnotationFromXml(modelData, Nodes,Notes);
+                var selectedNodes = this.Nodes == null ? null : this.Nodes.Where(s => s.IsSelected);
+                var selectedNotes = this.Notes == null ? null : this.Notes.Where(s => s.IsSelected);
+
+                var annotationModel = new AnnotationModel(selectedNodes, selectedNotes);
+                annotationModel.ModelBaseRequested += annotationModel_GetModelBase;
+                annotationModel.Disposed += (_) => annotationModel.ModelBaseRequested -= annotationModel_GetModelBase;
+                annotationModel.Deserialize(modelData, SaveContext.Undo);                
                 Annotations.Add(annotationModel);
             }
             else // Other node types.
@@ -1402,6 +1544,16 @@ namespace Dynamo.Models
                 NodeModel nodeModel = NodeFactory.CreateNodeFromXml(modelData, SaveContext.Undo);
                 Nodes.Add(nodeModel);
                 RegisterNode(nodeModel);
+                
+                //check whether this node belongs to a group
+                foreach (var annotation in Annotations)
+                {
+                    //this node "was" in a group
+                    if (annotation.DeletedModelBases.Any(m=>m.GUID == nodeModel.GUID))
+                    {
+                        annotation.AddToSelectedModels(nodeModel);
+                    }
+                }
             }
         }
 
@@ -1461,10 +1613,9 @@ namespace Dynamo.Models
         /// This determines if it should be redrawn(if it is external) or if it should be 
         /// deleted (if it is internal)
         /// </summary>
-        [Obsolete("Node to Code not enabled, API subject to change.")]
-        private static bool IsInternalNodeToCodeConnection(ConnectorModel connector)
+        private static bool IsInternalNodeToCodeConnection(IEnumerable<NodeModel> nodes, ConnectorModel connector)
         {
-            return DynamoSelection.Instance.Selection.Contains(connector.Start.Owner) && DynamoSelection.Instance.Selection.Contains(connector.End.Owner);
+            return nodes.Contains(connector.Start.Owner) && nodes.Contains(connector.End.Owner);
         }
 
         /// <summary>
@@ -1472,35 +1623,32 @@ namespace Dynamo.Models
         /// based on the connectors passed as inputs.
         /// </summary>
         /// <param name="externalOutputConnections">List of connectors to remake, along with the port names of the new port</param>
-        /// <param name="codeBlockNode">The new Node To Code created Code Block Node</param>
-        [Obsolete("Node to Code not enabled, API subject to change.")]
-        private void ReConnectOutputConnections(Dictionary<ConnectorModel, string> externalOutputConnections, CodeBlockNodeModel codeBlockNode)
+        /// <param name="cbn">The new Node To Code created Code Block Node</param>
+        private List<ConnectorModel> ReConnectOutputConnections(Dictionary<ConnectorModel, string> externalOutputConnections, CodeBlockNodeModel cbn)
         {
+            List<ConnectorModel> newConnectors = new List<ConnectorModel>();
             foreach (var kvp in externalOutputConnections)
             {
                 var connector = kvp.Key;
-                string variableName = kvp.Value;
+                var variableName = kvp.Value;
 
                 //Get the start and end idex for the ports for the connection
-                int endIndex = connector.End.Owner.InPorts.IndexOf(connector.End);
-                int i;
-                for (i = 0; i < codeBlockNode.OutPorts.Count; i++)
-                {
-                    if (codeBlockNode.GetAstIdentifierForOutputIndex(i).Value == variableName)
-                        break;
-                }
-                var portModel = codeBlockNode.OutPorts[i];
-                int startIndex = codeBlockNode.OutPorts.IndexOf(portModel);
+                var portModel = cbn.OutPorts.FirstOrDefault(
+                    port => cbn.GetRawAstIdentifierForOutputIndex(port.Index).Value.Equals(variableName));
+
+                if (portModel == null)
+                    continue;
 
                 //Make the new connection and then record and add it
                 var newConnector = ConnectorModel.Make(
-                    codeBlockNode,
+                    cbn,
                     connector.End.Owner,
-                    startIndex,
-                    endIndex);
+                    portModel.Index,
+                    connector.End.Index);
 
-                UndoRecorder.RecordCreationForUndo(newConnector);
+                newConnectors.Add(newConnector);
             }
+            return newConnectors;
         }
 
         /// <summary>
@@ -1508,35 +1656,34 @@ namespace Dynamo.Models
         /// based on the connectors passed as inputs.
         /// </summary>
         /// <param name="externalInputConnections">List of connectors to remake, along with the port names of the new port</param>
-        /// <param name="codeBlockNode">The new Node To Code created Code Block Node</param>
-        [Obsolete("Node to Code not enabled, API subject to change.")]
-        private void ReConnectInputConnections(
-            Dictionary<ConnectorModel, string> externalInputConnections, CodeBlockNodeModel codeBlockNode)
+        /// <param name="cbn">The new Node To Code created Code Block Node</param>
+        private List<ConnectorModel> ReConnectInputConnections(
+            Dictionary<ConnectorModel, string> externalInputConnections, CodeBlockNodeModel cbn)
         {
-            var connections = from kvp in externalInputConnections
-                              let connector = kvp.Key
-                              let variableName = kvp.Value
-                              let startIndex = connector.Start.Owner.OutPorts.IndexOf(connector.Start)
-                              let endIndex = CodeBlockNodeModel.GetInportIndex(codeBlockNode, variableName)
-                              where Connectors.All(c => c.End != codeBlockNode.InPorts[endIndex])
-                              select
-                                  new
-                                  {
-                                      Start = connector.Start.Owner,
-                                      End = codeBlockNode,
-                                      StartIdx = startIndex,
-                                      EndIdx = endIndex
-                                  };
+            List<ConnectorModel> newConnectors = new List<ConnectorModel>();
 
-            foreach (var newConnector in connections)
+            foreach (var kvp in externalInputConnections)
             {
-                var connector = ConnectorModel.Make(
-                    newConnector.Start,
-                    newConnector.End,
-                    newConnector.StartIdx,
-                    newConnector.EndIdx);
-                UndoRecorder.RecordCreationForUndo(connector);
+                var connector = kvp.Key;
+                var variableName = kvp.Value;
+
+                var endPortIndex = CodeBlockNodeModel.GetInportIndex(cbn, variableName);
+                if (endPortIndex < 0)
+                    continue;
+
+                if (Connectors.Any(c => c.End == cbn.InPorts[endPortIndex]))
+                    continue;
+
+                var newConnector = ConnectorModel.Make(
+                    connector.Start.Owner,
+                    cbn,
+                    connector.Start.Index,
+                    endPortIndex);
+
+                newConnectors.Add(newConnector);
             }
+
+            return newConnectors;
         }
 
         #endregion

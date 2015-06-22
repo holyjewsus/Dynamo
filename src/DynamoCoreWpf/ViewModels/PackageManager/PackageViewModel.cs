@@ -16,6 +16,7 @@ namespace Dynamo.ViewModels
     public class PackageViewModel : NotificationObject
     {
         private readonly DynamoViewModel dynamoViewModel;
+        private readonly PackageManagerClient packageManagerClient;
         public Package Model { get; private set; }
 
         public bool HasAdditionalFiles
@@ -56,6 +57,8 @@ namespace Dynamo.ViewModels
         public PackageViewModel(DynamoViewModel dynamoViewModel, Package model)
         {
             this.dynamoViewModel = dynamoViewModel;
+            var pmExtension = dynamoViewModel.Model.GetPackageManagerExtension();
+            this.packageManagerClient = pmExtension.PackageManagerClient;
             Model = model;
 
             ToggleTypesVisibleInManagerCommand = new DelegateCommand(ToggleTypesVisibleInManager, CanToggleTypesVisibleInManager);
@@ -125,7 +128,8 @@ namespace Dynamo.ViewModels
             if (Model.LoadedAssemblies.Any())
             {
                 var resAssem =
-                    MessageBox.Show(Resources.MessageNeedToRestart,
+                    MessageBox.Show(string.Format(Resources.MessageNeedToRestart,
+                        dynamoViewModel.BrandingResourceProvider.ProductName),
                         Resources.UninstallingPackageMessageBoxTitle,
                         MessageBoxButton.OKCancel,
                         MessageBoxImage.Exclamation);
@@ -141,11 +145,13 @@ namespace Dynamo.ViewModels
             try
             {
                 var dynModel = dynamoViewModel.Model;
-                Model.UninstallCore(dynModel.CustomNodeManager, dynModel.PackageLoader, dynModel.PreferenceSettings);
+                var pmExtension = dynModel.GetPackageManagerExtension();
+                Model.UninstallCore(dynModel.CustomNodeManager, pmExtension.PackageLoader, dynModel.PreferenceSettings);
             }
             catch (Exception)
             {
-                MessageBox.Show(Resources.MessageFailedToUninstall,
+                MessageBox.Show(string.Format(Resources.MessageFailedToUninstall,
+                    dynamoViewModel.BrandingResourceProvider.ProductName),
                     Resources.UninstallFailureMessageBoxTitle,
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -174,12 +180,12 @@ namespace Dynamo.ViewModels
                                       MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (res == MessageBoxResult.No) return;
 
-            dynamoViewModel.Model.PackageManagerClient.Deprecate(Model.Name);
+            packageManagerClient.Deprecate(Model.Name);
         }
 
         private bool CanDeprecate()
         {
-            return dynamoViewModel.Model.PackageManagerClient.HasAuthProvider;
+            return packageManagerClient.HasAuthProvider;
         }
 
         private void Undeprecate()
@@ -189,12 +195,12 @@ namespace Dynamo.ViewModels
                                       MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (res == MessageBoxResult.No) return;
 
-            dynamoViewModel.Model.PackageManagerClient.Undeprecate(Model.Name);
+            packageManagerClient.Undeprecate(Model.Name);
         }
 
         private bool CanUndeprecate()
         {
-            return dynamoViewModel.Model.PackageManagerClient.HasAuthProvider;
+            return packageManagerClient.HasAuthProvider;
         }
 
         private void PublishNewPackageVersion(bool isTestMode)
@@ -208,7 +214,7 @@ namespace Dynamo.ViewModels
 
         private bool CanPublishNewPackageVersion()
         {
-            return dynamoViewModel.Model.PackageManagerClient.HasAuthProvider;
+            return packageManagerClient.HasAuthProvider;
         }
 
         private void PublishNewPackage(bool isTestMode)
@@ -222,7 +228,7 @@ namespace Dynamo.ViewModels
 
         private bool CanPublishNewPackage()
         {
-            return dynamoViewModel.Model.PackageManagerClient.HasAuthProvider;
+            return packageManagerClient.HasAuthProvider;
         }
 
         private void GetLatestVersion()

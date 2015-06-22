@@ -31,7 +31,8 @@ namespace Dynamo.Models
         protected virtual void OpenFileImpl(OpenFileCommand command)
         {
             string xmlFilePath = command.XmlFilePath;
-            OpenFileFromPath(xmlFilePath);
+            bool forceManualMode = command.ForceManualExecutionMode;
+            OpenFileFromPath(xmlFilePath, forceManualMode);
 
             //clear the clipboard to avoid copying between dyns
             //ClipBoard.Clear();
@@ -77,7 +78,7 @@ namespace Dynamo.Models
 
             // legacy command, hold on to your butts
             var name = command.Name;
-            var nodeId = command.NodeId;
+            var nodeId = command.ModelGuid;
 
             // find nodes with of the same type with the same GUID
             var query = CurrentWorkspace.Nodes.Where(n => n.GUID.Equals(nodeId) && n.Name.Equals(name));
@@ -141,14 +142,14 @@ namespace Dynamo.Models
                 command.X,
                 command.Y,
                 command.NoteText,
-                command.NodeId);
+                command.ModelGuid);
 
             CurrentWorkspace.RecordCreatedModel(noteModel);
         }
 
         void CreateAnnotationImpl(CreateAnnotationCommand command)
         {
-            AnnotationModel annotationModel = currentWorkspace.AddAnnotation(command.AnnotationText, command.AnnotationId);
+            AnnotationModel annotationModel = currentWorkspace.AddAnnotation(command.AnnotationText, command.ModelGuid);
             
             CurrentWorkspace.RecordCreatedModel(annotationModel);
         }
@@ -162,26 +163,29 @@ namespace Dynamo.Models
                 return;
             }
 
-            ModelBase model = CurrentWorkspace.GetModelInternal(command.ModelGuid);
-
-            if (false == model.IsSelected)
+            foreach (var guid in command.ModelGuids)
             {
-                if (!command.Modifiers.HasFlag(ModifierKeys.Shift))
-                    DynamoSelection.Instance.ClearSelection();
+                ModelBase model = CurrentWorkspace.GetModelInternal(guid);
 
-                if (!DynamoSelection.Instance.Selection.Contains(model))
-                    DynamoSelection.Instance.Selection.Add(model);
-            }
-            else
-            {
-                if (command.Modifiers.HasFlag(ModifierKeys.Shift))
-                    DynamoSelection.Instance.Selection.Remove(model);
+                if (!model.IsSelected)
+                {
+                    if (!command.Modifiers.HasFlag(ModifierKeys.Shift) && command.ModelGuids.Count() == 1)
+                        DynamoSelection.Instance.ClearSelection();
+
+                    if (!DynamoSelection.Instance.Selection.Contains(model))
+                        DynamoSelection.Instance.Selection.Add(model);
+                }
+                else
+                {
+                    if (command.Modifiers.HasFlag(ModifierKeys.Shift))
+                        DynamoSelection.Instance.Selection.Remove(model);
+                }
             }
         }
 
         void MakeConnectionImpl(MakeConnectionCommand command)
         {
-            Guid nodeId = command.NodeId;
+            Guid nodeId = command.ModelGuid;
 
             switch (command.ConnectionMode)
             {
@@ -202,6 +206,7 @@ namespace Dynamo.Models
         void BeginConnection(Guid nodeId, int portIndex, PortType portType)
         {
             bool isInPort = portType == PortType.Input;
+            activeStartPort = null;
 
             var node = CurrentWorkspace.GetModelInternal(nodeId) as NodeModel;
             if (node == null)
@@ -281,17 +286,37 @@ namespace Dynamo.Models
         void DeleteModelImpl(DeleteModelCommand command)
         {
             var modelsToDelete = new List<ModelBase>();
-            if (command.ModelGuid != Guid.Empty)
-            {
-                modelsToDelete.Add(CurrentWorkspace.GetModelInternal(command.ModelGuid));
-            }
-            else
+            if (command.ModelGuid == Guid.Empty)
             {
                 // When nothing is specified then it means all selected models.
                 modelsToDelete.AddRange(DynamoSelection.Instance.Selection.OfType<ModelBase>());
             }
+            else
+            {
+                modelsToDelete.AddRange(command.ModelGuids.Select(guid => CurrentWorkspace.GetModelInternal(guid)));
+            }
 
             DeleteModelInternal(modelsToDelete);
+        }
+
+        void UngroupModelImpl(UngroupModelCommand command)
+        {
+            if (command.ModelGuid == Guid.Empty)
+                return;
+
+            var modelsToUngroup = command.ModelGuids.Select(guid => CurrentWorkspace.GetModelInternal(guid)).ToList();
+
+            UngroupModel(modelsToUngroup);
+        }
+
+        void AddToGroupImpl(AddModelToGroupCommand command)
+        {
+            if (command.ModelGuid == Guid.Empty)
+                return;
+
+            var modelsToGroup = command.ModelGuids.Select(guid => CurrentWorkspace.GetModelInternal(guid)).ToList();
+
+            AddToGroup(modelsToGroup);
         }
 
         void UndoRedoImpl(UndoRedoCommand command)
@@ -309,26 +334,25 @@ namespace Dynamo.Models
 
         void SendModelEventImpl(ModelEventCommand command)
         {
-            CurrentWorkspace.SendModelEvent(command.ModelGuid, command.EventName);
+            foreach (var guid in command.ModelGuids)
+            {
+                CurrentWorkspace.SendModelEvent(guid, command.EventName);
+            }
         }
 
         void UpdateModelValueImpl(UpdateModelValueCommand command)
         {
-            WorkspaceModel targetWorkspace  = CurrentWorkspace;
-            if (!command.WorkspaceGuid.Equals(System.Guid.Empty))
+            WorkspaceModel targetWorkspace = CurrentWorkspace;
+            if (!command.WorkspaceGuid.Equals(Guid.Empty))
                 targetWorkspace = Workspaces.FirstOrDefault(w => w.Guid.Equals(command.WorkspaceGuid));
 
             targetWorkspace.UpdateModelValue(command.ModelGuids,
                 command.Name, command.Value);
         }
 
-        [Obsolete("Node to Code not enabled, API subject to change.")]
         private void ConvertNodesToCodeImpl(ConvertNodesToCodeCommand command)
         {
-            CurrentWorkspace.ConvertNodesToCodeInternal(
-                command.NodeId,
-                EngineController,
-                DebugSettings.VerboseLogging);
+            CurrentWorkspace.ConvertNodesToCodeInternal(EngineController);
 
             CurrentWorkspace.HasUnsavedChanges = true;
         }
@@ -339,7 +363,7 @@ namespace Dynamo.Models
                 command.Name,
                 command.Category,
                 command.Description, 
-                functionId: command.NodeId);
+                command.ModelGuid);
 
             AddWorkspace(workspace);
             CurrentWorkspace = workspace;
@@ -351,18 +375,20 @@ namespace Dynamo.Models
             CurrentWorkspace = Workspaces.ElementAt(command.WorkspaceModelIndex);
         }
 
-        void CreatePresetStateImpl(CreatePresetStateFromSelectionCommand command)
+        void CreatePresetStateImpl(AddPresetCommand command)
         {
-            this.CurrentWorkspace.CreatePresetStateFromSelection(command.PresetStateName,command.PresetStateDescription,command.SelectedNodesIDs);
+            this.CurrentWorkspace.AddPreset(command.PresetStateName,command.PresetStateDescription,command.ModelGuids);
         }
-        void SetWorkSpaceToStateImpl(SetWorkSpaceToStateCommand command)
+        void SetWorkSpaceToStateImpl(ApplyPresetCommand command)
         {
             var workspaceToSet = this.Workspaces.Where(x => x.Guid == command.WorkSpaceID).First();
-            var state = workspaceToSet.PresetsCollection.DesignStates.Where(x => x.Guid == command.StateID).First();
+            if (workspaceToSet == null)
+            {
+                return;
+            }
+            var state = workspaceToSet.Presets.Where(x => x.Guid == command.StateID).FirstOrDefault();
 
-            //TODO check if either of these are null, if we cant find the state by GUID lookup try name
-
-            workspaceToSet.SetWorkspaceToState (state);
+            workspaceToSet.ApplyPreset (state);
         }
 
     }

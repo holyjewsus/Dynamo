@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
-using System.Xml.Linq;
 
 using Dynamo.Interfaces;
 using Dynamo.Library;
 using Dynamo.Utilities;
-using DynamoUtilities;
 
 using ProtoCore.AST.AssociativeAST;
 using ProtoCore.BuildData;
@@ -18,10 +14,10 @@ using ProtoCore.DSASM;
 using ProtoCore.Utils;
 using ProtoFFI;
 
-using RestSharp;
 
 using Operator = ProtoCore.DSASM.Operator;
 using ProtoCore;
+using ProtoCore.Namespace;
 
 namespace Dynamo.DSEngine
 {
@@ -40,7 +36,12 @@ namespace Dynamo.DSEngine
         private readonly List<string> importedLibraries = new List<string>();
 
         private readonly IPathManager pathManager;
-        public readonly ProtoCore.Core LibraryManagementCore;
+        public ProtoCore.Core LibraryManagementCore{get; private set;}
+        private ProtoCore.Core liveRunnerCore = null;
+        public void SetLiveCore(ProtoCore.Core core)
+        {
+            liveRunnerCore = core;
+        }
 
         private class UpgradeHint
         {
@@ -60,6 +61,20 @@ namespace Dynamo.DSEngine
 
         private readonly Dictionary<string, UpgradeHint> priorNameHints =
             new Dictionary<string, UpgradeHint>();
+
+        /// <summary>
+        /// Copy properties from the liveCore
+        /// The properties to copy are only those used by the library core
+        /// </summary>
+        public void UpdateLibraryCoreData()
+        {
+            // If a liverunner core is provided, sync the library core data
+            if (liveRunnerCore != null)
+            {
+                LibraryManagementCore.ProcTable = new ProtoCore.DSASM.ProcedureTable(liveRunnerCore.ProcTable);
+                LibraryManagementCore.ClassTable = new ProtoCore.DSASM.ClassTable(liveRunnerCore.ClassTable);
+            }
+        }
 
         public LibraryServices(ProtoCore.Core libraryManagementCore, IPathManager pathManager)
         {
@@ -377,6 +392,7 @@ namespace Dynamo.DSEngine
 
                 CompilerUtils.TryLoadAssemblyIntoCore(LibraryManagementCore, library);
 
+
                 if (LibraryManagementCore.BuildStatus.ErrorCount > 0)
                 {
                     string errorMessage = string.Format(Properties.Resources.LibraryBuildError, library);
@@ -410,7 +426,11 @@ namespace Dynamo.DSEngine
                 OnLibraryLoadFailed(new LibraryLoadFailedEventArgs(library, e.Message));
                 return false;
             }
+
             OnLibraryLoaded(new LibraryLoadedEventArgs(library));
+
+            // After a library is loaded, update the library core data with the liveRunner core data
+            UpdateLibraryCoreData();
             return true;
         }
 
@@ -605,7 +625,8 @@ namespace Dynamo.DSEngine
                                                                 PathManager = pathManager,
                                                                 ReturnType = method.returntype,
                                                                 FunctionType = FunctionType.GenericFunction,
-                                                                IsVisibleInLibrary = visibleInLibrary
+                                                                IsVisibleInLibrary = visibleInLibrary,
+                                                                IsBuiltIn = true
                                                             });
 
             AddBuiltinFunctions(functions);
@@ -644,14 +665,16 @@ namespace Dynamo.DSEngine
                     FunctionName = op,
                     Parameters = args,
                     PathManager = pathManager,
-                    FunctionType = FunctionType.GenericFunction
+                    FunctionType = FunctionType.GenericFunction,
+                    IsBuiltIn = true
                 }))
                 .Concat(new FunctionDescriptor(new FunctionDescriptorParams
                 {
                     FunctionName = Op.GetUnaryOpFunction(UnaryOperator.Not),
                     Parameters = GetUnaryFuncArgs(),
                     PathManager = pathManager,
-                    FunctionType = FunctionType.GenericFunction
+                    FunctionType = FunctionType.GenericFunction,
+                    IsBuiltIn = true
                 }).AsSingleton());
 
             AddBuiltinFunctions(functions);
@@ -793,7 +816,11 @@ namespace Dynamo.DSEngine
                             defaultArgumentNode = binaryExpr.RightNode;
                         }
                     }
-
+                    if (defaultArgumentNode != null)
+                    {
+                        var rewriter = new ElementRewriter(LibraryManagementCore.ClassTable, LibraryManagementCore.BuildStatus.LogSymbolConflictWarning);
+                        defaultArgumentNode = defaultArgumentNode.Accept(rewriter);
+                    }
                     return new TypedParameter(arg.Name, argType, defaultArgumentNode);
                 }).ToList();
 
@@ -819,7 +846,8 @@ namespace Dynamo.DSEngine
                 PathManager = pathManager,
                 IsVarArg = proc.isVarArg,
                 ObsoleteMsg = obsoleteMessage,
-                CanUpdatePeriodically = canUpdatePeriodically
+                CanUpdatePeriodically = canUpdatePeriodically,
+                IsBuiltIn = pathManager.PreloadedLibraries.Contains(library)
             });
 
             AddImportedFunctions(library, new[] { function });

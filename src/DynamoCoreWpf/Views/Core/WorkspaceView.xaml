@@ -6,6 +6,7 @@
              xmlns:controls="clr-namespace:Dynamo.Controls"
              xmlns:ui="clr-namespace:Dynamo.UI.Controls"
              xmlns:views="clr-namespace:Dynamo.Views"
+             xmlns:viewmodels="clr-namespace:Dynamo.ViewModels;assembly=DynamoCoreWpf"
              xmlns:p="clr-namespace:Dynamo.Wpf.Properties"
              mc:Ignorable="d"
              d:DesignHeight="300"
@@ -15,12 +16,83 @@
              MouseMove="OnMouseMove"
              KeyDown="WorkspaceView_KeyDown"
              KeyUp="WorkspaceView_KeyUp"
-             IsHitTestVisible="{Binding IsCurrentSpace}">
+             IsHitTestVisible="{Binding IsCurrentSpace}"
+             AllowDrop="True"
+             Drop="OnWorkspaceDrop">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type ContextMenu}"
+               x:Key="WorkspaceContextMenuStyle">
+            <Setter Property="SnapsToDevicePixels"
+                    Value="True" />
+            <Setter Property="OverridesDefaultStyle"
+                    Value="True" />
+            <Setter Property="Grid.IsSharedSizeScope"
+                    Value="true" />
+            <Setter Property="HasDropShadow"
+                    Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <StackPanel Margin="8,0,8,8"
+                                    Name="ContextMenuPanel"
+                                    Height="{Binding ElementName=MenuItems, Path=ActualHeight, 
+                                                     Converter={StaticResource WorkspaceContextMenuHeightConverter}}">
+                            <ui:InCanvasSearchControl DataContext="{Binding InCanvasSearchViewModel}"
+                                                      Width="{Binding ElementName=ContextMenuPanel, Path=ActualWidth}" />
+                            <Border BorderThickness="1"
+                                    Name="MenuItems"
+                                    Background="White"
+                                    BorderBrush="#bbbbbb"
+                                    Padding="0,3,0,3"
+                                    CornerRadius="4">
+                                <StackPanel IsItemsHost="True"
+                                            KeyboardNavigation.DirectionalNavigation="Cycle" />
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="20"
+                                                      ShadowDepth="0"
+                                                      Opacity="0.7" />
+                                </Border.Effect>
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="Visibility"
+                                                Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=InCanvasSearchViewModel.SearchRootCategories.Count}"
+                                                         Value="0">
+                                                <Setter Property="Visibility"
+                                                        Value="Visible" />
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding Path=InCanvasSearchViewModel.CurrentMode,
+                                                                           Converter={StaticResource LibraryViewModeToBoolConverter}}"
+                                                         Value="True">
+                                                <Setter Property="Visibility"
+                                                        Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                            </Border>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <EventSetter Event="Opened"
+                         Handler="OnContextMenuOpened"/>
+            <EventSetter Event="PreviewKeyDown"
+                         Handler="OnInCanvasSearchContextMenuKeyDown" />
+            <EventSetter Event="PreviewMouseUp"
+                         Handler="OnInCanvasSearchContextMenuMouseUp" />
+            <EventSetter Event="PreviewMouseDown"
+                         Handler="OnInCanvasSearchContextMenuMouseDown" />
+        </Style>
+    </UserControl.Resources>
 
     <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
         <Canvas Name="outerCanvas"
-                ClipToBounds="True">
+                ClipToBounds="True"
+                PreviewMouseDown="OnCanvasClicked">
             <Canvas.IsHitTestVisible>
                 <Binding Path="DataContext.ShouldBeHitTestVisible"
                          RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type TabControl}}" />
@@ -92,7 +164,68 @@
             </controls:ZoomBorder>
 
             <Canvas.ContextMenu>
-                <ContextMenu>
+                <ContextMenu Style="{StaticResource WorkspaceContextMenuStyle}">
+                    <MenuItem Name="WorkspaceLacingMenu"
+                              Header="{x:Static p:Resources.ContextMenuLacing}">
+                        <MenuItem IsCheckable="True"
+                                  Command="{Binding Path=SetArgumentLacingCommand}"
+                                  CommandParameter="Shortest"
+                                  Header="{x:Static p:Resources.ContextMenuLacingShortest}">
+                            <MenuItem.IsChecked>
+                                <Binding Path="SelectionArgumentLacing"
+                                         Mode="OneWay"
+                                         Converter="{StaticResource EnumToBoolConverter}"
+                                         ConverterParameter="Shortest" />
+                            </MenuItem.IsChecked>
+                        </MenuItem>
+                        <MenuItem IsCheckable="True"
+                                  Command="{Binding Path=SetArgumentLacingCommand}"
+                                  CommandParameter="Longest"
+                                  Header="{x:Static p:Resources.ContextMenuLacingLongest}">
+                            <MenuItem.IsChecked>
+                                <Binding Path="SelectionArgumentLacing"
+                                         Mode="OneWay"
+                                         Converter="{StaticResource EnumToBoolConverter}"
+                                         ConverterParameter="Longest" />
+                            </MenuItem.IsChecked>
+                        </MenuItem>
+                        <MenuItem IsCheckable="True"
+                                  Command="{Binding Path=SetArgumentLacingCommand}"
+                                  CommandParameter="CrossProduct"
+                                  Header="{x:Static p:Resources.ContextMenuLacingCrossProduct}">
+                            <MenuItem.IsChecked>
+                                <Binding Path="SelectionArgumentLacing"
+                                         Mode="OneWay"
+                                         Converter="{StaticResource EnumToBoolConverter}"
+                                         ConverterParameter="CrossProduct" />
+                            </MenuItem.IsChecked>
+                        </MenuItem>
+                    </MenuItem>
+
+
+                    <MenuItem IsEnabled="{Binding Path=HasSelection}"
+                              Header="{x:Static  p:Resources.ContextMenuShowAllGeometry}"
+                              Command="{Binding Path=ShowHideAllGeometryPreviewCommand}"
+                              CommandParameter="true"
+                              Visibility="{Binding Path=AnyNodeVisible, Converter={StaticResource InverseBoolToVisibilityCollapsedConverter}}"/>
+
+                    <MenuItem IsEnabled="{Binding Path=HasSelection}"
+                              Header="{x:Static p:Resources.ContextMenuHideAllGeometry}"
+                              Command="{Binding Path=ShowHideAllGeometryPreviewCommand}"
+                              CommandParameter="false"
+                              Visibility="{Binding Path=AnyNodeVisible, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"/>
+
+                    <MenuItem IsEnabled="{Binding Path=HasSelection}"
+                              Header="{x:Static  p:Resources.ContextMenuShowUpstreamPreview}"
+                              Command="{Binding Path=ShowHideAllUpstreamPreviewCommand}"
+                              CommandParameter="true"
+                              Visibility="{Binding Path=AnyNodeUpstreamVisible, Converter={StaticResource InverseBoolToVisibilityCollapsedConverter}}" />
+
+                    <MenuItem IsEnabled="{Binding Path=HasSelection}"
+                              Header="{x:Static p:Resources.ContextMenuHideUpstreamPreview}"
+                              Command="{Binding Path=ShowHideAllUpstreamPreviewCommand}"
+                              CommandParameter="false"
+                              Visibility="{Binding Path=AnyNodeUpstreamVisible, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}" />
 
                     <MenuItem  Header="{x:Static p:Resources.DynamoViewEditMenuAlignSelection}"
                                Name="Align">
@@ -124,12 +257,14 @@
 
                     <MenuItem  Header="{x:Static p:Resources.ContextMenuNodesFromSelection}"
                                Command="{Binding NodeFromSelectionCommand}" />
-                    <MenuItem Header="Create State From Selection"
-                              Command="{Binding DynamoViewModel.ShowNewDesignOptionDialogCommand}" />
-                    <!--
+
+                    <MenuItem  Header="{x:Static p:Resources.DynamoViewEditMenuCreatePreset}"
+                              Command="{Binding DynamoViewModel.ShowNewPresetsDialogCommand}" />
+
                     <MenuItem  Header="{x:Static p:Resources.ContextMenuNodeToCode}"
-                               Command="{Binding NodeToCodeCommand}" />
-                    -->
+                               Command="{Binding NodeToCodeCommand}" 
+                               Visibility="{Binding Path=CanRunNodeToCode, Converter={StaticResource BooleanToVisibilityCollapsedConverter}}"/>
+
                     <MenuItem  Header="{x:Static p:Resources.ContextCreateGroupFromSelection}"                                 
                                Command="{Binding DynamoViewModel.AddAnnotationCommand}" />
                     
@@ -266,6 +401,15 @@
                 </ui:ImageCheckBox.IsChecked>
             </ui:ImageCheckBox>
         </StackPanel>
+
+        <Popup Name="InCanvasSearchBar"
+               StaysOpen="True"
+               AllowsTransparency="True"
+               IsOpen="False"
+               Placement="MousePoint"
+               DataContext="{Binding InCanvasSearchViewModel}">
+            <ui:InCanvasSearchControl />
+        </Popup>
 
     </Grid>
 </UserControl>

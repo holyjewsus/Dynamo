@@ -388,6 +388,10 @@ namespace ProtoFFI
                 if (isStaticClass && m.GetBaseDefinition().DeclaringType == baseType && baseType == typeof(object))
                     continue;
 
+                // Mono issue: m == m.GetBaseDefinition() for methods from Object class returns True instead of False
+                if (m.DeclaringType == typeof(object) && m == m.GetBaseDefinition())
+                    continue;
+
                 //Don't include overriden methods or generic methods
                 if (m.IsPublic && !m.IsGenericMethod && m == m.GetBaseDefinition())
                 {
@@ -658,7 +662,7 @@ namespace ProtoFFI
             func.Signature = new ProtoCore.AST.AssociativeAST.ArgumentSignatureNode();
             func.ReturnType = CLRModuleType.GetProtoCoreType(f.FieldType, Module);
             func.FunctionBody = null;
-            func.access = ProtoCore.CompilerDefinitions.AccessSpecifier.kPublic;
+            func.access = ProtoCore.CompilerDefinitions.AccessModifier.kPublic;
             func.IsDNI = false;
             func.IsExternLib = true;
             func.ExternLibName = Module.Name;
@@ -711,7 +715,7 @@ namespace ProtoFFI
             }
             func.ReturnType = retype;
             func.FunctionBody = null;
-            func.access = ProtoCore.CompilerDefinitions.AccessSpecifier.kPublic;
+            func.access = ProtoCore.CompilerDefinitions.AccessModifier.kPublic;
             func.IsDNI = false;
             func.IsExternLib = true;
             func.ExternLibName = Module.Name;
@@ -793,7 +797,7 @@ namespace ProtoFFI
             constr.Signature = ParseArgumentSignature(method);
             constr.ReturnType = returnType;
             constr.FunctionBody = null;
-            constr.access = ProtoCore.CompilerDefinitions.AccessSpecifier.kPublic;
+            constr.access = ProtoCore.CompilerDefinitions.AccessModifier.kPublic;
             constr.IsExternLib = true;
             constr.ExternLibName = Module.Name;
 
@@ -841,7 +845,7 @@ namespace ProtoFFI
         {
             ProtoCore.AST.AssociativeAST.VarDeclNode varDeclNode = new ProtoCore.AST.AssociativeAST.VarDeclNode();
             varDeclNode.memregion = ProtoCore.DSASM.MemoryRegion.kMemStack;
-            varDeclNode.access = ProtoCore.CompilerDefinitions.AccessSpecifier.kPublic;
+            varDeclNode.access = ProtoCore.CompilerDefinitions.AccessModifier.kPublic;
 
             ProtoCore.AST.AssociativeAST.IdentifierNode identifierNode = 
                 new ProtoCore.AST.AssociativeAST.IdentifierNode

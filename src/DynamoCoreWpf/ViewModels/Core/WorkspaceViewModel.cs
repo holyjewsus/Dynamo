@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Data;
-using System.Windows.Documents;
-
-using Dynamo.Controls;
 using Dynamo.Models;
 using Dynamo.Selection;
 using Dynamo.UI;
@@ -30,7 +25,9 @@ namespace Dynamo.ViewModels
     public delegate void SelectionEventHandler(object sender, SelectionBoxUpdateArgs e);
     public delegate void ViewModelAdditionEventHandler(object sender, ViewModelEventArgs e);
     public delegate void WorkspacePropertyEditHandler(WorkspaceModel workspace);
-    
+
+    public enum ShowHideFlags { Hide, Show };
+
     public partial class WorkspaceViewModel : ViewModelBase
     {
         #region Properties and Fields
@@ -51,6 +48,12 @@ namespace Dynamo.ViewModels
         public event WorkspacePropertyEditHandler WorkspacePropertyEditRequested;
         public PortViewModel portViewModel { get; set; }
         public bool IsSnapping { get; set; }
+
+        /// <summary>
+        /// ViewModel that is used in InCanvasSearch in context menu and called by Shift+DoubleClick.
+        /// </summary>
+        public SearchViewModel InCanvasSearchViewModel { get; private set; }
+
         /// <summary>
         /// For requesting registered workspace to zoom in center
         /// </summary>
@@ -114,6 +117,16 @@ namespace Dynamo.ViewModels
             // extend this for all workspaces
             if (WorkspacePropertyEditRequested != null)
                 WorkspacePropertyEditRequested(Model);
+        }
+
+        internal event Action<ShowHideFlags> RequestShowInCanvasSearch;
+
+        private void OnRequestShowInCanvasSearch(object param)
+        {
+            var flag = (ShowHideFlags)param;
+
+            if (RequestShowInCanvasSearch != null)
+                RequestShowInCanvasSearch(flag);
         }
 
         /// <summary>
@@ -242,6 +255,14 @@ namespace Dynamo.ViewModels
             get { return stateMachine.IsInIdleState; }
         }
 
+        public bool CanRunNodeToCode
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public Action FindNodesFromElements { get; set; }
 
         public RunSettingsViewModel RunSettingsViewModel { get; protected set; }
@@ -251,6 +272,7 @@ namespace Dynamo.ViewModels
         public WorkspaceViewModel(WorkspaceModel model, DynamoViewModel dynamoViewModel)
         {
             this.DynamoViewModel = dynamoViewModel;
+            this.DynamoViewModel.PropertyChanged += DynamoViewModel_PropertyChanged;
 
             Model = model;
             stateMachine = new StateMachine(this);
@@ -283,7 +305,8 @@ namespace Dynamo.ViewModels
             Model.ConnectorDeleted += Connectors_ConnectorDeleted;
             Model.PropertyChanged += ModelPropertyChanged;
 
-            DynamoSelection.Instance.Selection.CollectionChanged += this.AlignSelectionCanExecuteChanged;
+            DynamoSelection.Instance.Selection.CollectionChanged += 
+                (sender, e) => RefreshViewOnSelectionChange();
 
             // sync collections
             Nodes_CollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, Model.Nodes));
@@ -291,6 +314,9 @@ namespace Dynamo.ViewModels
             Annotations_CollectionChanged(null, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, Model.Annotations));
             foreach (var c in Model.Connectors)
                 Connectors_ConnectorAdded(c);
+
+            InCanvasSearchViewModel = new SearchViewModel(DynamoViewModel);
+            InCanvasSearchViewModel.Visible = true;
         }
 
         void RunSettingsViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -303,9 +329,15 @@ namespace Dynamo.ViewModels
 
         void DynamoViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "ShouldBeHitTestVisible")
+            switch (e.PropertyName)
             {
-                RaisePropertyChanged("ShouldBeHitTestVisible");
+                case "ShouldBeHitTestVisible":
+                    RaisePropertyChanged("ShouldBeHitTestVisible");
+                    break;
+                case "CurrentSpace":
+                    // When workspace is changed(e.g. from home to custom), close InCanvasSearch.
+                    OnRequestShowInCanvasSearch(ShowHideFlags.Hide);
+                    break;
             }
         }
 
@@ -523,8 +555,7 @@ namespace Dynamo.ViewModels
                 throw new ArgumentException(message, "parameters");
             }
 
-            Guid nodeID = Guid.NewGuid();
-            var command = new DynamoModel.ConvertNodesToCodeCommand(nodeID);
+            var command = new DynamoModel.ConvertNodesToCodeCommand();
             this.DynamoViewModel.ExecuteCommand(command);
         }
 
@@ -792,6 +823,51 @@ namespace Dynamo.ViewModels
             return DynamoSelection.Instance.Selection.Count > 1;
         }
 
+        private void ShowHideAllGeometryPreview(object parameter)
+        {
+            var modelGuids = DynamoSelection.Instance.Selection.
+                OfType<NodeModel>().Select(n => n.GUID);
+
+            if (!modelGuids.Any())
+                return;
+
+            var command = new DynamoModel.UpdateModelValueCommand(Guid.Empty,
+                modelGuids, "IsVisible", (string) parameter);
+
+            DynamoViewModel.Model.ExecuteCommand(command);
+            RefreshViewOnSelectionChange();
+        }
+
+        private void ShowHideAllUpstreamPreview(object parameter)
+        {
+            var modelGuids = DynamoSelection.Instance.Selection.
+                OfType<NodeModel>().Select(n => n.GUID);
+
+            if (!modelGuids.Any())
+                return;
+
+            var command = new DynamoModel.UpdateModelValueCommand(Guid.Empty,
+                modelGuids, "IsUpstreamVisible", (string) parameter);
+
+            DynamoViewModel.Model.ExecuteCommand(command);
+            RefreshViewOnSelectionChange();
+        }
+
+        private void SetArgumentLacing(object parameter)
+        {
+            var modelGuids = DynamoSelection.Instance.Selection.
+                OfType<NodeModel>().Select(n => n.GUID);
+
+            if (!modelGuids.Any())
+                return;
+
+            var command = new DynamoModel.UpdateModelValueCommand(Guid.Empty,
+                modelGuids, "ArgumentLacing", (string) parameter);
+
+            DynamoViewModel.Model.ExecuteCommand(command);
+            RaisePropertyChanged("SelectionArgumentLacing");
+        }
+
         private void Hide(object parameters)
         {
             // Closing of custom workspaces will simply close those workspaces,
@@ -858,6 +934,7 @@ namespace Dynamo.ViewModels
         private void AlignSelectionCanExecuteChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             AlignSelectedCommand.RaiseCanExecuteChanged();
+
         }
 
         private static bool CanCreateNodeFromSelection(object parameter)
@@ -1081,6 +1158,18 @@ namespace Dynamo.ViewModels
         private static bool CanUnPauseVisualizationManagerUpdates(object parameter)
         {
             return true;
+        }
+
+        private void RefreshViewOnSelectionChange()
+        {
+            AlignSelectedCommand.RaiseCanExecuteChanged();
+            ShowHideAllUpstreamPreviewCommand.RaiseCanExecuteChanged();
+            ShowHideAllGeometryPreviewCommand.RaiseCanExecuteChanged();
+            SetArgumentLacingCommand.RaiseCanExecuteChanged();
+            RaisePropertyChanged("HasSelection");
+            RaisePropertyChanged("AnyNodeVisible");
+            RaisePropertyChanged("AnyNodeUpstreamVisible");
+            RaisePropertyChanged("SelectionArgumentLacing");
         }
     }
 

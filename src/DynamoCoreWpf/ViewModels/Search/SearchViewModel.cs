@@ -63,6 +63,12 @@ namespace Dynamo.ViewModels
         public int MaxNumSearchResults { get; set; }
 
         /// <summary>
+        /// Position, where canvas was clicked. 
+        /// After node will be called, it will be created at the same place.
+        /// </summary>
+        public Point InCanvasSearchPosition; 
+
+        /// <summary>
         ///     Indicates whether the node browser is visible or not
         /// </summary>
         private bool browserVisibility = true;
@@ -192,9 +198,9 @@ namespace Dynamo.ViewModels
 
         #region Initialization
 
-        internal SearchViewModel(DynamoViewModel dynamoViewModel, NodeSearchModel model)
+        internal SearchViewModel(DynamoViewModel dynamoViewModel)
         {
-            Model = model;
+            Model = dynamoViewModel.Model.SearchModel;
             this.dynamoViewModel = dynamoViewModel;
 
             IPathManager pathManager = null;
@@ -206,6 +212,12 @@ namespace Dynamo.ViewModels
             MaxNumSearchResults = 15;
 
             InitializeCore();
+        }
+
+        // Just for tests.
+        internal SearchViewModel(NodeSearchModel model)
+        {
+            Model = model;
         }
 
         private void InitializeCore()
@@ -228,6 +240,7 @@ namespace Dynamo.ViewModels
                 InsertEntry(MakeNodeSearchElementVM(entry), entry.Categories);
                 RaisePropertyChanged("BrowserRootCategories");
             };
+            Model.EntryUpdated += UpdateEntry;
             Model.EntryRemoved += RemoveEntry;
 
             if (dynamoViewModel != null)
@@ -278,7 +291,7 @@ namespace Dynamo.ViewModels
         {
             foreach (var item in tree)
             {
-                var classes = item.SubCategories.Where(cat => cat.SubCategories.Count == 0).ToList();
+                var classes = item.SubCategories.Where(cat => cat.IsClassButton).ToList();
                 foreach (var item2 in classes)
                     item.SubCategories.Remove(item2);
 
@@ -306,6 +319,27 @@ namespace Dynamo.ViewModels
             }
         }
 
+        internal void UpdateEntry(NodeSearchElement entry)
+        {
+            var rootNode = libraryRoot;
+            foreach (var categoryName in entry.Categories)
+            {
+                var tempNode = rootNode.SubCategories.FirstOrDefault(item => item.Name == categoryName);
+                // Root node can be null, if there is classes-viewmodel between updated entry and current category.
+                if (tempNode == null)
+                {
+                    // Get classes.
+                    var classes = rootNode.SubCategories.FirstOrDefault();
+                    // Search in classes.
+                    tempNode = classes.SubCategories.FirstOrDefault(item => item.Name == categoryName);
+                }
+
+                rootNode = tempNode;
+            }
+            var entryVM = rootNode.Entries.FirstOrDefault(foundEntryVM => foundEntryVM.Name == entry.Name);
+            entryVM.Model = entry;
+        }
+
         internal void RemoveEntry(NodeSearchElement entry)
         {
             var branch = GetTreeBranchToNode(libraryRoot, entry);
@@ -327,7 +361,7 @@ namespace Dynamo.ViewModels
                 parent.Items.Remove(target);
 
                 // Check to see if all items under "parent" are removed, leaving behind only one 
-                // entry that is "ClassInformationViewModel" (a class used to show StandardPanel).
+                // entry that is "ClassInformationViewModel" (a class used to show ClassInformationView).
                 // If that is the case, remove the "ClassInformationViewModel" at the same time.
                 if (parent.Items.Count == 1 && parent.Items[0] is ClassInformationViewModel)
                     parent.Items.RemoveAt(0);
@@ -474,7 +508,7 @@ namespace Dynamo.ViewModels
                     // New category should be added to existing ClassesNodeCategoryViewModel.
                     // Make notice: ClassesNodeCategoryViewModel is always first item in 
                     // all subcategories.
-                    if (nameStack.Count == 0 && target.SubCategories.Count > 0 &&
+                    if (nameStack.Count == 0 && !target.IsClassButton &&
                         target.SubCategories[0] is ClassesNodeCategoryViewModel)
                     {
                         target.SubCategories[0].SubCategories.Add(newTarget);
@@ -491,7 +525,7 @@ namespace Dynamo.ViewModels
                         if (targetClass.SubCategories.Remove(target))
                             targetClass.Parent.SubCategories.Add(target);
                         // Delete empty classes container.
-                        if (targetClass.SubCategories.Count == 0)
+                        if (targetClass.IsClassButton)
                             targetClass.Parent.SubCategories.RemoveAt(0);
 
                         targetClass.Dispose();
@@ -601,7 +635,7 @@ namespace Dynamo.ViewModels
 
         private void SearchViewModelRequestBitmapSource(IconRequestEventArgs e)
         {
-            var warehouse = iconServices.GetForAssembly(e.IconAssembly);
+            var warehouse = iconServices.GetForAssembly(e.IconAssembly, e.UseAdditionalResolutionPaths);
             ImageSource icon = null;
             if (warehouse != null)
                 icon = warehouse.LoadIconInternal(e.IconFullPath);
@@ -656,6 +690,7 @@ namespace Dynamo.ViewModels
             RaisePropertyChanged("SearchRootCategories");
 
             SearchResults = new ObservableCollection<NodeSearchElementViewModel>(foundNodes);
+            RaisePropertyChanged("SearchResults");
         }
 
 
@@ -676,7 +711,7 @@ namespace Dynamo.ViewModels
 
         private IEnumerable<NodeSearchElementViewModel> Search(string search, int maxNumSearchResults)
         {
-            var foundNodes = Model.Search(search).Take(maxNumSearchResults);
+            var foundNodes = Model.Search(search);
 
             ClearSearchCategories();
             PopulateSearchCategories(foundNodes);
@@ -708,9 +743,6 @@ namespace Dynamo.ViewModels
                 UpdateTopResult(searchRootCategories.FirstOrDefault().MemberGroups.FirstOrDefault());
             else
                 UpdateTopResult(null);
-
-            // Order found categories by name.
-            searchRootCategories = new ObservableCollection<SearchCategory>(searchRootCategories.OrderBy(x => x.Name));
 
             SortSearchCategoriesChildren();
         }
@@ -764,7 +796,7 @@ namespace Dynamo.ViewModels
                 newTarget = target.SubCategories.FirstOrDefault(c => c.Name == currentCategory);
                 if (newTarget == null)
                 {
-                    if (!isCheckedForClassesCategory && target.SubCategories.Count > 0 &&
+                    if (!isCheckedForClassesCategory && !target.IsClassButton &&
                         target.SubCategories[0] is ClassesNodeCategoryViewModel)
                     {
                         isCheckedForClassesCategory = true;
@@ -893,9 +925,12 @@ namespace Dynamo.ViewModels
             //SearchText = SearchResults[SelectedIndex].Model.Name;
         }
 
-        public void OnSearchElementClicked(NodeModel nodeModel)
+        public void OnSearchElementClicked(NodeModel nodeModel, Point position)
         {
-            dynamoViewModel.ExecuteCommand(new DynamoModel.CreateNodeCommand(nodeModel, 0, 0, true, true));
+            bool useDeafultPosition = position.X == 0 && position.Y == 0;
+
+            dynamoViewModel.ExecuteCommand(new DynamoModel.CreateNodeCommand(
+                nodeModel, position.X, position.Y, useDeafultPosition, true));
         }
         #endregion
 

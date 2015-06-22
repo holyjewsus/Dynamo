@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Dynamo.Wpf.Views.Preview.Watch3DSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             Width="Auto" Height="Auto">
+    <Grid Background="Gray" Width="Auto" Height="Auto">
+        <StackPanel Margin="5">
+            <Label Content="Key Light:"/>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Azimuth:"/>
+                <TextBox Width="50" Text="{Binding LightAzimuthDegrees, Mode=TwoWay}"/>
+                <Label Content="Elevation:"/>
+                <TextBox Width="50" Text="{Binding LightElevationDegrees, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel>
+                <Label Content="Test Selection:"/>
+                <Button Content="Select" Command="{Binding TestSelectionCommand}"></Button>
+            </StackPanel>
+        </StackPanel>
+        
+    </Grid>
+</UserControl>

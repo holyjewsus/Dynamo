@@ -13,7 +13,7 @@ namespace ProtoCore.DSASM
     {
         public string name { get; set; }
         public SymbolTable symbols { get; set; }
-        public List<AST.AssociativeAST.BinaryExpressionNode> defaultArgExprList { get; set; } 
+        public List<AST.AssociativeAST.AssociativeNode> defaultArgExprList { get; set; } 
         public ProcedureTable vtable { get; set; }
         public int size { get; set; }
         public int rank { get; set; }
@@ -45,7 +45,7 @@ namespace ProtoCore.DSASM
             disposeMethod = null;
             rank = ProtoCore.DSASM.Constants.kDefaultClassRank;
             symbols = new SymbolTable("classscope", 0);
-            defaultArgExprList = new List<AST.AssociativeAST.BinaryExpressionNode>();
+            defaultArgExprList = new List<AST.AssociativeAST.AssociativeNode>();
             classId = (int)PrimitiveType.kInvalidType;
 
             // Jun TODO: how significant is runtime index for class procedures?
@@ -59,6 +59,34 @@ namespace ProtoCore.DSASM
             coerceTypes.Add((int)ProtoCore.PrimitiveType.kTypeVar, (int)ProtoCore.DSASM.ProcedureDistance.kCoerceScore);
             coerceTypes.Add((int)ProtoCore.PrimitiveType.kTypeArray, (int)ProtoCore.DSASM.ProcedureDistance.kCoerceScore);
             coerceTypes.Add((int)ProtoCore.PrimitiveType.kTypeNull, (int)ProtoCore.DSASM.ProcedureDistance.kCoerceScore);
+        }
+
+        public ClassNode(ClassNode rhs)
+        {
+            IsImportedClass = rhs.IsImportedClass;
+            name = rhs.name;
+            size = rhs.size;
+            hasCachedDisposeMethod = rhs.hasCachedDisposeMethod;
+            disposeMethod = rhs.disposeMethod;
+            rank = rhs.rank;
+            symbols = new SymbolTable("classscope", 0);
+            if (rhs.symbols != null)
+            {
+                symbols = new SymbolTable(rhs.symbols.ScopeName, rhs.symbols.RuntimeIndex);
+            }
+            defaultArgExprList = new List<AST.AssociativeAST.AssociativeNode>();
+            classId = rhs.classId;
+
+            int classRuntimProc = ProtoCore.DSASM.Constants.kInvalidIndex;
+            vtable = new ProcedureTable(classRuntimProc);
+            if (rhs.vtable != null)
+            {
+                vtable = new ProcedureTable(rhs.vtable);
+            }
+            baseList = new List<int>(rhs.baseList);
+            ExternLib = rhs.ExternLib;
+            typeSystem = rhs.typeSystem;
+            coerceTypes = new Dictionary<int, int>(rhs.coerceTypes);
         }
 
         public bool ConvertibleTo(int type)
@@ -187,7 +215,7 @@ namespace ProtoCore.DSASM
 
                 if (classScope == ProtoCore.DSASM.Constants.kInvalidIndex)
                 {
-                    isAccessible = (procNode.access == CompilerDefinitions.AccessSpecifier.kPublic);
+                    isAccessible = (procNode.access == CompilerDefinitions.AccessModifier.kPublic);
                 }
                 else if (classScope == myClassIndex) 
                 {
@@ -195,11 +223,11 @@ namespace ProtoCore.DSASM
                 }
                 else if (typeSystem.classTable.ClassNodes[classScope].IsMyBase(myClassIndex))
                 {
-                    isAccessible = (procNode.access != CompilerDefinitions.AccessSpecifier.kPrivate);
+                    isAccessible = (procNode.access != CompilerDefinitions.AccessModifier.kPrivate);
                 }
                 else
                 {
-                    isAccessible = (procNode.access == CompilerDefinitions.AccessSpecifier.kPublic);
+                    isAccessible = (procNode.access == CompilerDefinitions.AccessModifier.kPublic);
                 }
 
                 return procNode;
@@ -422,6 +450,17 @@ namespace ProtoCore.DSASM
 
         public ClassTable()
         {
+        }
+
+        public ClassTable(ClassTable rhs)
+        {
+            classNodes = new List<ClassNode>();
+            for (int n = 0; n < rhs.classNodes.Count; ++n)
+            {
+                classNodes.Add(new ClassNode(rhs.classNodes[n]));
+            }
+
+            symbolTable = new Namespace.SymbolTable(rhs.symbolTable);
         }
 
         public void Reserve(int size)
