@@ -25,6 +25,7 @@ namespace Dynamo.Applications.StartupUtils
 
         public PathResolver(string preloaderLocation, IEnumerable<string> librariesToPreload)
         {
+            Console.WriteLine("about to build path resolver");
             // If a suitable preloader cannot be found on the system, then do 
             // not add invalid path into additional resolution. The default 
             // implementation of IPathManager in Dynamo insists on having valid 
@@ -198,9 +199,12 @@ namespace Dynamo.Applications.StartupUtils
             var geometryFactoryPath = string.Empty;
             var preloaderLocation = string.Empty;
             PreloadShapeManager(ref geometryFactoryPath, ref preloaderLocation);
-
+            Console.WriteLine("preloaded shape manager");
+            Console.WriteLine(geometryFactoryPath);
+            Console.WriteLine(preloaderLocation);
             var config = new DynamoModel.DefaultStartConfiguration()
                   {
+                     
                       PathResolver = new PathResolver(preloaderLocation, librariesToPreload),
                       GeometryFactoryPath = geometryFactoryPath,
                       StartInTestMode = true
@@ -209,7 +213,7 @@ namespace Dynamo.Applications.StartupUtils
             //if we are building a model for CLI mode, then we don't want to start an updateManager
             //for now, building an updatemanager instance requires finding Dynamo install location
             //which if we are running on mac os or *nix will use different logic then SandboxLookup 
-
+            Console.WriteLine("about to construct /load updatemanager");
             UpdateManagerConfiguration umConfig = null;
             if (!CLI)
             {
@@ -218,7 +222,7 @@ namespace Dynamo.Applications.StartupUtils
                 config.UpdateManager = new Dynamo.UpdateManager.UpdateManager(umConfig);
                 config.StartInTestMode = false;
             }
-
+            Console.WriteLine("about to start model from config, we should try, if we fail, start with no config");
             var model = DynamoModel.Start(config);
             return model;
         }
@@ -251,7 +255,7 @@ namespace Dynamo.Applications.StartupUtils
             {
                 return new List<string> 
                 {
-                //"ProtoGeometry.dll",
+                "ProtoGeometry.dll",
                 //"DSCoreNodes.dll",
                 //"DSIronPython.dll",
                 //"FunctionObject.ds",

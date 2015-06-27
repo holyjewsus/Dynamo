@@ -41,10 +41,18 @@ namespace DynamoCLI
             try
             {
                 var cmdLineArgs = CommandLineArguments.FromArguments(args);
+                Console.WriteLine("command line args built");
+                Console.WriteLine(cmdLineArgs.OpenFilePath);
+                Console.WriteLine(cmdLineArgs.Verbose);
+
                 var locale = Dynamo.Applications.StartupUtils.Locale.SetLocale(cmdLineArgs);
+                Console.WriteLine(locale);
                 var model = Dynamo.Applications.StartupUtils.Preloading.MakeModel(true,Dynamo.Applications.StartupUtils.Preloading.CLILibraries);
+                Console.WriteLine(model.Version);
                 var runner = new CommandLineRunner(model);
+                Console.WriteLine("about to run");
                 runner.Run(cmdLineArgs);
+                Console.WriteLine("run complete");
                 
             }
             catch (Exception e)
