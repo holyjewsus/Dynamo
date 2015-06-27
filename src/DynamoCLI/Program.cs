@@ -68,8 +68,8 @@ namespace DynamoCLI
                 {
                 }
 
-                Debug.WriteLine(e.Message);
-                Debug.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
             }
         }
 
