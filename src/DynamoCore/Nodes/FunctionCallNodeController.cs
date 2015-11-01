@@ -116,16 +116,12 @@ namespace Dynamo.Nodes
 
             //first store the output externally in a variable
             var dictNode = AstFactory.BuildAssignment(AstFactory.BuildIdentifier("dict"+Guid.NewGuid()), rhs);
-            //if the model is a multiout node but only has one out, then don't add the dict as a result
-            if (model.OutPorts.Count > 1 && Definition.ReturnKeys.Any())
-            {
-                
-            }
-
-            else
+            //if the model is not a multiout node, than store the unpacked dictionary on the node
+            if (Definition.ReturnKeys == null && !Definition.ReturnKeys.Any())
             {
                 resultAst.Add(AstFactory.BuildAssignment(model.AstIdentifierForPreview, rhs));
             }
+
 
             var keys = Definition.ReturnKeys ?? Enumerable.Empty<string>();
             resultAst.AddRange(
