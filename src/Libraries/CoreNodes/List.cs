@@ -28,6 +28,12 @@ namespace DSCore
             get { return new ArrayList(); }
         }
 
+        [MultiReturn("somekey")]
+        public static Dictionary<string, object> testmulti(string input)
+        {
+            return new Dictionary<string,object>(){{"somekey",100}};
+        }
+
         /// <summary>
         ///     Creates a new list containing all unique items in the given list.
         /// </summary>

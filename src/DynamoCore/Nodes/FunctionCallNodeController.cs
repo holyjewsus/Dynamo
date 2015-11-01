@@ -113,7 +113,19 @@ namespace Dynamo.Nodes
         /// <param name="resultAst">Result accumulator: add all new output AST to this list.</param>
         protected virtual void AssignIdentifiersForFunctionCall(NodeModel model, AssociativeNode rhs, List<AssociativeNode> resultAst)
         {
-            resultAst.Add(AstFactory.BuildAssignment(model.AstIdentifierForPreview, rhs));
+
+            //first store the output externally in a variable
+            var dictNode = AstFactory.BuildAssignment(AstFactory.BuildIdentifier("dict"+Guid.NewGuid()), rhs);
+            //if the model is a multiout node but only has one out, then don't add the dict as a result
+            if (model.OutPorts.Count > 1 && Definition.ReturnKeys.Any())
+            {
+                
+            }
+
+            else
+            {
+                resultAst.Add(AstFactory.BuildAssignment(model.AstIdentifierForPreview, rhs));
+            }
 
             var keys = Definition.ReturnKeys ?? Enumerable.Empty<string>();
             resultAst.AddRange(
@@ -122,7 +134,7 @@ namespace Dynamo.Nodes
                 let outputIdentifier = outputIdentiferNode.ToString()
                 let getValueCall = AstFactory.BuildFunctionCall(
                     BuiltInMethods.GetMethodName(BuiltInMethods.MethodID.kTryGetValueFromNestedDictionaries),
-                    new List<AssociativeNode> {model.AstIdentifierForPreview, AstFactory.BuildStringNode(item.key)})
+                    new List<AssociativeNode> {dictNode, AstFactory.BuildStringNode(item.key)})
                 select
                 AstFactory.BuildAssignment(outputIdentiferNode, getValueCall));
         }
@@ -139,7 +151,7 @@ namespace Dynamo.Nodes
         {
             AssociativeNode rhs = GetFunctionApplication(model, inputAstNodes);
 
-            if (!model.IsPartiallyApplied || model.OutPortData.Count == 1)
+            if (!model.IsPartiallyApplied)
                 AssignIdentifiersForFunctionCall(model, rhs, resultAst);
             else
                 BuildAstForPartialMultiOutput(model, rhs, resultAst);
