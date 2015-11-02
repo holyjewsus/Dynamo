@@ -34,6 +34,18 @@ namespace DSCore
             return new Dictionary<string,object>(){{"somekey",100}};
         }
 
+        [MultiReturn("somekey","someotherkey")]
+        public static Dictionary<string, object> testmulti2outs(string input)
+        {
+            return new Dictionary<string, object>() { { "somekey", 100},{"someotherkey",200 } };
+        }
+
+        [MultiReturn("somekey", "someotherkey")]
+        public static Dictionary<string, object> testmulti2outs2ins(string input,string input2)
+        {
+            return new Dictionary<string, object>() { { "somekey", 100},{ "someotherkey", 200 } };
+        }
+
         /// <summary>
         ///     Creates a new list containing all unique items in the given list.
         /// </summary>
