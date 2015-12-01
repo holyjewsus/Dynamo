@@ -1801,6 +1801,7 @@ namespace Dynamo.Graph.Nodes
                 RaisePropertyChanged("ArgumentLacing");
                 RaisePropertyChanged("IsVisible");
                 RaisePropertyChanged("IsUpstreamVisible");
+                RaisePropertyChanged("IsFrozen");
                
                 // Notify listeners that the position of the node has changed,
                 // then all connected connectors will also redraw themselves.

@@ -30,13 +30,7 @@ namespace Dynamo.Graph
             if (elNodes.Count == 0)
                 elNodes = xmlDoc.GetElementsByTagName("dynElements");
             XmlNode elNodesList = elNodes[0];
-            var nodes = new List<XmlNode>();
-            foreach (XmlNode node in elNodesList.ChildNodes)
-            {
-                nodes.Add(node);
-            }
-           
-            return from XmlElement elNode in nodes.OrderBy(x=>x.Attributes["x"])
+            return from XmlElement elNode in elNodesList
                    select LoadNodeFromXml(elNode, SaveContext.File, nodeFactory, resolver);
         }
 
@@ -194,6 +188,7 @@ namespace Dynamo.Graph
         {
             var elementResolver = LoadElementResolverFromXml(xmlDoc);
             var nodes = LoadNodesFromXml(xmlDoc, nodeFactory, elementResolver).ToList();
+            nodes.ForEach(x => x.RaisesModificationEvents = false);
             var connectors = LoadConnectorsFromXml(xmlDoc, nodes.ToDictionary(node => node.GUID)).ToList();
             var notes = LoadNotesFromXml(xmlDoc).ToList();
             var annotations = LoadAnnotationsFromXml(xmlDoc, nodes, notes).ToList();

@@ -8,11 +8,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Dynamo.Engine.CodeGeneration;
 using Dynamo.Models;
-using System.Windows; 
+using System.Windows;
 using Dynamo.Graph;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Nodes.CustomNodes;
-using Dynamo.Graph.Workspaces; 
+using Dynamo.Graph.Workspaces;
 using Dynamo.Selection;
 using Dynamo.Wpf.ViewModels.Core;
 using DynCmd = Dynamo.ViewModels.DynamoViewModel;
@@ -32,7 +32,7 @@ namespace Dynamo.ViewModels
         #endregion
 
         #region events
-        public event SnapInputEventHandler SnapInputEvent;        
+        public event SnapInputEventHandler SnapInputEvent;
         #endregion
 
         #region private members
@@ -171,10 +171,10 @@ namespace Dynamo.ViewModels
         }
 
         public double ZIndex
-         {
+        {
             get { return zIndex; }
             set { zIndex = value; RaisePropertyChanged("ZIndex"); }
-         }
+        }
 
         /// <summary>
         /// Input grid's enabled state is now bound to this property
@@ -339,15 +339,17 @@ namespace Dynamo.ViewModels
         public bool IsFrozen
         {
             get
-            {              
+            {
+                RaisePropertyChanged("IsFrozenExplicitly");
+                RaisePropertyChanged("CanToggleFrozen");
                 return NodeModel.IsFrozen;
             }
             set
             {
-                NodeModel.IsFrozen = value;                    
+                NodeModel.IsFrozen = value;
             }
         }
-        
+
         /// <summary>
         /// A flag indicating whether the node is set to freeze by the user.
         /// </summary>
@@ -357,16 +359,16 @@ namespace Dynamo.ViewModels
         public bool IsFrozenExplicitly
         {
             get
-            {    
+            {
                 //if the node is freeze by the user, then always
                 //check the Freeze property     
                 if (this.NodeLogic.isFrozenExplicitly)
-                {                   
+                {
                     return true;
                 }
-                
+
                 return false;
-            }             
+            }
         }
 
         /// <summary>
@@ -393,17 +395,17 @@ namespace Dynamo.ViewModels
                 {
                     return false;
                 }
-                               
+
                 //if the node is set to freeze by the user     
                 // then enable the Freeze property
-                if (this.NodeLogic.isFrozenExplicitly)                   
+                if (this.NodeLogic.isFrozenExplicitly)
                 {
                     return true;
                 }
-                                
+
                 return false;
             }
-            
+
         }
 
         #endregion
@@ -444,9 +446,9 @@ namespace Dynamo.ViewModels
         {
             WorkspaceViewModel = workspaceViewModel;
             DynamoViewModel = workspaceViewModel.DynamoViewModel;
-           
+
             nodeLogic = logic;
-            
+
             //respond to collection changed events to add
             //and remove port model views
             logic.InPorts.CollectionChanged += inports_collectionChanged;
@@ -473,11 +475,11 @@ namespace Dynamo.ViewModels
 
             ShowExecutionPreview = workspaceViewModel.DynamoViewModel.ShowRunPreview;
             IsNodeAddedRecently = true;
-            DynamoSelection.Instance.Selection.CollectionChanged += SelectionOnCollectionChanged;             
+            DynamoSelection.Instance.Selection.CollectionChanged += SelectionOnCollectionChanged;
         }
- 
+
         public NodeViewModel(WorkspaceViewModel workspaceViewModel, NodeModel logic, Size preferredSize)
-            :this(workspaceViewModel, logic)
+            : this(workspaceViewModel, logic)
         {
             // preferredSize is set when a node needs to have a fixed size
             PreferredSize = preferredSize;
@@ -485,12 +487,12 @@ namespace Dynamo.ViewModels
 
         private void SelectionOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-           CreateGroupCommand.RaiseCanExecuteChanged();
-           AddToGroupCommand.RaiseCanExecuteChanged();
-           UngroupCommand.RaiseCanExecuteChanged();
-           ToggleIsFrozenCommand.RaiseCanExecuteChanged();
-           RaisePropertyChanged("IsFrozenExplicitly");
-           RaisePropertyChanged("CanToggleFrozen");
+            CreateGroupCommand.RaiseCanExecuteChanged();
+            AddToGroupCommand.RaiseCanExecuteChanged();
+            UngroupCommand.RaiseCanExecuteChanged();
+            ToggleIsFrozenCommand.RaiseCanExecuteChanged();
+            RaisePropertyChanged("IsFrozenExplicitly");
+            RaisePropertyChanged("CanToggleFrozen");
         }
 
         void DebugSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -546,18 +548,18 @@ namespace Dynamo.ViewModels
         {
             foreach (var item in nodeLogic.InPorts)
             {
-                PortViewModel inportViewModel = SubscribePortEvents(item);               
+                PortViewModel inportViewModel = SubscribePortEvents(item);
                 InPorts.Add(inportViewModel);
             }
 
             foreach (var item in nodeLogic.OutPorts)
             {
-                PortViewModel outportViewModel = SubscribePortEvents(item);              
+                PortViewModel outportViewModel = SubscribePortEvents(item);
                 OutPorts.Add(outportViewModel);
             }
         }
 
-        
+
         /// <summary>
         /// Respond to property changes on the model
         /// </summary>
@@ -598,7 +600,7 @@ namespace Dynamo.ViewModels
                     break;
                 case "IsSelected":
                     RaisePropertyChanged("IsSelected");
-                    RaisePropertyChanged("PreviewState");                    
+                    RaisePropertyChanged("PreviewState");
                     break;
                 case "State":
                     RaisePropertyChanged("State");
@@ -632,11 +634,14 @@ namespace Dynamo.ViewModels
                     break;
                 case "ForceReExecuteOfNode":
                     RaisePropertyChanged("WillForceReExecuteOfNode");
-                    break;             
+                    break;
                 case "CanUpdatePeriodically":
                     RaisePropertyChanged("EnablePeriodicUpdate");
                     RaisePropertyChanged("PeriodicUpdateVisibility");
-                    break;                 
+                    break;
+                case "IsFrozen":
+                    RaiseFrozenPropertyChanged();
+                    break;
             }
         }
 
@@ -718,7 +723,7 @@ namespace Dynamo.ViewModels
         }
 
         private void SetLacingType(object param)
-        {           
+        {
             DynamoViewModel.ExecuteCommand(
               new DynamoModel.UpdateModelValueCommand(
                     Guid.Empty, NodeModel.GUID, "ArgumentLacing", param.ToString()));
@@ -735,7 +740,7 @@ namespace Dynamo.ViewModels
         private void ViewCustomNodeWorkspace(object parameter)
         {
             var f = (nodeLogic as Function);
-            if(f!= null)
+            if (f != null)
                 DynamoViewModel.FocusCustomNodeWorkspace(f.Definition.FunctionId);
         }
 
@@ -773,8 +778,8 @@ namespace Dynamo.ViewModels
                 //create a new port view model
                 foreach (var item in e.NewItems)
                 {
-                    PortViewModel inportViewModel = SubscribePortEvents(item as PortModel);                   
-                    InPorts.Add(inportViewModel);                    
+                    PortViewModel inportViewModel = SubscribePortEvents(item as PortModel);
+                    InPorts.Add(inportViewModel);
                 }
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
@@ -783,7 +788,7 @@ namespace Dynamo.ViewModels
                 //is the one passed in
                 foreach (var item in e.OldItems)
                 {
-                    PortViewModel portToRemove = UnSubscribePortEvents(InPorts.ToList().First(x => x.PortModel == item)); ;                   
+                    PortViewModel portToRemove = UnSubscribePortEvents(InPorts.ToList().First(x => x.PortModel == item)); ;
                     InPorts.Remove(portToRemove);
                 }
             }
@@ -799,7 +804,7 @@ namespace Dynamo.ViewModels
                 //create a new port view model
                 foreach (var item in e.NewItems)
                 {
-                    PortViewModel outportViewModel = SubscribePortEvents(item as PortModel);                    
+                    PortViewModel outportViewModel = SubscribePortEvents(item as PortModel);
                     OutPorts.Add(outportViewModel);
                 }
             }
@@ -823,7 +828,7 @@ namespace Dynamo.ViewModels
         /// <returns></returns>
         private PortViewModel SubscribePortEvents(PortModel item)
         {
-            PortViewModel portViewModel = new PortViewModel(this, item);            
+            PortViewModel portViewModel = new PortViewModel(this, item);
             portViewModel.MouseEnter += OnRectangleMouseEnter;
             portViewModel.MouseLeave += OnRectangleMouseLeave;
             portViewModel.MouseLeftButtonDown += OnMouseLeftButtonDown;
@@ -1052,16 +1057,18 @@ namespace Dynamo.ViewModels
                 node.IsFrozen = !node.IsFrozen;
             }
 
-            RaisePropertyChanged("IsFrozenExplicitly");
-            RaisePropertyChanged("CanToggleFrozen");
-            RaisePropertyChanged("IsFrozen");
-
-            RaisePropertyChangedOnDownStreamNodes();
+            RaiseFrozenPropertyChanged();
         }
 
         private bool CanToggleIsFrozen(object parameters)
         {
             return DynamoSelection.Instance.Selection.Count() == 1;
+        }
+
+        private void RaiseFrozenPropertyChanged()
+        {
+            RaisePropertyChanged("IsFrozen");
+            RaisePropertyChangedOnDownStreamNodes();
         }
 
         /// <summary>
@@ -1104,7 +1111,7 @@ namespace Dynamo.ViewModels
         }
 
         private bool CanAddToGroup(object parameters)
-        {          
+        {
             var groups = WorkspaceViewModel.Model.Annotations;
             if (groups.Any(x => x.IsSelected))
             {
@@ -1136,6 +1143,6 @@ namespace Dynamo.ViewModels
             Model = model;
             Handled = false;
         }
-    }   
+    }
 }
 
