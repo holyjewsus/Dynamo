@@ -1889,6 +1889,8 @@ namespace Dynamo.Models
 
             _workspaces.Add(workspace);
             OnWorkspaceAdded(workspace);
+            //TODO attach to event
+            workspace.Nodes.ToList().ForEach(x => x.RaisesModificationEvents = true);
         }
         enum ButtonId
         {

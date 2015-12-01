@@ -663,12 +663,14 @@ namespace Dynamo.Graph.Nodes
                 {                   
                     MarkDownStreamNodesAsModified(this);                    
                     OnNodeModified();
+                    ComputeUpstreamNodes();
                 }
                 //If the node is frozen, then do not execute the graph immediately.
                 // delete the node and its downstream nodes from AST.
                 else
                 {
                     OnUpdateASTCollection();
+                    ComputeUpstreamNodes();
                 }                   
             }
         }
@@ -814,11 +816,10 @@ namespace Dynamo.Graph.Nodes
         public virtual void OnNodeModified(bool forceExecute = false)
         {
 
-            ComputeUpstreamNodes();
-
             if (!RaisesModificationEvents || IsFrozen)
                 return;
 
+            ComputeUpstreamNodes();
             MarkNodeAsModified(forceExecute);           
             var handler = Modified;
             if (handler != null) handler(this);
