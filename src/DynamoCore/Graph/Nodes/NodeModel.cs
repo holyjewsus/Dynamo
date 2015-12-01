@@ -73,6 +73,8 @@ namespace Dynamo.Graph.Nodes
         /// </summary>
         public virtual string CreationName { get { return this.Name; } }
 
+        public List<NodeModel> Upstream = new List<NodeModel>();
+
         #endregion
 
         #region events
@@ -616,6 +618,27 @@ namespace Dynamo.Graph.Nodes
              return ProtoCore.TypeSystem.BuildPrimitiveTypeObject(ProtoCore.PrimitiveType.kTypeVar);
         }
 
+        public void ComputeUpstreamNodes()
+        {
+            this.Upstream = new List<NodeModel>();
+            //if a node has been modified, update the upstream nodes
+            //for all downstream of that node
+            var inpNodes = this.InputNodes.Values;
+            foreach (var inputnode in inpNodes.Where(x => x != null))
+            {
+                this.Upstream.Add(inputnode.Item2);
+                this.Upstream.AddRange(inputnode.Item2.Upstream);
+            }
+            this.Upstream = this.Upstream.Distinct().ToList();
+
+            foreach (var output in this.OutPorts.Where(y => y != null))
+            {
+                if (output.Connectors.Any())
+                {
+                    output.Connectors.First().End.Owner.ComputeUpstreamNodes();
+                }
+            }
+        }
       
         /// <summary>
         /// A flag indicating whether the node is frozen.
@@ -646,6 +669,7 @@ namespace Dynamo.Graph.Nodes
                 else
                 {
                     OnUpdateASTCollection();
+                    OnNodeModified();
                 }                   
             }
         }
@@ -659,9 +683,7 @@ namespace Dynamo.Graph.Nodes
         /// <returns></returns>
         internal bool IsAnyUpstreamFrozen()
         {
-            bool ret = false;
-            List<NodeModel> nodes = new List<NodeModel>();
-            return CheckIfAnyUpstreamNodeIsFrozen(this, nodes, ref ret);
+           return Upstream.Any(x => x.isFrozenExplicitly == true);
         }
 
         private bool CheckIfAnyUpstreamNodeIsFrozen(NodeModel node, List<NodeModel> nodes, ref bool ret)
@@ -792,6 +814,9 @@ namespace Dynamo.Graph.Nodes
         public event Action<NodeModel> Modified;
         public virtual void OnNodeModified(bool forceExecute = false)
         {
+
+            ComputeUpstreamNodes();
+
             if (!RaisesModificationEvents || IsFrozen)
                 return;
 

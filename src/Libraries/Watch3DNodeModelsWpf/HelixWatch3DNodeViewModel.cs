@@ -79,7 +79,7 @@ namespace Watch3DNodeModelsWpf
             // Don't bother with node property changes 
             // that are not in this branch.
 
-            if (!updatedNode.IsUpstreamOf(watchNode))
+            if (!updatedNode.Upstream.Contains(watchNode))
                 return;
 
             switch (e.PropertyName)
