@@ -73,7 +73,7 @@ namespace Dynamo.Graph.Nodes
         /// </summary>
         public virtual string CreationName { get { return this.Name; } }
 
-        public List<NodeModel> Upstream = new List<NodeModel>();
+        public HashSet<NodeModel> Upstream = new HashSet<NodeModel>();
 
         #endregion
 
@@ -620,22 +620,35 @@ namespace Dynamo.Graph.Nodes
 
         public void ComputeUpstreamNodes()
         {
-            this.Upstream = new List<NodeModel>();
-            //if a node has been modified, update the upstream nodes
-            //for all downstream of that node
+            //first compute upstream nodes for this node
+            this.Upstream = new HashSet<NodeModel>();
             var inpNodes = this.InputNodes.Values;
+
             foreach (var inputnode in inpNodes.Where(x => x != null))
             {
                 this.Upstream.Add(inputnode.Item2);
-                this.Upstream.AddRange(inputnode.Item2.Upstream);
-            }
-            this.Upstream = this.Upstream.Distinct().ToList();
-
-            foreach (var output in this.OutPorts.Where(y => y != null))
-            {
-                if (output.Connectors.Any())
+                foreach (var upstreamNode in inputnode.Item2.Upstream)
                 {
-                    output.Connectors.First().End.Owner.ComputeUpstreamNodes();
+                    this.Upstream.Add(upstreamNode);
+                }
+            }
+
+            //then for downstream nodes
+            HashSet<NodeModel> downStreamNodes = new HashSet<NodeModel>();
+            this.GetDownstreamNodes(this, downStreamNodes);
+
+            foreach (var downstreamNode in downStreamNodes)
+            {
+                downstreamNode.Upstream = new HashSet<NodeModel>();
+                var currentinpNodes = downstreamNode.InputNodes.Values;
+
+                foreach (var inputnode in currentinpNodes.Where(x => x != null))
+                {
+                    downstreamNode.Upstream.Add(inputnode.Item2);
+                    foreach (var upstreamNode in inputnode.Item2.Upstream)
+                    {
+                        downstreamNode.Upstream.Add(upstreamNode);
+                    }
                 }
             }
         }
