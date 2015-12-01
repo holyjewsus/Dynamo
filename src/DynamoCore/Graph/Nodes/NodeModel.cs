@@ -669,7 +669,6 @@ namespace Dynamo.Graph.Nodes
                 else
                 {
                     OnUpdateASTCollection();
-                    OnNodeModified();
                 }                   
             }
         }

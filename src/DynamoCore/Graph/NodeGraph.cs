@@ -30,7 +30,13 @@ namespace Dynamo.Graph
             if (elNodes.Count == 0)
                 elNodes = xmlDoc.GetElementsByTagName("dynElements");
             XmlNode elNodesList = elNodes[0];
-            return from XmlElement elNode in elNodesList.ChildNodes
+            var nodes = new List<XmlNode>();
+            foreach (XmlNode node in elNodesList.ChildNodes)
+            {
+                nodes.Add(node);
+            }
+           
+            return from XmlElement elNode in nodes.OrderBy(x=>x.Attributes["x"])
                    select LoadNodeFromXml(elNode, SaveContext.File, nodeFactory, resolver);
         }
 
