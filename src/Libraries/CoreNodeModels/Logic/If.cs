@@ -7,6 +7,7 @@ using ProtoCore.AST.AssociativeAST;
 using ProtoCore.DSASM;
 using VMDataBridge;
 using System;
+using Autodesk.DesignScript.Runtime;
 
 namespace CoreNodeModels.Logic
 {
@@ -80,14 +81,14 @@ namespace CoreNodeModels.Logic
     [IsDesignScriptCompatible]
     public class SetCurrentState : NodeModel
     {
-        public static string currentState { get ; private set; }
+        public static string currentState { get; private set; }
         public Action Executed;
 
         public SetCurrentState()
         {
             Executed = new Action(() => { Console.WriteLine("executed"); });
             InPortData.Add(new PortData("state", "the name of the state to switch to"));
-          
+
             RegisterAllPorts();
             CanUpdatePeriodically = true;
 
@@ -104,7 +105,7 @@ namespace CoreNodeModels.Logic
             };
         }
 
-       public override void Dispose()
+        public override void Dispose()
         {
             base.Dispose();
             DataBridge.Instance.UnregisterCallback(GUID.ToString());
@@ -115,13 +116,14 @@ namespace CoreNodeModels.Logic
             base.OnBuilt();
             DataBridge.Instance.RegisterCallback(GUID.ToString(), DataBridgeCallback);
         }
-        
+
         private void DataBridgeCallback(object data)
         {
             SetCurrentState.currentState = data as string;
             this.Executed();
         }
     }
+
 
     [NodeName("OnCurrentState")]
     [NodeCategory("FiniteStateMachine")]
@@ -144,39 +146,28 @@ namespace CoreNodeModels.Logic
         {
             return new AssociativeNode[]
             {
-                 AstFactory.BuildAssignment(
-                    AstFactory.BuildIdentifier(AstIdentifierBase + "_dummy"),
-                    DataBridge.GenerateBridgeDataAst(GUID.ToString(), AstFactory.BuildExprList(inputAstNodes)))
+                //return the data if we execute
+                  AstFactory.BuildAssignment(
+                    GetAstIdentifierForOutputIndex(0),inputAstNodes[1])
 
             };
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-            DataBridge.Instance.UnregisterCallback(GUID.ToString());
-        }
-
-        protected override void OnBuilt()
-        {
-            base.OnBuilt();
-            DataBridge.Instance.RegisterCallback(GUID.ToString(), DataBridgeCallback);
-        }
-
-        private void DataBridgeCallback(object data)
+      //called from the UI thread using the engineMirror... may need to be scheduled...
+        public void SetFreezeState(string thisState)
         {
             try
             {
                 //if the current state is the same as the one referenced by this node then pass the value out
                 //else return nothing...
-                var dataAsList = data as ArrayList;
-                if (SetCurrentState.currentState == dataAsList[0] as string)
+                if (SetCurrentState.currentState == thisState)
                 {
-                    output = dataAsList[1];
+                    this.IsFrozen = false;
                 }
                 else
                 {
-                    output = AstFactory.BuildNullNode();
+                    //freeze the node now.
+                    this.IsFrozen = true;
                 }
             }
             catch

@@ -29,23 +29,31 @@
             {
                 dynamoViewModel = nodeView.ViewModel.DynamoViewModel;
                 this.model = model;
-                // model.Executed += onExecuted;
+                model.Executed += onExecuted;
             }
 
             private void onExecuted()
             {
                 //find all nodes of type OnState
                 var nodesToExecute = dynamoViewModel.CurrentSpace.Nodes.OfType<OnCurrentState>();
-                //schedule these nodes to be executed by calling onNodeModified with force Re-execute on them
-                //potentially on all their upstream node as well...?
-                //then call a graph update.
-                nodesToExecute.ToList().ForEach(x => x.OnNodeModified(true));
-                //if (nodesToExecute.ToList().Count > 0)
-                //{
-                //    dynamoViewModel.Model.Scheduler.ScheduleForExecution(new UpdateGraphAsyncTask(dynamoViewModel.Model.Scheduler, true));
-
-                //}
+                var engine = dynamoViewModel.EngineController;
+                var stateString = "default";
+                nodesToExecute.ToList().ForEach(node => {
+                    if (node.HasConnectedInput(0))
+                    {
+                        var stateNode = node.InPorts[0].Connectors[0].Start.Owner;
+                        var stateIndex = node.InPorts[0].Connectors[0].Start.Index;
+                        var startId = stateNode.GetAstIdentifierForOutputIndex(stateIndex).Name;
+                        var stateMirror = engine.GetMirror(startId);
+                        stateString = stateMirror.GetData().Data as string;
+                    }
+                    var copy = stateString;
+                    var task = new DelegateBasedAsyncTask(dynamoViewModel.Model.Scheduler, () => { node.SetFreezeState(copy); });
+                    task.scheduler.ScheduleForExecution(task);
+                } );
+               
             }
         }
+
     }
 }
