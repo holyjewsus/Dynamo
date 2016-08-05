@@ -75,6 +75,7 @@
     <Compile Include="NodeViewCustomizations\ConverterNodeViewCustomization.cs" />
     <Compile Include="NodeViewCustomizations\DateTime.cs" />
     <Compile Include="NodeViewCustomizations\DoubleInput.cs" />
+    <Compile Include="NodeViewCustomizations\StateMachineCustomizations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NodeViewCustomizations\BoolSelector.cs" />
     <Compile Include="NodeViewCustomizations\ColorRange.cs" />
