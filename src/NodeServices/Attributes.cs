@@ -260,7 +260,7 @@ namespace Autodesk.DesignScript.Runtime
         }
     }
 
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property |AttributeTargets.Constructor)]
     public class CanUpdatePeriodicallyAttribute : Attribute
     {
         public CanUpdatePeriodicallyAttribute(bool canUpdatePeriodically)

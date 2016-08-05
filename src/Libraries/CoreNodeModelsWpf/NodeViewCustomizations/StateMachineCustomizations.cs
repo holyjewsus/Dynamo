@@ -11,6 +11,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Scheduler;
+    using System;
 
     namespace CoreNodeModelsWpf.Nodes
     {
@@ -28,7 +29,7 @@
             {
                 dynamoViewModel = nodeView.ViewModel.DynamoViewModel;
                 this.model = model;
-                model.Executed += onExecuted;
+                // model.Executed += onExecuted;
             }
 
             private void onExecuted()
