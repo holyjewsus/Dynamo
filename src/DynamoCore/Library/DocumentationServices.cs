@@ -34,6 +34,7 @@ namespace Dynamo.Engine
             var documentationPath = "";
             if (ResolveForAssembly(assemblyPath, pathManager, ref documentationPath))
             {
+                Console.WriteLine("we are trying to load documentation from" + documentationPath);
                 var c = XmlReader.Create(documentationPath);
                 _triedPaths.Add(assemblyPath, true);
                 _cached.Add(assemblyPath, c);

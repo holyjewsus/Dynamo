@@ -300,7 +300,7 @@ namespace Dynamo.Engine
         {
             if (reader == null)
                 return;
-
+            Console.WriteLine("loading data from " + assemblyName);
             MemberDocumentNode currentDocNode = null;
             XmlTagType currentTag = XmlTagType.None;
             string currentParamName = String.Empty;

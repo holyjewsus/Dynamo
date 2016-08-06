@@ -287,7 +287,7 @@ namespace Dynamo.Core
                 var dynamoCorePath = Assembly.GetExecutingAssembly().Location;
                 corePath = Path.GetDirectoryName(dynamoCorePath);
             }
-
+            Console.WriteLine("DynamoCorePath is at:" + corePath);
             dynamoCoreDir = corePath;
             var assemblyPath = Path.Combine(dynamoCoreDir, "DynamoCore.dll");
             if (!PathHelper.IsValidPath(assemblyPath))
