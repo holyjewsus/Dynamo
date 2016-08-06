@@ -63,6 +63,7 @@ namespace ProtoCore.DSASM
 
         public ClassNode(ClassNode rhs)
         {
+            System.Console.WriteLine("constructing classnode for"+ rhs.Name);
             IsImportedClass = rhs.IsImportedClass;
             Name = rhs.Name;
             Size = rhs.Size;

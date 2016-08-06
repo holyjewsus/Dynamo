@@ -126,6 +126,7 @@ namespace Dynamo.Engine
             FunctionDescriptor function,
             XmlReader xml )
         {
+            Console.WriteLine("get member documentation for" + function.FunctionName + " in " + function.Assembly);
             //customNodeDefinitions typedParameters don't have functionDescriptors
             if (function == null)
             {

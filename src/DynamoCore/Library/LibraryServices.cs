@@ -826,6 +826,7 @@ namespace Dynamo.Engine
                 if (classNode.IsImportedClass && !string.IsNullOrEmpty(classNode.ExternLib))
                 {
                     string library = Path.GetFileName(classNode.ExternLib);
+                    Console.Write("attempting to populate from" + library + "from a node with external lib name: " + classNode.ExternLib);
                     ImportClass(library, classNode);
                     librariesThatNeedMigrationLoading.Add(library);
                 }
