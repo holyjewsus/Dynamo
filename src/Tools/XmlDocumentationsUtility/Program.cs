@@ -110,7 +110,7 @@ namespace XmlDocumentationsUtility
 
                 if(dirInfo.Name == "en-US")
                 {
-                    string[] xmlFiles = Directory.GetFiles(directory, "*.xml");
+                    string[] xmlFiles = Directory.GetFiles(directory, "*.xml").Union(Directory.GetFiles(directory,"*.XML")).ToArray();
 
                     foreach (string xmlPath in xmlFiles)
                     {
