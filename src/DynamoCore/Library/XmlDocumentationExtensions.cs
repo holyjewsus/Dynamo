@@ -173,7 +173,10 @@ namespace Dynamo.Engine
             var documentNode = GetMemberDocumentNode(function, xml);
 
             if (documentNode == null)
+            {
+                Console.WriteLine("doc node" + function.FunctionName + "was null :(");
                 return String.Empty;
+            }
             if (property.Equals(DocumentElementType.Description) && !documentNode.Parameters.ContainsKey(paramName))
                 return String.Empty;
 
@@ -377,9 +380,11 @@ namespace Dynamo.Engine
                                 break;
                             case XmlTagType.SearchTags:
                                 currentDocNode.SearchTags = reader.Value.CleanUpDocString();
+                                Console.WriteLine("current tag is" + currentDocNode.SearchTags);
                                 break;
                             case XmlTagType.SearchTagWeights:
                                 currentDocNode.SearchTagWeights = reader.Value.CleanUpDocString();
+                                Console.WriteLine("current tag is" + currentDocNode.SearchTagWeights);
                                 break;
                         }
 
