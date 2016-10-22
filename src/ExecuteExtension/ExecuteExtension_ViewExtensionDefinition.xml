@@ -1,0 +1,4 @@
+<ViewExtensionDefinition>
+  <AssemblyPath>..\ExecuteExtension.dll</AssemblyPath>
+  <TypeName>Dynamo.ExecuteExtension.ExecuteExtension</TypeName>
+</ViewExtensionDefinition>
