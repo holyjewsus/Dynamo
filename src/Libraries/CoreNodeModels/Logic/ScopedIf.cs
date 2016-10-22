@@ -13,6 +13,123 @@ using LanguageBlockNode = ProtoCore.AST.AssociativeAST.LanguageBlockNode;
 
 namespace CoreNodeModels.Logic
 {
+
+
+    [NodeName("ForLoopTest"), NodeCategory(BuiltinNodeCategories.LOGIC)]
+    [IsDesignScriptCompatible]
+    public class ForLoopTest : ScopedNodeModel
+    {
+        private List<NodeModel> innerNodes = new List<NodeModel>();
+
+
+        public ForLoopTest()
+        {
+            InPortData.Add(new PortData("BeforeLoop", ""));
+            InPortData.Add(new PortData("nodesToLoop", ""));
+            InPortData.Add(new PortData("iterationsList", ""));
+            OutPortData.Add(new PortData("result", ""));
+        
+            RegisterAllPorts();
+
+        }
+        protected override bool IsScopedInport(int portIndex)
+        {
+            return portIndex != 2;
+        }
+
+        public override IEnumerable<AssociativeNode> BuildOutputAstInScope(List<AssociativeNode> inputAstNodes, bool verboseLogging, AstBuilder builder)
+        {
+
+            var BeforeLoopnodes = GetInScopeNodesForInport(0,false);
+            var BeforeCompiledNodes = builder.CompileToAstNodes(BeforeLoopnodes, CompilationContext.None, true);
+            var BeforeAstNodes = BeforeCompiledNodes.SelectMany(t => t.Item2).ToList();
+
+           
+            //compile the nodes we want to loop over in
+            var loopnodes = GetInScopeNodesForInport(1);
+            var allAstNodes = builder.CompileToAstNodes(loopnodes, CompilationContext.None, true);
+            var astNodes = allAstNodes.SelectMany(t => t.Item2).ToList();
+            //hack which adds output = function(blahblahblah) to the forloop
+            astNodes.Add(
+                AstFactory.BuildAssignment(BeforeAstNodes.Where(x => x.Kind == AstKind.BinaryExpression)
+                .Select(y => (y as BinaryExpressionNode).LeftNode).First(), inputAstNodes[1]));
+
+            var toRemove = new List<AssociativeNode>();
+             foreach(var node in astNodes)
+            {
+               foreach(var other in BeforeAstNodes)
+                {
+                    if(node.ToString() == other.ToString())
+                    {
+                        toRemove.Add(node);
+                    }
+                }
+            }
+
+            toRemove.ForEach(x => astNodes.Remove(x));
+
+            /*
+            // This function will compile FOR node to the following format:
+            //
+            //    BeforeBody...
+            //     v = [Imperative]
+            //     {
+                       i = 0;
+            //         for (i in 0..iterations)
+                        {
+                        Body...
+                        }
+            //        return output;
+            //     }
+            //
+            */
+
+            //for loopvar in expression
+            var forLoopStatement = new ProtoCore.AST.ImperativeAST.ForLoopNode()
+            {
+                Body = astNodes.Select(x => x.ToImperativeAST()).ToList(),
+                LoopVariable = new ProtoCore.AST.AssociativeAST.IdentifierNode("x").ToImperativeNode(),
+                Expression  = inputAstNodes[2].ToImperativeAST()
+
+            };
+
+            // thisVariable = [Imperative]
+            // {
+            //     ...
+            // }
+            var outerBlock = new LanguageBlockNode
+            {
+                codeblock = new LanguageCodeBlock(Language.Imperative),
+                CodeBlockNode = new ProtoCore.AST.ImperativeAST.CodeBlockNode
+                {
+                    Body = new List<ProtoCore.AST.ImperativeAST.ImperativeNode> {
+                        AstFactory.BuildAssignment(new IdentifierNode("x"),AstFactory.BuildIntNode(0)).ToImperativeAST(),
+                        forLoopStatement
+
+                    }
+                    
+                }
+            };
+
+            (outerBlock.CodeBlockNode as ProtoCore.AST.ImperativeAST.CodeBlockNode).Body.InsertRange(0, BeforeAstNodes.Select(x => x.ToImperativeAST()));
+            (outerBlock.CodeBlockNode as ProtoCore.AST.ImperativeAST.CodeBlockNode).Body.Add(
+                AstFactory.BuildReturnStatement(BeforeAstNodes.Where(x => x.Kind == AstKind.BinaryExpression)
+                .Select(y => (y as BinaryExpressionNode).LeftNode).First()).ToImperativeAST());
+
+
+            var thisVariable = GetAstIdentifierForOutputIndex(0);
+            var assignment = AstFactory.BuildAssignment(thisVariable, outerBlock);
+
+            return new AssociativeNode[]
+            {
+                assignment
+            };
+
+        }
+
+    }
+
+
     [NodeName("ScopeIf"), NodeCategory(BuiltinNodeCategories.LOGIC),
      NodeDescription("ScopeIfDescription", typeof(Resources)), IsDesignScriptCompatible]
     [AlsoKnownAs("DSCoreNodesUI.Logic.ScopedIf")]
