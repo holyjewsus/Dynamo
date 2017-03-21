@@ -35,6 +35,7 @@ namespace CoreNodeModels.Input
             {                              
                 dscolor = value;
                 OnNodeModified();
+                RaisePropertyChanged("dsColor");
             }
         }
         /// <summary>
@@ -116,7 +117,7 @@ namespace CoreNodeModels.Input
         /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("Color(Alpha = {3}, Red = {0}, Green = {1}, Blue = {2})", dsColor.Alpha, dsColor.Red, dsColor.Green, dsColor.Blue);
+            return string.Format("Color(Alpha = {0}, Red = {1}, Green = {2}, Blue = {3})", dsColor.Alpha, dsColor.Red, dsColor.Green, dsColor.Blue);
         }
     }
 }

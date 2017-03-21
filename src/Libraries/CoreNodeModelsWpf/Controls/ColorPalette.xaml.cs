@@ -5,6 +5,7 @@ using Dynamo.Graph.Workspaces;
 using Dynamo.Models;
 using Dynamo.UI;
 using Dynamo.ViewModels;
+using System;
 
 namespace CoreNodeModelsWpf.Controls
 
@@ -25,9 +26,8 @@ namespace CoreNodeModelsWpf.Controls
         
         private void On_Change(object sender, System.Windows.RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
-            var undoRecorder = ui.ViewModel.WorkspaceViewModel.Model.UndoRecorder;           
-            WorkspaceModel.RecordModelForModification(nodeModel, undoRecorder);      
+              var undoRecorder = ui.ViewModel.WorkspaceViewModel.Model.UndoRecorder;   
+              WorkspaceModel.RecordModelForModification(nodeModel, undoRecorder);      
         }
-        
     }
 }

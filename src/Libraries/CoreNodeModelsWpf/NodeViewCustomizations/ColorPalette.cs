@@ -26,9 +26,13 @@ namespace CoreNodeModelsWpf.Nodes
             get { return mcolor; }
             set
             {
-                mcolor = value;
-                colorPaletteNode.dsColor = DSColor.ByARGB(mcolor.A, mcolor.R, mcolor.G, mcolor.B);
-                RaisePropertyChanged("MColor");
+                if(mcolor != value)
+                {
+                    mcolor = value;
+                    colorPaletteNode.dsColor = DSColor.ByARGB(mcolor.A, mcolor.R, mcolor.G, mcolor.B);
+                    RaisePropertyChanged("MColor");
+                }
+               
             }
         }
         /// <summary>
@@ -40,10 +44,23 @@ namespace CoreNodeModelsWpf.Nodes
         {
             colorPaletteNode = model;
             mcolor = Color.FromArgb(model.dsColor.Alpha, model.dsColor.Red, model.dsColor.Green, model.dsColor.Blue);
+            model.PropertyChanged += Model_PropertyChanged;
             ColorPaletteUINode = new ColorPaletteUI(model, nodeView);
             nodeView.inputGrid.Children.Add(ColorPaletteUINode);
             ColorPaletteUINode.DataContext = this;
         }
+
+        private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+           if(e.PropertyName == "dsColor")
+            {
+                this.MColor = Color.FromArgb(this.colorPaletteNode.dsColor.Alpha,
+                    this.colorPaletteNode.dsColor.Red,
+                    this.colorPaletteNode.dsColor.Green,
+                    this.colorPaletteNode.dsColor.Blue);
+            }
+        }
+
         /// <summary>
         ///     Dispose.
         /// </summary>
