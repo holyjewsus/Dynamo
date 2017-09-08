@@ -16,10 +16,12 @@ using Dynamo.Tests;
 using NUnit.Framework;
 
 using DoubleSlider = CoreNodeModels.Input.DoubleSlider;
+using Dynamo.Events;
+using Dynamo.Tests.SerializationUtils;
 
 namespace DynamoCoreWpfTests
 {
-    internal class SerializationTests : DynamoViewModelUnitTest
+    internal class XMLSerializationTests : DynamoViewModelUnitTest
     {
         [Test]
         [Category("UnitTests")]
@@ -419,5 +421,95 @@ namespace DynamoCoreWpfTests
             libraries.Add("ProtoGeometry.dll");
             base.GetLibrariesToPreload(libraries);
         }
+    }
+
+    class JSONSerializationTests : DynamoViewModelUnitTest
+    {
+        private TimeSpan lastExecutionDuration = new TimeSpan();
+        private Dictionary<Guid, string> modelsGuidToIdMap = new Dictionary<Guid, string>();
+
+        protected override void GetLibrariesToPreload(List<string> libraries)
+        {
+            libraries.Add("VMDataBridge.dll");
+            libraries.Add("ProtoGeometry.dll");
+            libraries.Add("DSCoreNodes.dll");
+            base.GetLibrariesToPreload(libraries);
+        }
+
+
+        [TestFixtureSetUp]
+        public void FixtureSetup()
+        {
+            ExecutionEvents.GraphPostExecution += ExecutionEvents_GraphPostExecution;
+
+            //Clear Temp directory folders before start of the new serialization test run
+            var tempPath = Path.GetTempPath();
+            var jsonFolder = Path.Combine(tempPath, "json");
+            var jsonNonGuidFolder = Path.Combine(tempPath, "jsonNonGuid");
+
+            //Try and delete all the files from the previous run. 
+            //If there's an error in deleting files, the tests should countinue
+            if (System.IO.Directory.Exists(jsonFolder))
+            {
+                try
+                {
+                    Console.WriteLine("Deleting JSON directory from temp");
+                    System.IO.Directory.Delete(jsonFolder, true);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+
+            if (System.IO.Directory.Exists(jsonNonGuidFolder))
+            {
+                try
+                {
+                    Console.WriteLine("Deleting jsonNonGuid directory from temp");
+                    System.IO.Directory.Delete(jsonNonGuidFolder, true);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
+            ExecutionEvents.GraphPostExecution -= ExecutionEvents_GraphPostExecution;
+        }
+
+        private void ExecutionEvents_GraphPostExecution(Dynamo.Session.IExecutionSession session)
+        {
+            lastExecutionDuration = (TimeSpan)session.GetParameterValue(Dynamo.Session.ParameterKeys.LastExecutionDuration);
+        }
+
+        /// <summary>
+        /// This parameterized test finds all .dyn files in directories within
+        /// the test directory, opens them and executes, then converts them to
+        /// json and executes again, comparing the values from the two runs.
+        /// </summary>
+        /// <param name="filePath">The path to a .dyn file. This parameter is supplied
+        /// by the test framework.</param>
+        [Test, TestCaseSource("FindWorkspaces")]
+        public void SerializationTest(string filePath)
+        {
+            serializationUtils.DoWorkspaceOpenAndCompare(filePath,
+                "json",
+                this.OpenModel,
+                serializationUtils.ConvertCurrentWorkspaceToJsonAndSave,
+                CompareWorkspaces,
+                SaveWorkspaceComparisonData,
+                this.CurrentDynamoModel,
+                this.RunCurrentModel,
+                this.lastExecutionDuration,
+                this.modelsGuidToIdMap,
+                bannedTests);
+        }
+
+
     }
 }

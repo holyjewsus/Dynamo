@@ -11,108 +11,19 @@ using Dynamo.Models;
 using Newtonsoft.Json;
 using Dynamo.Engine;
 using Dynamo.Events;
-using System.Text.RegularExpressions;
 using Dynamo.Utilities;
 using Newtonsoft.Json.Linq;
+using Dynamo.Tests.SerializationUtils;
 
 namespace Dynamo.Tests
 {
-    /* The Serialization tests compare the results of a workspace opened and executed from its
-     * original .dyn format, to one converted to json, deserialized and executed. In the process,
-     * the tests save the following files:
-     *  - xxx.json file representing the serialized version of the workspace to json, where xxx is the
-     *  original .dyn file name.
-     *  - xxx_data.json file containing the cached values of each of the workspaces
-     *  - xxx.ds file containing the Design Script code for the workspace.
-     */
-    [TestFixture, Category("Serialization")]
-    class SerializationTests : DynamoModelTestBase
+    namespace SerializationUtils
     {
-        private TimeSpan lastExecutionDuration = new TimeSpan();
-        private Dictionary<Guid, string> modelsGuidToIdMap = new Dictionary<Guid, string>();
-
-
-        protected override void GetLibrariesToPreload(List<string> libraries)
-        {
-            libraries.Add("VMDataBridge.dll");
-            libraries.Add("ProtoGeometry.dll");
-            libraries.Add("DSCoreNodes.dll");
-            base.GetLibrariesToPreload(libraries);
-        }
-
-        [TestFixtureSetUp]
-        public void FixtureSetup()
-        {
-            ExecutionEvents.GraphPostExecution += ExecutionEvents_GraphPostExecution;
-            
-            //Clear Temp directory folders before start of the new serialization test run
-            var tempPath = Path.GetTempPath();
-            var jsonFolder = Path.Combine(tempPath, "json");
-            var jsonNonGuidFolder = Path.Combine(tempPath, "jsonNonGuid");
-
-            //Try and delete all the files from the previous run. 
-            //If there's an error in deleting files, the tests should countinue
-            if (Directory.Exists(jsonFolder))
-            {
-                try
-                {
-                    Console.WriteLine("Deleting JSON directory from temp");
-                    Directory.Delete(jsonFolder, true);
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-
-            if (Directory.Exists(jsonNonGuidFolder))
-            {
-                try
-                {
-                    Console.WriteLine("Deleting jsonNonGuid directory from temp");
-                    Directory.Delete(jsonNonGuidFolder, true);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-        }
-
-        [TestFixtureTearDown]
-        public void TearDown()
-        {
-            ExecutionEvents.GraphPostExecution -= ExecutionEvents_GraphPostExecution;
-        }
-
-        private void ExecutionEvents_GraphPostExecution(Session.IExecutionSession session)
-        {
-            lastExecutionDuration = (TimeSpan)session.GetParameterValue(Session.ParameterKeys.LastExecutionDuration);
-        }
-
-        internal class PortComparisonData
-        {
-            public string ID { get; set; }
-            public bool UseLevels { get; set; }
-            public bool KeepListStructure { get; set; }
-            public int Level { get; set; }
-            public bool UsingDefaultValue { get; set; }
-
-            public override bool Equals(object obj)
-            {
-                var other = (obj as PortComparisonData);
-                return ID == other.ID &&
-                    other.KeepListStructure == this.KeepListStructure &&
-                    other.Level == this.Level &&
-                    other.UseLevels == this.UseLevels &&
-                    other.UsingDefaultValue == this.UsingDefaultValue;
-            }
-        }
 
         /// <summary>
         /// Caches workspaces data for comparison.
         /// </summary>
-        internal class WorkspaceComparisonData
+        public class WorkspaceComparisonData
         {
             public Guid Guid { get; set; }
             public string Description { get; set; }
@@ -126,6 +37,27 @@ namespace Dynamo.Tests
             public Dictionary<Guid, PortComparisonData> PortDataMap { get; set; }
             public Dictionary<Guid, NodeInputData> InputsMap { get; set; }
             public string DesignScript { get; set; }
+
+            private static object GetDataOfValue(ProtoCore.Mirror.MirrorData value)
+            {
+                if (value.IsCollection)
+                {
+                    return value.GetElements().Select(x => GetDataOfValue(x)).ToList<object>();
+                }
+
+                if (!value.IsPointer)
+                {
+                    var data = value.Data;
+
+                    if (data != null)
+                    {
+                        return data;
+                    }
+                }
+
+                return value.StringData;
+            }
+
 
             public WorkspaceComparisonData(WorkspaceModel workspace, EngineController controller)
             {
@@ -184,24 +116,327 @@ namespace Dynamo.Tests
             }
         }
 
-        private static object GetDataOfValue(ProtoCore.Mirror.MirrorData value)
+        /// <summary>
+        /// port data for comparison.
+        /// </summary>
+        public class PortComparisonData
         {
-            if (value.IsCollection)
+            public string ID { get; set; }
+            public bool UseLevels { get; set; }
+            public bool KeepListStructure { get; set; }
+            public int Level { get; set; }
+            public bool UsingDefaultValue { get; set; }
+
+            public override bool Equals(object obj)
             {
-                return value.GetElements().Select(x => GetDataOfValue(x)).ToList<object>();
+                var other = (obj as PortComparisonData);
+                return ID == other.ID &&
+                    other.KeepListStructure == this.KeepListStructure &&
+                    other.Level == this.Level &&
+                    other.UseLevels == this.UseLevels &&
+                    other.UsingDefaultValue == this.UsingDefaultValue;
+            }
+        }
+
+        /// <summary>
+        /// shared methods for JSON serialization tests
+        /// </summary>
+        public static class serializationUtils
+        {
+            public static void DoWorkspaceOpenAndCompare(string filePath,
+                string dirName,
+                Action<string> openFunction,
+              Func<DynamoModel, string, string> saveFunction,
+              Action<WorkspaceComparisonData, WorkspaceComparisonData> workspaceCompareFunction,
+              Action<WorkspaceComparisonData, string, TimeSpan> workspaceDataSaveFunction,
+              DynamoModel dynamoModel,
+              Action runFunction,
+              TimeSpan lastExecutionDuration,
+              Dictionary<Guid, string> modelsGuidToIdMap = null, List<string> bannedTests = null)
+            {
+
+                //handle defaults
+                if (modelsGuidToIdMap == null)
+                {
+                    modelsGuidToIdMap = new Dictionary<Guid, string>();
+                }
+                if (bannedTests == null)
+                {
+                    bannedTests = new List<string>();
+                }
+
+
+                var openPath = filePath;
+
+                if (bannedTests.Any(t => filePath.Contains(t)))
+                {
+                    Assert.Inconclusive("Skipping test known to kill the test framework...");
+                }
+
+                openFunction(openPath);
+
+                var model = dynamoModel;
+                var ws1 = model.CurrentWorkspace;
+                ws1.Description = "TestDescription";
+
+                var dummyNodes = ws1.Nodes.Where(n => n is DummyNode);
+                if (dummyNodes.Any())
+                {
+                    Assert.Inconclusive("The Workspace contains dummy nodes for: " + string.Join(",", dummyNodes.Select(n => n.Name).ToArray()));
+                }
+
+                var cbnErrorNodes = ws1.Nodes.Where(n => n is CodeBlockNodeModel && n.State == ElementState.Error);
+                if (cbnErrorNodes.Any())
+                {
+                    Assert.Inconclusive("The Workspace contains code block nodes in error state due to which rest " +
+                                        "of the graph will not execute; skipping test ...");
+                }
+
+                if (((HomeWorkspaceModel)ws1).RunSettings.RunType == Models.RunType.Manual)
+                {
+                    runFunction();
+                }
+
+                var wcd1 = new WorkspaceComparisonData(ws1, model.EngineController);
+
+                var dirPath = Path.Combine(Path.GetTempPath(), dirName);
+                if (!Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
+                var fi = new FileInfo(filePath);
+                var filePathBase = dirPath + @"\" + Path.GetFileNameWithoutExtension(fi.Name);
+
+                ConvertCurrentWorkspaceToDesignScriptAndSave(filePathBase, model);
+
+                string json = saveFunction(model, filePathBase);
+
+                workspaceDataSaveFunction(wcd1, filePathBase, lastExecutionDuration);
+
+                lastExecutionDuration = new TimeSpan();
+
+                var ws2 = WorkspaceModel.FromJson(json, model.LibraryServices,
+                    model.EngineController, model.Scheduler, model.NodeFactory, DynamoModel.IsTestMode, false,
+                    model.CustomNodeManager);
+
+                if (ws2 is CustomNodeWorkspaceModel)
+                {
+                    model.AddCustomNodeWorkspace((CustomNodeWorkspaceModel)ws2);
+                }
+
+                foreach (var c in ws2.Connectors)
+                {
+                    Assert.NotNull(c.Start.Owner, "The node is not set for the start of connector " + c.GUID + ". The end node is " + c.End.Owner + ".");
+                    Assert.NotNull(c.End.Owner, "The node is not set for the end of connector " + c.GUID + ". The start node is " + c.Start.Owner + ".");
+                }
+
+                // The following logic is taken from the DynamoModel.Open method.
+                // It assumes a single home workspace model. So, we remove all
+                // others, before adding a new one.
+                if (ws2 is HomeWorkspaceModel)
+                {
+                    var currentHomeSpaces = model.Workspaces.OfType<HomeWorkspaceModel>().ToList();
+                    if (currentHomeSpaces.Any())
+                    {
+                        var end = ws2 is HomeWorkspaceModel ? 0 : 1;
+
+                        for (var i = currentHomeSpaces.Count - 1; i >= end; i--)
+                        {
+                            model.RemoveWorkspace(currentHomeSpaces[i]);
+                        }
+                    }
+
+                    model.AddWorkspace(ws2);
+
+                    var hws = ws2 as HomeWorkspaceModel;
+                    if (hws != null)
+                    {
+                        model.ResetEngine();
+
+                        if (hws.RunSettings.RunType == RunType.Periodic)
+                        {
+                            hws.StartPeriodicEvaluation();
+                        }
+                    }
+
+                    model.CurrentWorkspace = ws2;
+                }
+
+                Assert.NotNull(ws2);
+
+                dummyNodes = ws2.Nodes.Where(n => n is DummyNode);
+                if (dummyNodes.Any())
+                {
+                    Assert.Inconclusive("The Workspace contains dummy nodes for: " + string.Join(",", dummyNodes.Select(n => n.Name).ToArray()));
+                }
+
+                var wcd2 = new WorkspaceComparisonData(ws2, model.EngineController);
+
+                workspaceCompareFunction(wcd1, wcd2);
+
+                var functionNodes = ws2.Nodes.Where(n => n is Function).Cast<Function>();
+                if (functionNodes.Any())
+                {
+                    Assert.True(functionNodes.All(n => model.CustomNodeManager.LoadedDefinitions.Contains(n.Definition)));
+                }
+
+                foreach (var c in ws2.Connectors)
+                {
+                    Assert.NotNull(c.Start.Owner);
+                    Assert.NotNull(c.End.Owner);
+                    Assert.True(ws2.Nodes.Contains(c.Start.Owner));
+                    Assert.True(ws2.Nodes.Contains(c.End.Owner));
+                }
+
+                //assert that the inputs in the saved json file are the same as those we can gather from the 
+                //grah at runtime - because we don't deserialize these directly we check the json itself.
+                var jObject = JObject.Parse(json);
+                var jToken = jObject["Inputs"];
+                var inputs = jToken.ToArray().Select(x => x.ToObject<NodeInputData>()).ToList();
+                var inputs2 = ws1.Nodes.Where(x => x.IsSetAsInput == true && x.InputData != null).Select(input => input.InputData).ToList();
+
+                //inputs2 might come from a WS with non guids, so we need to replace the ids with guids if they exist in the map
+                foreach (var input in inputs2)
+                {
+                    if (modelsGuidToIdMap.ContainsKey(input.Id))
+                    {
+                        input.Id = GuidUtility.Create(GuidUtility.UrlNamespace, modelsGuidToIdMap[input.Id]);
+                    }
+                }
+                Assert.IsTrue(inputs.SequenceEqual(inputs2));
             }
 
-            if (!value.IsPointer)
-            {
-                var data = value.Data;
 
-                if (data != null)
+            private static void ConvertCurrentWorkspaceToDesignScriptAndSave(string filePathBase, DynamoModel dynamoModel)
+            {
+                try
                 {
-                    return data;
+                    var workspace = dynamoModel.CurrentWorkspace;
+                    var libCore = dynamoModel.EngineController.LibraryServices.LibraryManagementCore;
+                    var libraryServices = new LibraryCustomizationServices(dynamoModel.PathManager);
+                    var nameProvider = new NamingProvider(libCore, libraryServices);
+                    var controller = dynamoModel.EngineController;
+                    var resolver = dynamoModel.CurrentWorkspace.ElementResolver;
+                    var namingProvider = new NamingProvider(controller.LibraryServices.LibraryManagementCore, libraryServices);
+
+                    var result = NodeToCodeCompiler.NodeToCode(libCore, workspace.Nodes, workspace.Nodes, namingProvider);
+                    NodeToCodeCompiler.ReplaceWithShortestQualifiedName(
+                            controller.LibraryServices.LibraryManagementCore.ClassTable, result.AstNodes, resolver);
+                    var codegen = new ProtoCore.CodeGenDS(result.AstNodes);
+                    var ds = codegen.GenerateCode();
+
+                    var dsPath = filePathBase + ".ds";
+                    if (File.Exists(dsPath))
+                    {
+                        File.Delete(dsPath);
+                    }
+                    File.WriteAllText(dsPath, ds);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                    Assert.Inconclusive("The current workspace could not be converted to Design Script.");
                 }
             }
 
-            return value.StringData;
+            public static string ConvertCurrentWorkspaceToJsonAndSave(DynamoModel model, string filePathBase)
+            {
+                var json = model.CurrentWorkspace.ToJson(model.EngineController);
+                Assert.IsNotNullOrEmpty(json);
+
+                var tempPath = Path.GetTempPath();
+                var jsonFolder = Path.Combine(tempPath, "json");
+
+                if (!Directory.Exists(jsonFolder))
+                {
+                    Directory.CreateDirectory(jsonFolder);
+                }
+
+                var jsonPath = filePathBase + ".dyn";
+                if (File.Exists(jsonPath))
+                {
+                    File.Delete(jsonPath);
+                }
+                File.WriteAllText(jsonPath, json);
+
+                return json;
+            }
+
+        }
+    }
+
+
+    /* The Serialization tests compare the results of a workspace opened and executed from its
+     * original .dyn format, to one converted to json, deserialized and executed. In the process,
+     * the tests save the following files:
+     *  - xxx.json file representing the serialized version of the workspace to json, where xxx is the
+     *  original .dyn file name.
+     *  - xxx_data.json file containing the cached values of each of the workspaces
+     *  - xxx.ds file containing the Design Script code for the workspace.
+     */
+    [TestFixture, Category("Serialization")]
+    class SerializationTests : DynamoModelTestBase
+    {
+        private TimeSpan lastExecutionDuration = new TimeSpan();
+        private Dictionary<Guid, string> modelsGuidToIdMap = new Dictionary<Guid, string>();
+
+
+        protected override void GetLibrariesToPreload(List<string> libraries)
+        {
+            libraries.Add("VMDataBridge.dll");
+            libraries.Add("ProtoGeometry.dll");
+            libraries.Add("DSCoreNodes.dll");
+            base.GetLibrariesToPreload(libraries);
+        }
+
+        [TestFixtureSetUp]
+        public void FixtureSetup()
+        {
+            ExecutionEvents.GraphPostExecution += ExecutionEvents_GraphPostExecution;
+
+            //Clear Temp directory folders before start of the new serialization test run
+            var tempPath = Path.GetTempPath();
+            var jsonFolder = Path.Combine(tempPath, "json");
+            var jsonNonGuidFolder = Path.Combine(tempPath, "jsonNonGuid");
+
+            //Try and delete all the files from the previous run. 
+            //If there's an error in deleting files, the tests should countinue
+            if (Directory.Exists(jsonFolder))
+            {
+                try
+                {
+                    Console.WriteLine("Deleting JSON directory from temp");
+                    Directory.Delete(jsonFolder, true);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+
+            if (Directory.Exists(jsonNonGuidFolder))
+            {
+                try
+                {
+                    Console.WriteLine("Deleting jsonNonGuid directory from temp");
+                    Directory.Delete(jsonNonGuidFolder, true);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
+            ExecutionEvents.GraphPostExecution -= ExecutionEvents_GraphPostExecution;
+        }
+
+        private void ExecutionEvents_GraphPostExecution(Session.IExecutionSession session)
+        {
+            lastExecutionDuration = (TimeSpan)session.GetParameterValue(Session.ParameterKeys.LastExecutionDuration);
         }
 
         private void CompareWorkspacesDifferentGuids(WorkspaceComparisonData a, WorkspaceComparisonData b)
@@ -349,14 +584,33 @@ namespace Dynamo.Tests
         public void CustomNodeSerializationTest()
         {
             var customNodeTestPath = Path.Combine(TestDirectory, @"core\CustomNodes\TestAdd.dyn");
-            DoWorkspaceOpenAndCompare(customNodeTestPath, "json", ConvertCurrentWorkspaceToJsonAndSave, CompareWorkspaces, SaveWorkspaceComparisonData);
+            serializationUtils.DoWorkspaceOpenAndCompare(customNodeTestPath,
+                "json",
+                this.OpenModel,
+                ConvertCurrentWorkspaceToJsonAndSave,
+                CompareWorkspaces,
+                SaveWorkspaceComparisonData,
+                 this.CurrentDynamoModel,
+                 this.RunCurrentModel,
+                this.lastExecutionDuration
+
+                );
         }
 
         [Test]
         public void AllTypesSerialize()
         {
             var customNodeTestPath = Path.Combine(TestDirectory, @"core\serialization\serialization.dyn");
-            DoWorkspaceOpenAndCompare(customNodeTestPath, "json", ConvertCurrentWorkspaceToJsonAndSave, CompareWorkspaces, SaveWorkspaceComparisonData);
+            serializationUtils.DoWorkspaceOpenAndCompare(
+                customNodeTestPath,
+                "json",
+                this.OpenModel,
+                ConvertCurrentWorkspaceToJsonAndSave,
+                CompareWorkspaces,
+                SaveWorkspaceComparisonData,
+                this.CurrentDynamoModel,
+                this.RunCurrentModel,
+                this.lastExecutionDuration);
         }
 
         public object[] FindWorkspaces()
@@ -376,7 +630,17 @@ namespace Dynamo.Tests
         [Test, TestCaseSource("FindWorkspaces")]
         public void SerializationTest(string filePath)
         {
-            DoWorkspaceOpenAndCompare(filePath, "json", ConvertCurrentWorkspaceToJsonAndSave, CompareWorkspaces, SaveWorkspaceComparisonData);
+            serializationUtils.DoWorkspaceOpenAndCompare(filePath,
+                "json",
+                this.OpenModel,
+                ConvertCurrentWorkspaceToJsonAndSave,
+                CompareWorkspaces,
+                SaveWorkspaceComparisonData,
+                this.CurrentDynamoModel,
+                this.RunCurrentModel,
+                this.lastExecutionDuration,
+                this.modelsGuidToIdMap,
+                bannedTests);
         }
 
         /// <summary>
@@ -392,7 +656,18 @@ namespace Dynamo.Tests
         public void SerializationNonGuidIdsTest(string filePath)
         {
             modelsGuidToIdMap.Clear();
-            DoWorkspaceOpenAndCompare(filePath, "json_nonGuidIds", ConvertCurrentWorkspaceToNonGuidJsonAndSave, CompareWorkspacesDifferentGuids, SaveWorkspaceComparisonDataWithNonGuidIds);
+            serializationUtils.DoWorkspaceOpenAndCompare(filePath,
+                "json_nonGuidIds",
+                   this.OpenModel,
+                ConvertCurrentWorkspaceToNonGuidJsonAndSave,
+                CompareWorkspacesDifferentGuids,
+                SaveWorkspaceComparisonDataWithNonGuidIds,
+                  this.CurrentDynamoModel,
+                this.RunCurrentModel,
+                                this.lastExecutionDuration,
+
+                this.modelsGuidToIdMap,
+                bannedTests);
         }
 
         private static List<string> bannedTests = new List<string>()
@@ -416,150 +691,7 @@ namespace Dynamo.Tests
                 "TestFrozen"
             };
 
-        private void DoWorkspaceOpenAndCompare(string filePath, string dirName,
-            Func<DynamoModel, string, string> saveFunction,
-            Action<WorkspaceComparisonData, WorkspaceComparisonData> workspaceCompareFunction,
-            Action<WorkspaceComparisonData, string, TimeSpan> workspaceDataSaveFunction)
-        {
-            var openPath = filePath;
 
-            if (bannedTests.Any(t => filePath.Contains(t)))
-            {
-                Assert.Inconclusive("Skipping test known to kill the test framework...");
-            }
-
-            OpenModel(openPath);
-
-            var model = CurrentDynamoModel;
-            var ws1 = model.CurrentWorkspace;
-            ws1.Description = "TestDescription";
-
-            var dummyNodes = ws1.Nodes.Where(n => n is DummyNode);
-            if (dummyNodes.Any())
-            {
-                Assert.Inconclusive("The Workspace contains dummy nodes for: " + string.Join(",", dummyNodes.Select(n => n.Name).ToArray()));
-            }
-
-            var cbnErrorNodes = ws1.Nodes.Where(n => n is CodeBlockNodeModel && n.State == ElementState.Error);
-            if (cbnErrorNodes.Any())
-            {
-                Assert.Inconclusive("The Workspace contains code block nodes in error state due to which rest " +
-                                    "of the graph will not execute; skipping test ...");
-            }
-
-            if (((HomeWorkspaceModel)ws1).RunSettings.RunType == Models.RunType.Manual)
-            {
-                RunCurrentModel();
-            }
-
-            var wcd1 = new WorkspaceComparisonData(ws1, CurrentDynamoModel.EngineController);
-
-            var dirPath = Path.Combine(Path.GetTempPath(), dirName);
-            if (!Directory.Exists(dirPath))
-            {
-                Directory.CreateDirectory(dirPath);
-            }
-            var fi = new FileInfo(filePath);
-            var filePathBase = dirPath + @"\" + Path.GetFileNameWithoutExtension(fi.Name);
-
-            ConvertCurrentWorkspaceToDesignScriptAndSave(filePathBase);
-
-            string json = saveFunction(model, filePathBase);
-
-            workspaceDataSaveFunction(wcd1, filePathBase, lastExecutionDuration);
-
-            lastExecutionDuration = new TimeSpan();
-
-            var ws2 = WorkspaceModel.FromJson(json, model.LibraryServices,
-                model.EngineController, model.Scheduler, model.NodeFactory, DynamoModel.IsTestMode, false,
-                model.CustomNodeManager);
-
-            if (ws2 is CustomNodeWorkspaceModel)
-            {
-                model.AddCustomNodeWorkspace((CustomNodeWorkspaceModel)ws2);
-            }
-
-            foreach (var c in ws2.Connectors)
-            {
-                Assert.NotNull(c.Start.Owner, "The node is not set for the start of connector " + c.GUID + ". The end node is " + c.End.Owner + ".");
-                Assert.NotNull(c.End.Owner, "The node is not set for the end of connector " + c.GUID + ". The start node is " + c.Start.Owner + ".");
-            }
-
-            // The following logic is taken from the DynamoModel.Open method.
-            // It assumes a single home workspace model. So, we remove all
-            // others, before adding a new one.
-            if (ws2 is HomeWorkspaceModel)
-            {
-                var currentHomeSpaces = model.Workspaces.OfType<HomeWorkspaceModel>().ToList();
-                if (currentHomeSpaces.Any())
-                {
-                    var end = ws2 is HomeWorkspaceModel ? 0 : 1;
-
-                    for (var i = currentHomeSpaces.Count - 1; i >= end; i--)
-                    {
-                        model.RemoveWorkspace(currentHomeSpaces[i]);
-                    }
-                }
-
-                model.AddWorkspace(ws2);
-
-                var hws = ws2 as HomeWorkspaceModel;
-                if (hws != null)
-                {
-                    model.ResetEngine();
-
-                    if (hws.RunSettings.RunType == RunType.Periodic)
-                    {
-                        hws.StartPeriodicEvaluation();
-                    }
-                }
-
-                model.CurrentWorkspace = ws2;
-            }
-
-            Assert.NotNull(ws2);
-
-            dummyNodes = ws2.Nodes.Where(n => n is DummyNode);
-            if (dummyNodes.Any())
-            {
-                Assert.Inconclusive("The Workspace contains dummy nodes for: " + string.Join(",", dummyNodes.Select(n => n.Name).ToArray()));
-            }
-
-            var wcd2 = new WorkspaceComparisonData(ws2, CurrentDynamoModel.EngineController);
-
-            workspaceCompareFunction(wcd1, wcd2);
-
-            var functionNodes = ws2.Nodes.Where(n => n is Function).Cast<Function>();
-            if (functionNodes.Any())
-            {
-                Assert.True(functionNodes.All(n => CurrentDynamoModel.CustomNodeManager.LoadedDefinitions.Contains(n.Definition)));
-            }
-
-            foreach (var c in ws2.Connectors)
-            {
-                Assert.NotNull(c.Start.Owner);
-                Assert.NotNull(c.End.Owner);
-                Assert.True(ws2.Nodes.Contains(c.Start.Owner));
-                Assert.True(ws2.Nodes.Contains(c.End.Owner));
-            }
-
-            //assert that the inputs in the saved json file are the same as those we can gather from the 
-            //grah at runtime - because we don't deserialize these directly we check the json itself.
-            var jObject = JObject.Parse(json);
-            var jToken = jObject["Inputs"];
-            var inputs = jToken.ToArray().Select(x => x.ToObject<NodeInputData>()).ToList();
-            var inputs2 = ws1.Nodes.Where(x => x.IsSetAsInput == true && x.InputData != null).Select(input => input.InputData).ToList();
-
-            //inputs2 might come from a WS with non guids, so we need to replace the ids with guids if they exist in the map
-            foreach (var input in inputs2)
-            {
-                if (modelsGuidToIdMap.ContainsKey(input.Id))
-                {
-                    input.Id = GuidUtility.Create(GuidUtility.UrlNamespace, modelsGuidToIdMap[input.Id]);
-                }
-            }
-            Assert.IsTrue(inputs.SequenceEqual(inputs2));
-        }
 
         private static void SaveWorkspaceComparisonData(WorkspaceComparisonData wcd1, string filePathBase, TimeSpan executionDuration)
         {
@@ -628,28 +760,7 @@ namespace Dynamo.Tests
             File.WriteAllText(dataPath, dataMapStr);
         }
 
-        private static string ConvertCurrentWorkspaceToJsonAndSave(DynamoModel model, string filePathBase)
-        {
-            var json = model.CurrentWorkspace.ToJson(model.EngineController);
-            Assert.IsNotNullOrEmpty(json);
-
-            var tempPath = Path.GetTempPath();
-            var jsonFolder = Path.Combine(tempPath, "json");
-
-            if (!Directory.Exists(jsonFolder))
-            {
-                Directory.CreateDirectory(jsonFolder);
-            }
-
-            var jsonPath = filePathBase + ".dyn";
-            if (File.Exists(jsonPath))
-            {
-                File.Delete(jsonPath);
-            }
-            File.WriteAllText(jsonPath, json);
-
-            return json;
-        }
+   
 
         private string ConvertCurrentWorkspaceToNonGuidJsonAndSave(DynamoModel model, string filePathBase)
         {
@@ -716,37 +827,6 @@ namespace Dynamo.Tests
             return json;
         }
 
-        private void ConvertCurrentWorkspaceToDesignScriptAndSave(string filePathBase)
-        {
-            try
-            {
-                var workspace = CurrentDynamoModel.CurrentWorkspace;
 
-                var libCore = CurrentDynamoModel.EngineController.LibraryServices.LibraryManagementCore;
-                var libraryServices = new LibraryCustomizationServices(CurrentDynamoModel.PathManager);
-                var nameProvider = new NamingProvider(libCore, libraryServices);
-                var controller = CurrentDynamoModel.EngineController;
-                var resolver = CurrentDynamoModel.CurrentWorkspace.ElementResolver;
-                var namingProvider = new NamingProvider(controller.LibraryServices.LibraryManagementCore, libraryServices);
-
-                var result = NodeToCodeCompiler.NodeToCode(libCore, workspace.Nodes, workspace.Nodes, namingProvider);
-                NodeToCodeCompiler.ReplaceWithShortestQualifiedName(
-                        controller.LibraryServices.LibraryManagementCore.ClassTable, result.AstNodes, resolver);
-                var codegen = new ProtoCore.CodeGenDS(result.AstNodes);
-                var ds = codegen.GenerateCode();
-
-                var dsPath = filePathBase + ".ds";
-                if (File.Exists(dsPath))
-                {
-                    File.Delete(dsPath);
-                }
-                File.WriteAllText(dsPath, ds);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                Assert.Inconclusive("The current workspace could not be converted to Design Script.");
-            }
-        }
     }
 }
