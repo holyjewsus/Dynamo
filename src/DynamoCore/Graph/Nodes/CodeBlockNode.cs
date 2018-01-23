@@ -839,13 +839,21 @@ namespace Dynamo.Graph.Nodes
             }
         }
 
+        internal class portConnectionData
+        {
+            public Guid portGuid { get; set; }
+            public List<Guid> ConnectionGuids { get; set; } = new List<Guid>();
+            public List<PortModel> PortsConnectedToThisPort { get; set; } = new List<PortModel>();
+        }
+
         /// <summary>
         ///     Deletes all the connections and saves their data (the start and end port)
         ///     so that they can be recreated if needed.
         /// </summary>
         /// <param name="inportConnections">A list of connections that will be destroyed</param>
         /// <param name="outportConnections"></param>
-        private void SaveAndDeleteConnectors(IDictionary inportConnections, IDictionary outportConnections)
+        private void SaveAndDeleteConnectors(IDictionary inportConnections,
+            IDictionary outportConnections)
         {
             //----------------------------Inputs---------------------------------
             foreach (var portModel in InPorts)
@@ -853,14 +861,16 @@ namespace Dynamo.Graph.Nodes
                 var portName = portModel.ToolTip;
                 if (portModel.Connectors.Count != 0)
                 {
-                    inportConnections.Add(portName, new List<PortModel>());
+                    inportConnections.Add(portName, new portConnectionData{portGuid = portModel.GUID });
+
                     foreach (var connector in portModel.Connectors)
                     {
-                        (inportConnections[portName] as List<PortModel>).Add(connector.Start);
+                        (inportConnections[portName] as portConnectionData).PortsConnectedToThisPort.Add(connector.Start);
+                        (inportConnections[portName] as portConnectionData).ConnectionGuids.Add(connector.GUID);
                     }
                 }
                 else
-                    inportConnections.Add(portName, null);
+                    inportConnections.Add(portName, new portConnectionData { portGuid = portModel.GUID });
             }
 
             //Delete the connectors
@@ -876,14 +886,15 @@ namespace Dynamo.Graph.Nodes
                     portName += i.ToString(CultureInfo.InvariantCulture);
                 if (portModel.Connectors.Count != 0)
                 {
-                    outportConnections.Add(portName, new List<PortModel>());
+                    outportConnections.Add(portName, new portConnectionData { portGuid = portModel.GUID });
                     foreach (ConnectorModel connector in portModel.Connectors)
                     {
-                        (outportConnections[portName] as List<PortModel>).Add(connector.End);
+                        (outportConnections[portName] as portConnectionData).PortsConnectedToThisPort.Add(connector.End);
+                        (outportConnections[portName] as portConnectionData).ConnectionGuids.Add(connector.GUID);
                     }
                 }
                 else
-                    outportConnections.Add(portName, null);
+                    outportConnections.Add(portName, new portConnectionData { portGuid = portModel.GUID });
             }
 
             //Delete the connectors
@@ -907,16 +918,20 @@ namespace Dynamo.Graph.Nodes
                 string varName = InPorts[i].ToolTip;
                 if (inportConnections.Contains(varName))
                 {
-                    if (inportConnections[varName] != null)
+                    var portsConnectedToThisPort = (inportConnections[varName] as portConnectionData).PortsConnectedToThisPort;
+                    if (portsConnectedToThisPort.Count > 0)
                     {
-                        foreach (var startPortModel in (inportConnections[varName] as List<PortModel>))
+                        for (int j= 0; j <portsConnectedToThisPort.Count; j++)
                         {
+                            var startPortModel = portsConnectedToThisPort[j];
                             NodeModel startNode = startPortModel.Owner;
                             var connector = ConnectorModel.Make(
                                 startNode,
                                 this,
                                 startPortModel.Index,
                                 i);
+                            //set the connector guid back to the old connector guid before it was deleted.
+                            connector.GUID = (inportConnections[varName] as portConnectionData).ConnectionGuids[j];
                         }
                         outportConnections[varName] = null;
                     }
@@ -940,10 +955,14 @@ namespace Dynamo.Graph.Nodes
                 {
                     if (outportConnections[varName] != null)
                     {
-                        foreach (var endPortModel in (outportConnections[varName] as List<PortModel>))
+                        var portsConnectedToThisPort = (outportConnections[varName] as portConnectionData).PortsConnectedToThisPort;
+                        for (int j = 0; j < portsConnectedToThisPort.Count; j++)
                         {
+                            var endPortModel = portsConnectedToThisPort[j];
                             NodeModel endNode = endPortModel.Owner;
                             var connector = ConnectorModel.Make(this, endNode, i, endPortModel.Index);
+                            //set connector guid back to guid before this connector was deleted.
+                            connector.GUID = (outportConnections[varName] as portConnectionData).ConnectionGuids[j];
                         }
                         outportConnections[varName] = null;
                     }
@@ -966,7 +985,7 @@ namespace Dynamo.Graph.Nodes
                 int index = undefinedIndices[i];
                 if (index < outportConnections.Count && outportConnections[index] != null)
                 {
-                    foreach (PortModel endPortModel in (outportConnections[index] as List<PortModel>))
+                    foreach (PortModel endPortModel in (outportConnections[index] as portConnectionData).PortsConnectedToThisPort)
                     {
                         NodeModel endNode = endPortModel.Owner;
                         var connector = ConnectorModel.Make(this, endNode, index, endPortModel.Index);
@@ -978,7 +997,7 @@ namespace Dynamo.Graph.Nodes
             }
 
             /*
-             *Step 2:
+             *Step 3:
              *   The final step. Now that the priorties are finished, the 
              *   function tries to reuse any existing connections by attaching 
              *   them to any ports that have not already been given connections
