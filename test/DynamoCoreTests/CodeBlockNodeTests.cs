@@ -296,10 +296,9 @@ b = c[w][x][y][z];";
             this.CurrentDynamoModel.CurrentWorkspace.Undo();
             Assert.AreEqual(oldPos, codeBlockNode2.X);
 
-            //TODO not sure this is required behavior...
             //assert that after undo the port and connector have the same GUIDs
-            //Assert.AreEqual(oldinputPortGuid, codeBlockNode2.InPorts[0].GUID);
-            //Assert.AreEqual(oldConnectorGuid, codeBlockNode2.InPorts[0].Connectors[0].GUID);
+            Assert.AreEqual(oldinputPortGuid, codeBlockNode2.InPorts[0].GUID);
+            Assert.AreEqual(oldConnectorGuid, codeBlockNode2.InPorts[0].Connectors[0].GUID);
 
 
             RunCurrentModel();
