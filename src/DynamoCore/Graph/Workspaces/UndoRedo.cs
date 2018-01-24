@@ -6,6 +6,8 @@ using Dynamo.Graph.Nodes.NodeLoaders;
 using Dynamo.Graph.Notes;
 using Dynamo.Graph.Presets;
 using Dynamo.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -84,6 +86,9 @@ namespace Dynamo.Graph.Workspaces
                 RecordModelsForModification(models, recorder);
             }
         }
+
+        public Func<string, object> requestViewDeserialization;
+   
 
         /// <summary>
         /// TODO(Ben): This method is exposed this way for external codes (e.g.
@@ -295,7 +300,7 @@ namespace Dynamo.Graph.Workspaces
         /// from a corresponding collection of the workspace.
         /// </summary>
         /// <param name="modelData"><see cref="ModelBase"/> object given by <see cref="XmlElement"/></param>
-        public void DeleteModel(XmlElement modelData)
+        public void DeleteModel(JObject modelData)
         {
             //When there is a Redo operation, model is removed from
             //the workspace but the model is "not disposed" from memory.
@@ -348,10 +353,17 @@ namespace Dynamo.Graph.Workspaces
         /// Updates <see cref="ModelBase"/> object with given xml data
         /// </summary>
         /// <param name="modelData">Xml data to update model</param>
-        public void ReloadModel(XmlElement modelData)
+        public void ReloadModel(JObject modelData)
         {
             ModelBase model = GetModelForElement(modelData);
-            model.Deserialize(modelData, SaveContext.Undo);
+            var results = this.requestViewDeserialization(modelData.ToString());
+            if (results != null)
+            {
+                JsonConvert.PopulateObject(modelData.ToString(), model)
+            }
+            //make a request to any view deserializer that we have some json we would like to be deserialized
+            JsonConvert.PopulateObject(modelData.ToString(), model);//likely will need to use some deserialization settings here...);
+
         }
 
         /// <summary>
@@ -461,7 +473,7 @@ namespace Dynamo.Graph.Workspaces
         /// </summary>
         /// <param name="modelData">Xml data to find model.</param>
         /// <returns>Found <see cref="ModelBase"/> object.</returns>
-        public ModelBase GetModelForElement(XmlElement modelData)
+        public ModelBase GetModelForElement(JObject modelData)
         {
             // TODO(Ben): This may or may not be true, but I guess we should be
             // using "System.Type" (given the "type" information in "modelData"),
@@ -473,15 +485,16 @@ namespace Dynamo.Graph.Workspaces
             // if (typeof(Dynamo.Models.NodeModel).IsAssignableFrom(type))
             //     return Nodes.First((x) => (x.GUID == modelGuid));
 
-            var helper = new XmlElementHelper(modelData);
-            Guid modelGuid = helper.ReadGuid("guid");
+            //
+
+            Guid modelGuid = IdToGuidConverter(modelData.GetValue("Id").Value<string>());
 
             ModelBase foundModel = GetModelInternal(modelGuid);
             if (null != foundModel)
                 return foundModel;
 
             throw new ArgumentException(
-                string.Format("Unhandled model type: {0}", helper.ReadString("type", modelData.Name)));
+                string.Format("Unhandled model type: {0}",modelData.ToString()));
         }
 
         /// <summary>

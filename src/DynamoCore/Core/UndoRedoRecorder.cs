@@ -6,6 +6,9 @@ using Dynamo.Graph;
 using Dynamo.Graph.Connectors;
 using Dynamo.Graph.Nodes;
 using Dynamo.Models;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Dynamo.Graph.Workspaces;
 
 namespace Dynamo.Core
 {
@@ -26,7 +29,7 @@ namespace Dynamo.Core
         /// information so that the corresponding model can be located in the 
         /// client for deletion.
         /// </param>
-        void DeleteModel(XmlElement modelData);
+        void DeleteModel(JObject modelData);
 
         /// <summary>
         /// UndoRedoRecorder calls this method to request the client to reload 
@@ -34,14 +37,14 @@ namespace Dynamo.Core
         /// </summary>
         /// <param name="modelData">The xml data from which the corresponding 
         /// model can be reloaded from.</param>
-        void ReloadModel(XmlElement modelData);
+        void ReloadModel(JObject modelData);
 
         /// <summary>
         /// UndoRedoRecorder calls this method to request a model to be created.
         /// </summary>
         /// <param name="modelData">The xml data from which the corresponding 
         ///     model can be re-created from.</param>
-        void CreateModel(XmlElement modelData);
+        void CreateModel(JObject modelData);
 
         /// <summary>
         /// UndoRedoRecorder calls this method to retrieve the up-to-date 
@@ -53,7 +56,7 @@ namespace Dynamo.Core
         /// <param name="modelData">The xml data representing the model which 
         /// UndoRedoRecorder requires for serialization purposes.</param>
         /// <returns>Returns the model that modelData corresponds to.</returns>
-        ModelBase GetModelForElement(XmlElement modelData);
+        ModelBase GetModelForElement(JObject modelData);
     }
 
     internal class UndoRedoRecorder
@@ -71,11 +74,12 @@ namespace Dynamo.Core
         private const string ActionGroup = "ActionGroup";
 
         private readonly IUndoRedoRecorderClient undoClient;
-        private readonly XmlDocument document = new XmlDocument();
-        private XmlElement currentActionGroup;
-        private readonly Stack<XmlElement> undoStack;
-        private readonly Stack<XmlElement> redoStack;
+        private readonly JObject document = new Newtonsoft.Json.Linq.JObject();
+        private JObject currentActionGroup;
+        private readonly Stack<JObject> undoStack;
+        private readonly Stack<JObject> redoStack;
         private HashSet<Guid> offTrackModels;
+        private JsonSerializerSettings jsonModelSerializerSettings;
 
         #endregion
 
@@ -92,10 +96,33 @@ namespace Dynamo.Core
             // 
             this.undoClient = undoClient;
 
-            undoStack = new Stack<XmlElement>();
-            redoStack = new Stack<XmlElement>();
+            undoStack = new Stack<JObject>();
+            redoStack = new Stack<JObject>();
             offTrackModels = new HashSet<Guid>();
+
+            this.jsonModelSerializerSettings = new JsonSerializerSettings
+            {
+                Error = (sender, args) =>
+                {
+                    args.ErrorContext.Handled = true;
+                    Console.WriteLine(args.ErrorContext.Error);
+                },
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Newtonsoft.Json.Formatting.Indented,
+                Converters = new List<JsonConverter>{
+                        new ConnectorConverter(null),
+                        new DummyNodeWriteConverter(),
+                        new TypedParameterConverter()
+                    },
+                ReferenceResolverProvider = () => { return new IdReferenceResolver(); }
+            };
+
+            //var result = ReplaceTypeDeclarations(json);
         }
+
+        public Func<Guid, object> requestViewDeserialization;
+
 
         /// <summary>
         /// <para>For a series of actions to be recorded for undo, an "action 
@@ -112,7 +139,8 @@ namespace Dynamo.Core
         public IDisposable BeginActionGroup()
         {
             EnsureValidRecorderStates();
-            currentActionGroup = document.CreateElement(ActionGroup);
+            document.Add(ActionGroup, JObject.Parse("{\"Actions\":[]}"));
+            currentActionGroup = document.GetValue(ActionGroup) as JObject;
             return new ActionGroupDisposable(this);
         }
 
@@ -129,7 +157,9 @@ namespace Dynamo.Core
             // If there wasn't anything recorded between BeginActionGroup and 
             // the corresponding EndActionGroup method, then the action group 
             // is discarded.
-            if (currentActionGroup.HasChildNodes)
+
+            //TODO CHECk this is correct... for ""
+            if (currentActionGroup.HasValues)
                 undoStack.Push(currentActionGroup);
 
             currentActionGroup = null;
@@ -146,7 +176,7 @@ namespace Dynamo.Core
             // stack is pushed onto the redo stack so that the same action can 
             // be carried out when user performs a redo action.
             // 
-            XmlElement topMostAction = PopActionGroupFromUndoStack();
+            JObject topMostAction = PopActionGroupFromUndoStack();
             UndoActionGroup(topMostAction); // Perform the actual undo activities.
         }
 
@@ -158,7 +188,7 @@ namespace Dynamo.Core
                 return; // Nothing to be redone.
 
             // Top-most group gets moved from redo stack to undo stack.
-            XmlElement topMostAction = PopActionGroupFromRedoStack();
+            JObject topMostAction = PopActionGroupFromRedoStack();
             RedoActionGroup(topMostAction); // Perform the actual redo activities.
         }
 
@@ -235,7 +265,7 @@ namespace Dynamo.Core
         /// </summary>
         /// <returns>Returns the XmlElement representing the action group that 
         /// is on top of the stack at the time pop is requested.</returns>
-        public XmlElement PopFromUndoGroup()
+        public JObject PopFromUndoGroup()
         {
             if (redoStack.Count > 0)
             {
@@ -301,7 +331,7 @@ namespace Dynamo.Core
         /// <param name="model">The model to check against.</param>
         /// <returns>Returns true if the model has already been recorded in the
         /// current action group, or false otherwise.</returns>
-        private bool IsRecordedInActionGroup(XmlElement group, ModelBase model)
+        private bool IsRecordedInActionGroup(JObject group, ModelBase model)
         {
             if (null == group)
                 throw new ArgumentNullException("group");
@@ -309,28 +339,26 @@ namespace Dynamo.Core
                 throw new ArgumentNullException("model");
 
             Guid guid = model.GUID;
-            foreach (XmlNode childNode in group.ChildNodes)
+            foreach (JToken childNode in group["Actions"] as JArray)
             {
                 // See if the model supports Guid identification, in unit test cases 
                 // those sample models do not support this so in such cases identity 
                 // check will not be performed.
                 // 
-                XmlAttribute guidAttribute = childNode.Attributes["guid"];
-                if (null != guidAttribute && (guid == Guid.Parse(guidAttribute.Value)))
+                var guidAttribute = childNode["guid"];
+                if (null != guidAttribute && (guid == Guid.Parse(guidAttribute.Value<string>())))
                     return true; // This model was found to be recorded.
             }
 
             return false;
         }
 
-        private void SetNodeAction(XmlNode childNode, string action)
+        private void SetNodeAction(JToken childNode, string action)
         {
-            XmlAttribute actionAttribute = document.CreateAttribute(UserActionAttrib);
-            actionAttribute.Value = action;
-            childNode.Attributes.Append(actionAttribute);
+            childNode[UserActionAttrib] = action;
         }
 
-        private XmlElement PopActionGroupFromUndoStack()
+        private JObject PopActionGroupFromUndoStack()
         {
             if (CanUndo == false)
             {
@@ -341,7 +369,7 @@ namespace Dynamo.Core
             return undoStack.Pop();
         }
 
-        private XmlElement PopActionGroupFromRedoStack()
+        private JObject PopActionGroupFromRedoStack()
         {
             if (CanRedo == false)
             {
@@ -352,22 +380,30 @@ namespace Dynamo.Core
             return redoStack.Pop();
         }
 
-        private void RecordActionInternal(XmlElement group, ModelBase model, UserAction action)
+        private void RecordActionInternal(JObject group, ModelBase model, UserAction action)
         {
             if (IsRecordedInActionGroup(group, model))
                 return;
 
             // Serialize the affected model into xml representation
             // and store it under the current action group.
-            XmlNode childNode = model.Serialize(document, SaveContext.Undo);
+
+            var jsonModel = JsonConvert.SerializeObject(model, this.jsonModelSerializerSettings);
+            //requests that a view serializer serializes the view properties of this model.
+            var jsonView = this.requestViewDeserialization(model.GUID.ToString());
+
+            JToken childNode = JToken.Parse(json);
             SetNodeAction(childNode, action.ToString());
-            group.AppendChild(childNode);
+            (group["Actions"] as JArray).Add(childNode);
         }
 
-        private void UndoActionGroup(XmlElement actionGroup)
+        private void UndoActionGroup(JToken actionGroup)
         {
+            //TODO should we make sure to add a new group? or is it okay to overwrite existing group?
+
             // This is the action group where all the undone actions are added.
-            XmlElement newGroup = document.CreateElement(ActionGroup);
+            document.Add(ActionGroup,"{\"Actions\":{} }");
+             var newGroup = document.GetValue(ActionGroup) as JObject;
 
             // As we iterate through each child node under "actionGroup", 
             // occassionally we may want to appand that child node under 
@@ -377,17 +413,17 @@ namespace Dynamo.Core
             // cannot iterate over correctly. So here we make a duplicated copy
             // instead.
             // 
-            var actions = actionGroup.ChildNodes.Cast<XmlNode>().ToList();
+            var actions = (actionGroup["Actions"] as JArray).Cast<JObject>().ToList();
 
             // In undo scenario, user actions are undone in the reversed order 
             // that they were done (due to inter-dependencies among components).
             // 
             for (int index = actions.Count - 1; index >= 0; index--)
             {
-                var element = actions[index] as XmlElement;
+                var action = actions[index];
 
-                XmlAttribute actionAttribute = element.Attributes[UserActionAttrib];
-                var modelActionType = (UserAction)Enum.Parse(typeof(UserAction), actionAttribute.Value);
+                var actionType = action.GetValue(UserActionAttrib);
+                var modelActionType = (UserAction)Enum.Parse(typeof(UserAction), actionType.Value<string>());
 
                 switch (modelActionType)
                 {
@@ -397,17 +433,17 @@ namespace Dynamo.Core
                     case UserAction.Creation:
                         try
                         {
-                            ModelBase toBeDeleted = undoClient.GetModelForElement(element);
+                            ModelBase toBeDeleted = undoClient.GetModelForElement(action);
                             RecordActionInternal(newGroup, toBeDeleted, modelActionType);
-                            undoClient.DeleteModel(element);
+                            undoClient.DeleteModel(action);
                         }
                         catch (ArgumentException e)
                         {
                             bool isOffTrackObject = false;
-                            var guidAttribute = element.Attributes["guid"];
+                            var guidAttribute = action["guid"];
                             if (guidAttribute != null)
                             {
-                                var guid = Guid.Parse(guidAttribute.Value);
+                                var guid = Guid.Parse(guidAttribute.Value<string>());
                                 isOffTrackObject = offTrackModels.Contains(guid);
                             }
 
@@ -419,14 +455,14 @@ namespace Dynamo.Core
                         break;
 
                     case UserAction.Modification:
-                        ModelBase toBeUpdated = undoClient.GetModelForElement(element);
+                        ModelBase toBeUpdated = undoClient.GetModelForElement(action);
                         RecordActionInternal(newGroup, toBeUpdated, modelActionType);
-                        undoClient.ReloadModel(element);
+                        undoClient.ReloadModel(action);
                         break;
 
                     case UserAction.Deletion:
-                        newGroup.AppendChild(element);
-                        undoClient.CreateModel(element);
+                        (newGroup["Actions"] as JArray).Add(action);
+                        undoClient.CreateModel(action);
                         break;
                 }
             }
@@ -434,37 +470,39 @@ namespace Dynamo.Core
             redoStack.Push(newGroup); // Place the states on the redo-stack.
         }
 
-        private void RedoActionGroup(XmlElement actionGroup)
+        private void RedoActionGroup(JToken actionGroup)
         {
-            // This is the action group where all the redone actions are added.
-            XmlElement newGroup = document.CreateElement(ActionGroup);
+            //TODO should we make sure to add a new group? or is it okay to overwrite existing group?
+            document.Add(ActionGroup, "{\"Actions\":[] }");
+            var newGroup = document.GetValue(ActionGroup) as JObject;
 
             // See "UndoActionGroup" above for details why this duplicate.
-            var actions = actionGroup.ChildNodes.Cast<XmlNode>().ToList();
+            var actions = actionGroup.Children().Cast<JObject>().ToList();
 
             // Redo operation is the reversed of undo operation, naturally.
             for (int index = actions.Count - 1; index >= 0; index--)
             {
-                var element = actions[index] as XmlElement;
-                XmlAttribute actionAttribute = element.Attributes[UserActionAttrib];
-                var modelActionType = (UserAction)Enum.Parse(typeof(UserAction), actionAttribute.Value);
+                var action = actions[index];
+
+                var actionType = action.GetValue(UserActionAttrib);
+                var modelActionType = (UserAction)Enum.Parse(typeof(UserAction), actionType.Value<string>());
                 switch (modelActionType)
                 {
                     case UserAction.Creation:
-                        newGroup.AppendChild(element);
-                        undoClient.CreateModel(element);
+                        (newGroup["Actions"] as JArray).Add(action);
+                        undoClient.CreateModel(action);
                         break;
 
                     case UserAction.Modification:
-                        ModelBase toBeUpdated = undoClient.GetModelForElement(element);
+                        ModelBase toBeUpdated = undoClient.GetModelForElement(action);
                         RecordActionInternal(newGroup, toBeUpdated, modelActionType);
-                        undoClient.ReloadModel(element);
+                        undoClient.ReloadModel(action);
                         break;
 
                     case UserAction.Deletion:
-                        ModelBase toBeDeleted = undoClient.GetModelForElement(element);
+                        ModelBase toBeDeleted = undoClient.GetModelForElement(action);
                         RecordActionInternal(newGroup, toBeDeleted, modelActionType);
-                        undoClient.DeleteModel(element);
+                        undoClient.DeleteModel(action);
                         break;
                 }
             }
@@ -494,7 +532,7 @@ namespace Dynamo.Core
         {
             private readonly List<ModelBase> models;
             private readonly UndoRedoRecorder recorder;
-            private readonly Dictionary<Guid, XmlElement> existingConnectors;
+            private readonly Dictionary<Guid, JObject> existingConnectors;
             private readonly Dictionary<Guid, ConnectorModel> remainingConnectors;
 
             public ModelModificationUndoHelper(UndoRedoRecorder recorder, ModelBase model)
@@ -507,7 +545,7 @@ namespace Dynamo.Core
                 this.recorder = recorder;
 
                 this.models = new List<ModelBase>(models);
-                existingConnectors = new Dictionary<Guid, XmlElement>();
+                existingConnectors = new Dictionary<Guid, JObject>();
                 remainingConnectors = new Dictionary<Guid, ConnectorModel>();
 
                 var allConnectors = new List<ConnectorModel>();
@@ -531,10 +569,8 @@ namespace Dynamo.Core
                 // Record the existing connectors...
                 foreach (var connectorModel in allConnectors)
                 {
-                    var element = connectorModel.Serialize(
-                        recorder.document, SaveContext.Undo);
-
-                    existingConnectors[connectorModel.GUID] = element;
+                   var serializedConnector= JsonConvert.SerializeObject(connectorModel, this.recorder.jsonModelSerializerSettings);
+                   existingConnectors[connectorModel.GUID] = JObject.Parse(serializedConnector);
                 }
             }
 
@@ -553,7 +589,7 @@ namespace Dynamo.Core
                     }
                 }
 
-                var removed = new List<XmlElement>();
+                var removed = new List<JObject>();
                 var added = new List<ConnectorModel>();
                 if (!ComputeDifference(removed, added))
                     return; // No difference in connectors.
@@ -575,13 +611,13 @@ namespace Dynamo.Core
                     foreach (var connector in removed)
                     {
                         recorder.SetNodeAction(connector, deletionString);
-                        recorder.currentActionGroup.AppendChild(connector);
+                        (recorder.currentActionGroup["Actions"] as JArray).Add(connector);
                     }
 
-                    foreach (XmlNode childNode in previousGroup.ChildNodes)
+                    foreach (JToken childNode in previousGroup["Actions"] as JArray)
                     {
                         // Record the model modification itself.
-                        recorder.currentActionGroup.AppendChild(childNode);
+                        (recorder.currentActionGroup["Actions"] as JArray).Add(childNode);
                     }
 
                     foreach (var connector in added)
@@ -599,7 +635,7 @@ namespace Dynamo.Core
                 }
             }
 
-            private bool ComputeDifference(List<XmlElement> removed, List<ConnectorModel> added)
+            private bool ComputeDifference(List<JObject> removed, List<ConnectorModel> added)
             {
                 // Whatever that was in the existing set but no longer exist...
                 var deletedKeys = existingConnectors.Keys.Except(remainingConnectors.Keys);
