@@ -471,19 +471,19 @@ namespace Dynamo.ViewModels
             InCanvasSearchViewModel.Visible = true;
 
             //undo redo serialization
-            this.Model.UndoRecorder.requestViewDeserialization += (id) =>
+            this.Model.UndoRecorder.requestViewSerialization += (id) =>
             {
                 var foundVm = (Connectors.FirstOrDefault(c => c.ConnectorModel.GUID == id)
                 ?? Nodes.FirstOrDefault(node => node.Id == id)
                 ?? (Notes.FirstOrDefault(note => note.Model.GUID == id) as ViewModelBase
                 ?? Annotations.FirstOrDefault(annotation => annotation.AnnotationModel.GUID == id)));
-
-                //if this matches a viewModel we know about, then serialize it.
-                if(foundVm!= null)
+               
+                //serialize it using regular setttings...
+                if(foundVm != null)
                 {
-                    
+                    return foundVm.ToJson();
                 }
-                return;
+                return null;
             };
             
         }

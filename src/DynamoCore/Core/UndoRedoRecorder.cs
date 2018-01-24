@@ -122,6 +122,7 @@ namespace Dynamo.Core
         }
 
         public Func<Guid, object> requestViewDeserialization;
+        public Func<Guid, object> requestViewSerialization;
 
 
         /// <summary>
@@ -390,9 +391,15 @@ namespace Dynamo.Core
 
             var jsonModel = JsonConvert.SerializeObject(model, this.jsonModelSerializerSettings);
             //requests that a view serializer serializes the view properties of this model.
-            var jsonView = this.requestViewDeserialization(model.GUID.ToString());
+            var jsonView = this.requestViewSerialization(model.GUID);
+            //combine them.
 
-            JToken childNode = JToken.Parse(json);
+
+            var newModel = JObject.Parse(jsonModel);
+            var newView = JObject.Parse(jsonView as string);
+            newModel.Add("View", newView);
+
+            JToken childNode = newModel;
             SetNodeAction(childNode, action.ToString());
             (group["Actions"] as JArray).Add(childNode);
         }
