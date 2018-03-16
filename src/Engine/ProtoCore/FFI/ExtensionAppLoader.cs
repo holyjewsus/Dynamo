@@ -37,23 +37,39 @@ namespace ProtoFFI
                 IExtensionApplication app = mExtensionApps[item] as IExtensionApplication;
                 if (null == app)
                     continue;
-
-                switch (session.State)
+                try
                 {
-                    case ProtoCore.ExecutionStateEventArgs.State.ExecutionBegin:
-                        app.OnBeginExecution(session);
-                        break;
-                    case ProtoCore.ExecutionStateEventArgs.State.ExecutionEnd:
-                        app.OnEndExecution(session);
-                        break;
-                    case ProtoCore.ExecutionStateEventArgs.State.ExecutionBreak:
-                        app.OnSuspendExecution(session);
-                        break;
-                    case ProtoCore.ExecutionStateEventArgs.State.ExecutionResume:
-                        app.OnResumeExecution(session);
-                        break;
-                    default:
-                        break;
+                    switch (session.State)
+                    {
+                        case ProtoCore.ExecutionStateEventArgs.State.ExecutionBegin:
+                            app.OnBeginExecution(session);
+                            break;
+                        case ProtoCore.ExecutionStateEventArgs.State.ExecutionEnd:
+                            app.OnEndExecution(session);
+                            break;
+                        case ProtoCore.ExecutionStateEventArgs.State.ExecutionBreak:
+                            app.OnSuspendExecution(session);
+                            break;
+                        case ProtoCore.ExecutionStateEventArgs.State.ExecutionResume:
+                            app.OnResumeExecution(session);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                //Catch session mismatch exception from libG
+                //until ExtensionApplication is refactored.
+                catch(InvalidOperationException e)
+                {
+                    if(e.Message == "Session mismatch for begin and end execution call.")
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                    else
+                    {
+                        throw e;
+                    }
+                    
                 }
             }
         }
