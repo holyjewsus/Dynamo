@@ -51,6 +51,9 @@
       <HintPath>..\..\src\packages\CefSharp.Common.49.0.1\CefSharp\x64\CefSharp.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Greg, Version=1.0.6874.25994, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\src\packages\Greg.1.0.6874.25994\lib\net45\Greg.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.Prism, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\extern\prism\Microsoft.Practices.Prism.dll</HintPath>
