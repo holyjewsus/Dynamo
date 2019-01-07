@@ -20,13 +20,14 @@ namespace Dynamo.Tests
     {
         protected override void GetLibrariesToPreload(List<string> libraries)
         {
+            /*
             libraries.Add("VMDataBridge.dll");
             libraries.Add("DesignScriptBuiltin.dll");
             libraries.Add("DSCoreNodes.dll");
             libraries.Add("FunctionObject.ds");
             libraries.Add("BuiltIn.ds");
             libraries.Add("ProtoGeometry.dll");
-          
+          */
             base.GetLibrariesToPreload(libraries);
         }
 
@@ -88,7 +89,7 @@ namespace Dynamo.Tests
             AssertPreviewValue("4c5889ac-7b91-4fb5-aaad-a2128b533279", 4.0);
         }
 
-        [Test]
+        
         public void ImportingAnAssemblyDoesNotEffectCustomNodePaths()
         {
             //load a graph which requires first loading FFITarget.dll
@@ -111,7 +112,6 @@ namespace Dynamo.Tests
 
         }
 
-        [Test]
         public void CanImportDependencyBeforeRunningGraph()
         {
             //load a graph which requires first loading FFITarget.dll
@@ -127,8 +127,7 @@ namespace Dynamo.Tests
             AssertPreviewValue("5a1fae3e13ce4ccfba737ec75057907b", 2.0);
 
         }
-
-        [Test]
+         
         public void CanImportMultipleDepsBeforeRunningGraph()
         {
             //load a graph which requires first loading FFITarget.dll and SampleLibraryZeroTouch.dll
