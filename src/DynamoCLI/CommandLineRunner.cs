@@ -52,7 +52,9 @@ namespace DynamoCLI
 
             model.OpenFileFromPath(cmdLineArgs.OpenFilePath, true);
             Console.WriteLine("loaded file");
-            model.EvaluationCompleted += (o, args) => { evalComplete = true; };
+            EventHandler<EvaluationCompletedEventArgs> evaluationCompletedHandler = (o,args) => { evalComplete = true; };
+
+            model.EvaluationCompleted += evaluationCompletedHandler;
 
             // Build a list of states, by default there is only a single state `default`
             // If the desire is to have additional states you can add logic here to build
@@ -81,7 +83,7 @@ namespace DynamoCLI
                 evalComplete = false;
 
             }
-
+            model.EvaluationCompleted -= evaluationCompletedHandler;
             return doc;
         }
 
