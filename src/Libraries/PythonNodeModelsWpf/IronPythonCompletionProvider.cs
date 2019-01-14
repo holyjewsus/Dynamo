@@ -999,13 +999,22 @@ namespace Dynamo.Python
                 {
                     if (module == null)
                     {
-                        statement = String.Format("import {0} as {1}", memberName, name);
+                        if(asname == null)
+                        {
+                            statement = String.Format("import {0}", memberName);
+
+                        }
+                        else
+                        {
+                            statement = String.Format("import {0} as {1}", memberName, asname);
+
+                        }
                     }
                     else
                     {
-                        if (memberName != "*")
+                        if (memberName != "*" && asname != null )
                         {
-                            statement = String.Format("from {0} import {1} as {2}", module, memberName, name);
+                            statement = String.Format("from {0} import {1} as {2}", module, memberName, asname);
                         }
                         else
                         {
