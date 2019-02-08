@@ -12,6 +12,19 @@ namespace Autodesk.DesignScript.Runtime
     {
     }
 
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ZTFunctionBind : System.Attribute
+    {
+        public string ZTMethodName { get; private set; }
+        public Type ZTClassType { get; private set; }
+
+        public ZTFunctionBind(string functionToBind, Type ztType)
+        {
+            this.ZTMethodName = functionToBind;
+            this.ZTClassType = ztType;
+        }
+    }
+
     /// <summary>
     /// This attribute is used to specify whether the item will be displayed
     /// in the library.

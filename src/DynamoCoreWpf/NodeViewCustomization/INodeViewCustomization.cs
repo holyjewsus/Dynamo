@@ -9,4 +9,9 @@ namespace Dynamo.Wpf
     {
         void CustomizeView(T model, NodeView nodeView);
     }
+    public interface IZTNodeViewCustomization : IDisposable
+    {
+        void CustomizeView(NodeView nodeView);
+    }
+
 }

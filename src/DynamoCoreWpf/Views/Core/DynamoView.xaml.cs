@@ -14,8 +14,10 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Autodesk.DesignScript.Runtime;
 using Dynamo.Configuration;
 using Dynamo.Core;
+using Dynamo.Engine;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Notes;
 using Dynamo.Graph.Presets;
@@ -44,6 +46,8 @@ using Dynamo.Wpf.Views.PackageManager;
 using HelixToolkit.Wpf.SharpDX;
 using ResourceNames = Dynamo.Wpf.Interfaces.ResourceNames;
 using String = System.String;
+using System.Reflection;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace Dynamo.Controls
 {
@@ -75,6 +79,10 @@ namespace Dynamo.Controls
         private readonly DispatcherTimer _workspaceResizeTimer = new DispatcherTimer { Interval = new TimeSpan(0, 0, 0, 0, 500), IsEnabled = false };
 
         internal Watch3DView BackgroundPreview { get; private set; }
+
+        //TODO move to extension
+        //TODO this datastructure does not seem well designed...
+        internal Dictionary<Type, Tuple<string, Type>> ZtUICustomizationMap = new Dictionary<Type, Tuple<string, Type>>();
 
         public DynamoView(DynamoViewModel dynamoViewModel)
         {
@@ -289,6 +297,118 @@ namespace Dynamo.Controls
         {
             dynamoViewModel.Model.Loader.AssemblyLoaded += LoaderOnAssemblyLoaded;
             dynamoViewModel.NodeViewReady += ApplyNodeViewCustomization;
+            //TODO move to extension
+            dynamoViewModel.Model.LibraryServices.LibraryLoaded += FFI_LibraryLoaded;
+            dynamoViewModel.NodeViewReady += ApplyZTNodeViewCustomization;
+        }
+
+        private void ApplyZTNodeViewCustomization(object nodeView, EventArgs e)
+        {
+            var nodeViewImp = nodeView as NodeView;
+            if (nodeViewImp != null)
+            {
+                var model = nodeViewImp.ViewModel.NodeModel;
+                //if the model is a zeroTouch node
+                if (model is Graph.Nodes.ZeroTouch.DSFunction)
+                {
+                    var functionDef = (model as Graph.Nodes.ZeroTouch.DSFunction).Controller.Definition;
+                    var assembly = functionDef.Assembly;
+                    var className = functionDef.ClassName;
+                    var functionName = functionDef.FunctionName;
+
+                    var matchingAssembly = AppDomain.CurrentDomain.GetAssemblies().Where(assm => !assm.IsDynamic).FirstOrDefault(x => x.Location == assembly);
+                    var type = matchingAssembly.GetType(className);
+
+                    if(type != null)
+                    {
+                        var matchingTypeCustomization = this.ZtUICustomizationMap[type];
+                        if(matchingTypeCustomization.Item1 == functionName)
+                        {
+                            var customization = matchingTypeCustomization.Item2;
+                            var customize = Compile(customization);
+                            var disposable = customize(nodeViewImp);
+                            nodeViewImp.Unloaded += (s, a) => disposable.Dispose();
+                        }
+                    }
+
+                }
+            }
+        }
+
+        //TODO move to extension - 
+        private Func<NodeView, IDisposable> Compile(Type customizerType)
+        {
+            // generate:
+            //
+            // (model, view) => {
+            //      var c = new NodeViewCustomizer();
+            //      c.CustomizeView(view );
+            //      return new OnceDisposable( c );
+            // }
+
+            // use cache
+            //if (compiledCustomizationCall != null) return compiledCustomizationCall;
+            Func<NodeView,IDisposable> compiledCustomizationCall;
+
+            // parameters for the lambda
+            var viewParam = Expression.Parameter(typeof(NodeView), "view");
+
+            // var c = new NodeViewCustomizer();
+            var custLam = Expression.Lambda(Expression.New(customizerType));
+            var custExp = Expression.Invoke(custLam);
+            var varExp = Expression.Variable(customizerType);
+            var assignExp = Expression.Assign(varExp, custExp);
+
+            // c.CustomizeView(view );
+            var customizeViewMethodInfo = customizerType.GetMethod("CustomizeView");
+            var invokeExp = Expression.Call(varExp, customizeViewMethodInfo, viewParam);
+
+            // new OnceDisposable(c);
+            var onceDispConstInfo = typeof(OnceDisposable).GetConstructor(new[] { typeof(IDisposable) });
+            if (onceDispConstInfo == null) throw new Exception("Could not obtain OnceDisposable constructor!");
+            var onceDisp = Expression.Lambda(Expression.New(onceDispConstInfo, varExp));
+            var onceDispExp = Expression.Invoke(onceDisp);
+
+            // make full block
+            var block = Expression.Block(
+                new[] { varExp },
+                assignExp,
+                invokeExp,
+                onceDispExp);
+
+            // compile
+            return compiledCustomizationCall = Expression.Lambda<Func<NodeView, IDisposable>>(
+                block,
+                viewParam).Compile();
+        }
+
+        //TODO move to extension
+        private void FFI_LibraryLoaded(object sender, Engine.LibraryServices.LibraryLoadedEventArgs e)
+        {
+            if (e.LibraryPath.EndsWith(".dll"))
+            {
+                //scan this library for our attribute
+                var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(assm=>!assm.IsDynamic).FirstOrDefault(x => x.Location == e.LibraryPath);
+                if(assembly != null)
+                {
+                    var ztCustomizations = assembly.GetTypes().Where(x => typeof(IZTNodeViewCustomization).IsAssignableFrom(x)).ToList();
+                    // now we need to instantiate this customization type and use it to customize the view for our function
+                    // for now we can just store a map of this information on the view and look it up later from the nodesViews?
+                    var ztBindAttributes = ztCustomizations.Select(x => x.GetCustomAttribute<ZTFunctionBind>()).ToList();
+                    //some debugging
+                    ztBindAttributes.ForEach(x => Console.WriteLine(x.ZTMethodName));
+
+
+                    var index = 0;
+                    foreach(var customizationType in ztCustomizations)
+                    {
+                        var attributeData = ztBindAttributes[index];
+                        this.ZtUICustomizationMap.Add(attributeData.ZTClassType, Tuple.Create(attributeData.ZTMethodName, customizationType));
+                    }
+
+                }
+
+            }
         }
 
         private void UnsubscribeNodeViewCustomizationEvents()
