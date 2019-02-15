@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using Dynamo.Engine;
+using Dynamo.Graph.Nodes.ZeroTouch;
 using Dynamo.Logging;
 using ProtoCore.AST.AssociativeAST;
 
@@ -52,6 +53,19 @@ namespace Dynamo.Graph.Nodes
         /// <param name="inputAstNodes">Arguments to the function call.</param>
         public IEnumerable<AssociativeNode> BuildAst(NodeModel model, List<AssociativeNode> inputAstNodes)
         {
+
+            // TODO search here for data which may have been bound from the UI.
+            // if it exists use this as the inputASTNodes instead of the data returned from upstream nodes.
+            if(model is DSFunction && (model as DSFunction).BoundData.Keys.Count > 0)
+            {
+                var replacementInputNodes = new List<AssociativeNode>();
+                //lets limit our data to strings
+                foreach(var kvp in (model as DSFunction).BoundData)
+                {
+                    replacementInputNodes.Add(AstFactory.BuildPrimitiveNodeFromObject(kvp.Value));
+                }
+                inputAstNodes = replacementInputNodes;
+            }
             var resultAst = new List<AssociativeNode>();
             BuildOutputAst(model, inputAstNodes, resultAst);
             return resultAst;

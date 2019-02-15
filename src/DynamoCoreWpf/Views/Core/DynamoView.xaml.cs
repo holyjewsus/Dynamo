@@ -321,13 +321,27 @@ namespace Dynamo.Controls
 
                     if(type != null)
                     {
+                        //TODO hack for now - 
+                        //scan the assembly again... and rebuild the map. This won't work if the customization is in another assembly...
+                        this.FFI_LibraryLoaded(this, new LibraryServices.LibraryLoadedEventArgs(matchingAssembly.Location));
+
                         var matchingTypeCustomization = this.ZtUICustomizationMap[type];
+
                         if(matchingTypeCustomization.Item1 == functionName)
                         {
                             var customization = matchingTypeCustomization.Item2;
                             var customize = Compile(customization);
-                            var disposable = customize(nodeViewImp);
-                            nodeViewImp.Unloaded += (s, a) => disposable.Dispose();
+                            var customizationInstance = customize(nodeViewImp);
+                            nodeViewImp.Unloaded += (s, a) => customizationInstance.Dispose();
+                            //when the UI requests the data to be bound, we'll cache it.
+                            customizationInstance.RequestBindData = (dataDict) => {
+                                //TODO consider merging the dictionaries
+                                //TODO move this dict somewhere better (extension, cache object etc)
+                                foreach(var keypair in dataDict)
+                                {
+                                    (model as Graph.Nodes.ZeroTouch.DSFunction).BoundData[keypair.Key] = keypair.Value;
+                                }
+                            };
                         }
                     }
 
@@ -336,7 +350,7 @@ namespace Dynamo.Controls
         }
 
         //TODO move to extension - 
-        private Func<NodeView, IDisposable> Compile(Type customizerType)
+        private Func<NodeView, IZTNodeViewCustomization> Compile(Type customizerType)
         {
             // generate:
             //
@@ -348,7 +362,7 @@ namespace Dynamo.Controls
 
             // use cache
             //if (compiledCustomizationCall != null) return compiledCustomizationCall;
-            Func<NodeView,IDisposable> compiledCustomizationCall;
+            Func<NodeView,IZTNodeViewCustomization> compiledCustomizationCall;
 
             // parameters for the lambda
             var viewParam = Expression.Parameter(typeof(NodeView), "view");
@@ -364,20 +378,20 @@ namespace Dynamo.Controls
             var invokeExp = Expression.Call(varExp, customizeViewMethodInfo, viewParam);
 
             // new OnceDisposable(c);
-            var onceDispConstInfo = typeof(OnceDisposable).GetConstructor(new[] { typeof(IDisposable) });
-            if (onceDispConstInfo == null) throw new Exception("Could not obtain OnceDisposable constructor!");
-            var onceDisp = Expression.Lambda(Expression.New(onceDispConstInfo, varExp));
-            var onceDispExp = Expression.Invoke(onceDisp);
+          //  var onceDispConstInfo = typeof(OnceDisposable).GetConstructor(new[] { typeof(IDisposable) });
+          //  if (onceDispConstInfo == null) throw new Exception("Could not obtain OnceDisposable constructor!");
+          //  var onceDisp = Expression.Lambda(Expression.New(onceDispConstInfo, varExp));
+          //  var onceDispExp = Expression.Invoke(onceDisp);
 
             // make full block
             var block = Expression.Block(
                 new[] { varExp },
                 assignExp,
                 invokeExp,
-                onceDispExp);
+                varExp);
 
             // compile
-            return compiledCustomizationCall = Expression.Lambda<Func<NodeView, IDisposable>>(
+            return compiledCustomizationCall = Expression.Lambda<Func<NodeView, IZTNodeViewCustomization>>(
                 block,
                 viewParam).Compile();
         }
@@ -403,7 +417,11 @@ namespace Dynamo.Controls
                     foreach(var customizationType in ztCustomizations)
                     {
                         var attributeData = ztBindAttributes[index];
-                        this.ZtUICustomizationMap.Add(attributeData.ZTClassType, Tuple.Create(attributeData.ZTMethodName, customizationType));
+                        if (!this.ZtUICustomizationMap.ContainsKey(attributeData.ZTClassType))
+                        {
+                            this.ZtUICustomizationMap.Add(attributeData.ZTClassType, Tuple.Create(attributeData.ZTMethodName, customizationType));
+
+                        }
                     }
 
                 }

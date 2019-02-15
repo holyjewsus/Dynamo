@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections.Generic;
 using Dynamo.Controls;
 using Dynamo.Graph.Nodes;
 
@@ -12,6 +12,7 @@ namespace Dynamo.Wpf
     public interface IZTNodeViewCustomization : IDisposable
     {
         void CustomizeView(NodeView nodeView);
+        Action<Dictionary<string, string>> RequestBindData { get; set; }
     }
 
 }

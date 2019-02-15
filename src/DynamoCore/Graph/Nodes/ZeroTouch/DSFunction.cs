@@ -1,5 +1,6 @@
 using Autodesk.DesignScript.Runtime;
 using Dynamo.Engine;
+using System.Collections.Generic;
 
 namespace Dynamo.Graph.Nodes.ZeroTouch
 {
@@ -41,6 +42,8 @@ namespace Dynamo.Graph.Nodes.ZeroTouch
         {
             get { return false; }
         }
+
+        public Dictionary<string, string> BoundData = new Dictionary<string, string>();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="DSFunction"/> class.
