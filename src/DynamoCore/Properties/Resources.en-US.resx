@@ -707,6 +707,6 @@ To install {1}, Dynamo needs to first uninstall {0}.
 Restart Dynamo to complete the uninstall.</value>
   </data>
   <data name="FunctionDefinitionOverwrittenMessage" xml:space="preserve">
-    <value>Attempting to load customNode {0} loaded by package {1}, but a previous definition named {2} exists with no associated package. The new customNode definition has been loaded, but Dynamo may be in an unstable state, please avoid loading multiple custom nodes with the id.</value>
+    <value>Attempting to load customNode {0} loaded by package {1}, but a previous definition named {2} exists with no associated package. The new customNode definition has been loaded, but Dynamo may be in an unstable state, please avoid loading multiple custom nodes with the same id.</value>
   </data>
 </root>
