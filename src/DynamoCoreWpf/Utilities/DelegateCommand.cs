@@ -23,8 +23,25 @@ namespace Dynamo.UI.Commands
         public DelegateCommand(Action<object> execute,
                        Predicate<object> canExecute)
         {
-            _execute = execute;
-            _canExecute = canExecute;
+            if (execute == null)
+            {
+                _execute = (o) => { Console.WriteLine($"nameof(this) disabled"); };
+            }
+            else
+            {
+                _execute = execute;
+
+            }
+
+            if(canExecute == null)
+            {
+                _canExecute = (o)=> { return false; };
+            }
+            else
+            {
+                _canExecute = canExecute;
+
+            }
         }
 
         public bool CanExecute(object parameter)

@@ -47,6 +47,7 @@ using Utils = Dynamo.Graph.Nodes.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using System.Configuration;
 
 namespace Dynamo.Models
 {
@@ -553,6 +554,37 @@ namespace Dynamo.Models
         /// <param name="config">Start configuration</param>
         protected DynamoModel(IStartConfiguration config)
         {
+            //gather our debug config.
+
+            var path = this.GetType().Assembly.Location;
+            var configFile = ConfigurationManager.OpenExeConfiguration(path);
+
+            var analyticsDisableKey = "SilenceAnalytics";
+            var analyticsDisableString = configFile.AppSettings.Settings[analyticsDisableKey];
+            bool disableAnalyticsSwitch = false;
+            if (analyticsDisableString != null)
+            {
+                bool.TryParse(analyticsDisableString.Value, out disableAnalyticsSwitch);
+            }
+
+            var umdisablekey = "DisableUpdateManager";
+            var umdisablestring = configFile.AppSettings.Settings[umdisablekey];
+            bool umdisableSwitch = false;
+            if (umdisablestring != null)
+            {
+                bool.TryParse(umdisablestring.Value, out umdisableSwitch);
+            }
+
+            var extDisableKey = "DisableExtensions";
+            var extDisableString = configFile.AppSettings.Settings[extDisableKey];
+            bool extDisableSwitch = false;
+            if (extDisableString != null)
+            {
+                bool.TryParse(extDisableString.Value, out extDisableSwitch);
+            }
+
+
+
             ClipBoard = new ObservableCollection<ModelBase>();
 
             pathManager = new PathManager(new PathManagerParams
@@ -596,7 +628,15 @@ namespace Dynamo.Models
                 PreferenceSettings.PropertyChanged += PreferenceSettings_PropertyChanged;
             }
 
-            InitializeInstrumentationLogger();
+            if (disableAnalyticsSwitch)
+            {
+                Logger.LogError("DISABLING ANALYTICS");
+            }
+            else
+            {
+                InitializeInstrumentationLogger();
+            }
+            
 
             if (!IsTestMode && PreferenceSettings.IsFirstRun)
             {
@@ -693,6 +733,11 @@ namespace Dynamo.Models
 
             extensionManager = new ExtensionManager();
             extensionManager.MessageLogged += LogMessage;
+            if (extDisableSwitch)
+            {
+                Logger.LogError("DISABLING MODEL EXTENSIONS");
+                config.Extensions = new List<IExtension>();
+            }
             var extensions = config.Extensions ?? LoadExtensions();
 
             // when dynamo is ready, alert the loaded extensions
@@ -752,6 +797,13 @@ namespace Dynamo.Models
             }
 
             UpdateManager.Log += UpdateManager_Log;
+
+            if (umdisableSwitch && UpdateManager.Configuration is IDisableUpdateConfig)
+            {
+                Logger.LogError("DISABLING UPDATE MANAGER");
+                (UpdateManager.Configuration as IDisableUpdateConfig).DisableUpdates = true;
+
+            }
             if (!IsTestMode && !IsHeadless)
             {
                 DefaultUpdateManager.CheckForProductUpdate(UpdateManager);

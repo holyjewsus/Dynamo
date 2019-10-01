@@ -3,6 +3,7 @@ using Dynamo.Graph.Nodes.CustomNodes;
 using Dynamo.Wpf.ViewModels;
 using Microsoft.Practices.Prism.Commands;
 using DelegateCommand = Dynamo.UI.Commands.DelegateCommand;
+using System.Linq;
 
 namespace Dynamo.ViewModels
 {
@@ -10,6 +11,18 @@ namespace Dynamo.ViewModels
     {
         private void InitializeDelegateCommands()
         {
+
+            if (model.ExtensionManager.Extensions.OfType<PackageManager.PackageManagerExtension>().FirstOrDefault() != null)
+            {
+                ShowPackageManagerSearchCommand = new DelegateCommand(ShowPackageManagerSearch, CanShowPackageManagerSearch);
+                PublishNewPackageCommand = new DelegateCommand(PackageManagerClientViewModel.PublishNewPackage, PackageManagerClientViewModel.CanPublishNewPackage);
+                ShowInstalledPackagesCommand = new DelegateCommand(ShowInstalledPackages, CanShowInstalledPackages);
+                ManagePackagePathsCommand = new DelegateCommand(ManagePackagePaths, o => true);
+                PublishCurrentWorkspaceCommand = new DelegateCommand(PackageManagerClientViewModel.PublishCurrentWorkspace, PackageManagerClientViewModel.CanPublishCurrentWorkspace);
+                PublishSelectedNodesCommand = new DelegateCommand(PackageManagerClientViewModel.PublishSelectedNodes, PackageManagerClientViewModel.CanPublishSelectedNodes);
+                PublishCustomNodeCommand = new DelegateCommand<Function>(PackageManagerClientViewModel.PublishCustomNode, PackageManagerClientViewModel.CanPublishCustomNode);
+            }
+
             OpenCommand = new DelegateCommand(Open, CanOpen);
             OpenIfSavedCommand = new DelegateCommand(OpenIfSaved, CanOpen);
             OpenRecentCommand = new DelegateCommand(OpenRecent, CanOpenRecent);
@@ -58,13 +71,7 @@ namespace Dynamo.ViewModels
             GoToDictionaryCommand = new DelegateCommand(GoToDictionary, CanGoToDictionary);
             DisplayStartPageCommand = new DelegateCommand(DisplayStartPage, CanDisplayStartPage);
             ChangeScaleFactorCommand = new DelegateCommand(p => OnRequestScaleFactorDialog(this, EventArgs.Empty));
-            ShowPackageManagerSearchCommand = new DelegateCommand(ShowPackageManagerSearch, CanShowPackageManagerSearch);
-            PublishNewPackageCommand = new DelegateCommand(PackageManagerClientViewModel.PublishNewPackage, PackageManagerClientViewModel.CanPublishNewPackage);
-            ShowInstalledPackagesCommand = new DelegateCommand(ShowInstalledPackages, CanShowInstalledPackages);
-            ManagePackagePathsCommand = new DelegateCommand(ManagePackagePaths, o => true);
-            PublishCurrentWorkspaceCommand = new DelegateCommand(PackageManagerClientViewModel.PublishCurrentWorkspace, PackageManagerClientViewModel.CanPublishCurrentWorkspace);
-            PublishSelectedNodesCommand = new DelegateCommand(PackageManagerClientViewModel.PublishSelectedNodes, PackageManagerClientViewModel.CanPublishSelectedNodes);
-            PublishCustomNodeCommand = new DelegateCommand<Function>(PackageManagerClientViewModel.PublishCustomNode, PackageManagerClientViewModel.CanPublishCustomNode);
+          
             ShowHideConnectorsCommand = new DelegateCommand(ShowConnectors, CanShowConnectors);
             SelectNeighborsCommand = new DelegateCommand(SelectNeighbors, CanSelectNeighbors);
             ClearLogCommand = new DelegateCommand(ClearLog, CanClearLog);
