@@ -556,7 +556,7 @@ namespace Dynamo.Models
         {
             //gather our debug config.
 
-            var path = this.GetType().Assembly.Location;
+            var path = Assembly.GetExecutingAssembly().Location;
             var configFile = ConfigurationManager.OpenExeConfiguration(path);
 
             var analyticsDisableKey = "SilenceAnalytics";
