@@ -30,6 +30,7 @@ namespace Dynamo.Engine.Profiling
         public void Dispose()
         {
             UnregisterEventHandlers();
+            profilingData.Dispose();
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace Dynamo.Engine.Profiling
 
             string id = node.GUID.ToString();
             ExprListNode exprListNode = AstFactory.BuildExprList(inputAstNodes);
-            AssociativeNode bridgeData = DataBridge.GenerateBridgeDataAst(id+ profilingID, exprListNode);
+            AssociativeNode bridgeData = DataBridge.GenerateBridgeDataAst(id+ profilingID+"BEGIN", exprListNode);
 
             return AstFactory.BuildAssignment(identifier, bridgeData);
         }
@@ -88,7 +89,7 @@ namespace Dynamo.Engine.Profiling
                 Enumerable.Range(0, node.OutPorts.Count).Select(
                     index => (AssociativeNode)node.GetAstIdentifierForOutputIndex(index)).ToList();
             ExprListNode exprListNode = AstFactory.BuildExprList(outPortNodeList);
-            AssociativeNode bridgeData = DataBridge.GenerateBridgeDataAst(id+ profilingID, exprListNode);
+            AssociativeNode bridgeData = DataBridge.GenerateBridgeDataAst(id+ profilingID+"END", exprListNode);
 
             return AstFactory.BuildAssignment(identifier, bridgeData);
         }

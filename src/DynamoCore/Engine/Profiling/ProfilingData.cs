@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Dynamo.Graph.Nodes;
+using System.Linq;
 
 namespace Dynamo.Engine.Profiling
 {
@@ -120,6 +121,16 @@ namespace Dynamo.Engine.Profiling
             {
                 node.Reset();
             }
+        }
+
+        internal void Dispose()
+        {
+            foreach (var nodeId in NodeProfilingData.Keys.ToList())
+            {
+                UnregisterNode(nodeId);
+            }
+
+            
         }
     }
 }

@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Dynamo.Graph.Nodes;
 using VMDataBridge;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace Dynamo.Engine.Profiling
 {
@@ -14,7 +18,8 @@ namespace Dynamo.Engine.Profiling
         internal NodeProfilingData(NodeModel node)
         {
             this.node = node;
-            DataBridge.Instance.RegisterCallback(node.GUID.ToString()+ ProfilingSession.profilingID, RecordEvaluationState);
+            DataBridge.Instance.RegisterCallback(node.GUID.ToString()+ ProfilingSession.profilingID+"BEGIN", RecordEvaluationBegin);
+            DataBridge.Instance.RegisterCallback(node.GUID.ToString() + ProfilingSession.profilingID+"END", RecordEvaluationEnd);
         }
 
         internal void Reset()
@@ -25,20 +30,39 @@ namespace Dynamo.Engine.Profiling
 
         public void Dispose()
         {
-            DataBridge.Instance.UnregisterCallback(node.GUID.ToString());
+            DataBridge.Instance.UnregisterCallback(node.GUID.ToString() + ProfilingSession.profilingID+"BEGIN");
+            DataBridge.Instance.UnregisterCallback(node.GUID.ToString() + ProfilingSession.profilingID+"END");
         }
 
-        private void RecordEvaluationState(object data)
+        private void RecordEvaluationBegin(object data)
         {
-            if (!startTime.HasValue)
-            {
+            Console.WriteLine($"{nameof(RecordEvaluationBegin)} {node.Name},{prettyPrint(data)}");
                 startTime = DateTime.Now;
                 node.OnNodeExecutionBegin();
-                return;
-            }
 
+        }
+
+        private void RecordEvaluationEnd(object data)
+        {
+            Console.WriteLine($"{nameof(RecordEvaluationEnd)} {node.Name},{prettyPrint(data)}");
             endTime = DateTime.Now;
             node.OnNodeExecutionEnd();
+        }
+
+        private string prettyPrint(object data)
+        {
+
+            if(data is ICollection)
+            {
+                var items = string.Join(",",
+               (data as ICollection).Cast<Object>().Select(x => x.ToString()));
+                return $"[{items}]";
+            }
+            else
+            {
+                return data.ToString();
+            }
+
         }
 
         internal TimeSpan? ExecutionTime
