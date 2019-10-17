@@ -342,6 +342,7 @@ namespace ProtoFFI
             StackValue dsRetValue = StackValue.Null;
             try
             {
+                Console.WriteLine(ReflectionInfo.Name);
                 var ret = ReflectionInfo.Invoke(thisObject, parameters);
                 //Reduce to singleton if the attribute is specified.
                 ret = ReflectionInfo.ReduceReturnedCollectionToSingleton(ret);
