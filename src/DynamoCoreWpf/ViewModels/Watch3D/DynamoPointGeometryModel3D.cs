@@ -1,4 +1,5 @@
 ﻿using HelixToolkit.Wpf.SharpDX;
+using HelixToolkit.Wpf.SharpDX.Model.Scene;
 using System;
 
 namespace Dynamo.Wpf.ViewModels.Watch3D
@@ -10,5 +11,23 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
     public class DynamoPointGeometryModel3D : PointGeometryModel3D
     {
 
+        public DynamoPointGeometryModel3D()
+        {
+        }
+
+        protected override SceneNode OnCreateSceneNode()
+        {
+            return new DynamoPointNode() { Material = material };
+        }
+
+
+    }
+
+    public class DynamoPointNode : PointNode
+    {
+        protected override IRenderTechnique OnCreateRenderTechnique(IRenderHost host)
+        {
+            return base.OnCreateRenderTechnique(host);
+        }
     }
 }
