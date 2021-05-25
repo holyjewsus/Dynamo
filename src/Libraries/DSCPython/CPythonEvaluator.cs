@@ -176,16 +176,15 @@ namespace DSCPython
             {
                 return null;
             }
-
+            IntPtr gs = (IntPtr)0;
             InstallPython();
 
             if (!PythonEngine.IsInitialized)
             {
                 PythonEngine.Initialize();
-                PythonEngine.BeginAllowThreads();
+                gs = PythonEngine.BeginAllowThreads();
             }
 
-            IntPtr gs = PythonEngine.AcquireLock();
             try
             {
                 using (Py.GIL())
@@ -241,7 +240,8 @@ namespace DSCPython
             }
             finally
             {
-                PythonEngine.ReleaseLock(gs);
+                PythonEngine.EndAllowThreads(gs);
+                PythonEngine.Shutdown();
             }
         }
 

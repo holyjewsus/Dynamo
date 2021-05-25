@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
 using DSCPython;
+using System.IO;
 
 namespace DSPythonTests
 {
@@ -348,6 +349,31 @@ OUT = s,fs,dk,dv,di
                 var output = pythonEvaluator(code, empty, empty);
                 Assert.AreEqual(expected, output);
             }
+        }
+
+        [Test]
+        public void ImportedLibrariesReloadedOnNewEvaluation()
+        {
+            var script = @"import sys
+sys.path.append(r'C:\Users\kirschm\Desktop\dyn-3514')
+import reload_test
+OUT = reload_test.value";
+
+            var output = DSCPython.CPythonEvaluator.EvaluatePythonScript(
+               script,
+               new ArrayList { "IN" },
+               new ArrayList { new ArrayList { " ", "  " } });
+
+            Assert.AreEqual("Hello World!", output);
+
+            //now modify the file.
+            File.AppendAllLines(@"C:\Users\kirschm\Desktop\dyn-3514\reload_test.py", new string[] { "value ='bye'" });
+            output = DSCPython.CPythonEvaluator.EvaluatePythonScript(
+             script,
+             new ArrayList { "IN" },
+             new ArrayList { new ArrayList { " ", "  " } });
+
+            Assert.AreEqual("bye", output);
         }
     }
 }
