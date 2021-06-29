@@ -190,7 +190,7 @@ namespace DynamoCoreWpfTests
         #region Setup methods
         private PackagePathViewModel CreatePackagePathViewModel(PreferenceSettings setting)
         {
-            PackageLoader loader = new PackageLoader(setting.CustomPackageFolders);
+            PackageLoader loader = new PackageLoader(setting.CustomPackageFolders,ViewModel.Model.PathManager);
             LoadPackageParams loadParams = new LoadPackageParams
             {
                 Preferences = setting,

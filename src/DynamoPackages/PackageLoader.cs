@@ -55,7 +55,6 @@ namespace Dynamo.PackageManager
         /// </summary>
         public event Action<Package> PackageRemoved;
 
-        private const string stdLibName = @"Standard Library";
         private readonly List<IExtension> requestedExtensions = new List<IExtension>();
         /// <summary>
         /// Collection of ViewExtensions the ViewExtensionSource requested be loaded.
@@ -72,7 +71,7 @@ namespace Dynamo.PackageManager
         public IEnumerable<Package> LocalPackages { get { return localPackages; } }
 
         private readonly List<string> packagesDirectories = new List<string>();
-
+        private IPathManager pathManager;
 
         private int defaultPackagesDirectoryIndex = -1;
         /// <summary>
@@ -81,7 +80,7 @@ namespace Dynamo.PackageManager
         /// The first entry is the standard library.
         /// </summary>
         /// <returns>Returns the path to the DefaultPackagesDirectory if found - or null if something has gone wrong.</returns>
-        [Obsolete("This property is redudant,please use the PathManager.DefaultPackagesDirectory property.")]
+        [Obsolete("This property is redundant, please use the PathManager.DefaultPackagesDirectory property instead.")]
         public string DefaultPackagesDirectory
         {
             get { return defaultPackagesDirectoryIndex != -1 ? packagesDirectories[defaultPackagesDirectoryIndex] : null; }
@@ -123,59 +122,51 @@ namespace Dynamo.PackageManager
 
         private readonly List<string> packagesDirectoriesToVerifyCertificates = new List<string>();
 
-        private string stdLibDirectory = null;
 
-        /// <summary>
-        /// The standard library directory is located in the same directory as the DynamoPackages.dll
-        /// Property should only be set during testing.
-        /// </summary>
-        internal string StandardLibraryDirectory
-        {
-            get
-            {
-                return stdLibDirectory == null ?
-                    Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(GetType()).Location),stdLibName, @"Packages")
-                    : stdLibDirectory;
-            }
-            set
-            {
-                if (stdLibDirectory != value)
-                {
-                    stdLibDirectory = value;
-                }
-            }
-        }
-
-        public PackageLoader(string overridePackageDirectory)
-            : this(new[] { overridePackageDirectory })
+        internal PackageLoader(string overridePackageDirectory, IPathManager pathManager) : this(new[] { overridePackageDirectory }, pathManager)
         {
         }
 
-        /// <summary>
-        /// This constructor is only intended for testing of stdLib using a non standard directory.
-        /// </summary>
-        /// <param name="packagesDirectories"></param>
-        /// <param name="stdLibDirectory"></param>
-        internal PackageLoader(IEnumerable<string> packagesDirectories, string stdLibDirectory)
-        {
-            InitPackageLoader(packagesDirectories, stdLibDirectory);
+       // [Obsolete("Do not use. Please provide a IPathManager instance")]
+       // public PackageLoader(string overridePackageDirectory)
+      //      : this(new[] { overridePackageDirectory })
+      //  {
+      //  }
 
-            //override the property.
-            this.StandardLibraryDirectory = stdLibDirectory;
+        //[Obsolete("Do not use. Please provide a IPathManager instance")]
+    //    public PackageLoader(IEnumerable<string> packagesDirectories)
+      //  {
+     //       InitPackageLoader(packagesDirectories, null);
+    //    }
+
+        internal PackageLoader(IEnumerable<string> packageDiretories, IPathManager pathManager)
+        {
+            this.pathManager = pathManager;
+            InitPackageLoader(packageDiretories, (pathManager as PathManager)?.StandardLibraryDirectory);
         }
 
-        public PackageLoader(IEnumerable<string> packagesDirectories)
-        {
-            InitPackageLoader(packagesDirectories, StandardLibraryDirectory);
-        }
+        //[Obsolete("Do not use. Please provide a IPathManager instance")]
+        ///// <summary>
+        ///// Initialize a new instance of PackageLoader class
+        ///// </summary>
+        ///// <param name="packagesDirectories">Default package directories</param>
+        ///// <param name="packageDirectoriesToVerify">Default package directories where node library files require certificate verification before loading</param>
+        //public PackageLoader(IEnumerable<string> packagesDirectories, IEnumerable<string> packageDirectoriesToVerify)
+        //    : this(packagesDirectories)
+        //{
+        //    if (packageDirectoriesToVerify == null)
+        //        throw new ArgumentNullException("packageDirectoriesToVerify");
+
+        //    packagesDirectoriesToVerifyCertificates.AddRange(packageDirectoriesToVerify);
+        //}
 
         /// <summary>
         /// Initialize a new instance of PackageLoader class
         /// </summary>
         /// <param name="packagesDirectories">Default package directories</param>
         /// <param name="packageDirectoriesToVerify">Default package directories where node library files require certificate verification before loading</param>
-        public PackageLoader(IEnumerable<string> packagesDirectories, IEnumerable<string> packageDirectoriesToVerify)
-            : this(packagesDirectories)
+        public PackageLoader(IEnumerable<string> packagesDirectories, IEnumerable<string> packageDirectoriesToVerify, IPathManager pathManager)
+            : this(packagesDirectories,pathManager)
         {
             if (packageDirectoriesToVerify == null)
                 throw new ArgumentNullException("packageDirectoriesToVerify");
@@ -214,7 +205,7 @@ namespace Dynamo.PackageManager
                 var safeIndex = this.packagesDirectories.Count > 1 ? 1 : -1;
                 defaultPackagesDirectoryIndex = standardLibraryIndex == 1 ? 0 : safeIndex;
             }
-
+            //TODO remove and check if pathmanager.cs line 441 does this already.
             var error = PathHelper.CreateFolderIfNotExist(DefaultPackagesDirectory);
 
             if (error != null)
@@ -449,7 +440,7 @@ namespace Dynamo.PackageManager
                     &&
                     //if this directory is the standard library location
                     //and loading from there is disabled, don't scan the directory.
-                    ((disablePrefs.DisableStandardLibrary && packagesDirectory == StandardLibraryDirectory)
+                    ((disablePrefs.DisableStandardLibrary && packagesDirectory == (pathManager as PathManager)?.StandardLibraryDirectory)
                     //or if custom package directories are disabled, and this is a custom package directory, don't scan.
                     || (disablePrefs.DisableCustomPackageLocations && preferences.CustomPackageFolders.Contains(packagesDirectory))))
                 {

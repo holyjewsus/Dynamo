@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using Dynamo.Core;
 using Dynamo.PackageManager;
 using Dynamo.PackageManager.UI;
 using Dynamo.Tests;
@@ -159,7 +160,7 @@ namespace DynamoCoreWpfTests
         public void PackageManagerConflictsWithStdLib()
         {
             var pkgLoader = GetPackageLoader();
-            pkgLoader.StandardLibraryDirectory = StandardLibraryTestDirectory;
+            (ViewModel.Model.PathManager as PathManager).StandardLibraryDirectory = StandardLibraryTestDirectory;
 
             // Load a std lib package
             var stdPackageLocation = Path.Combine(StandardLibraryTestDirectory, "SignedPackage2");

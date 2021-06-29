@@ -102,7 +102,7 @@ namespace DynamoCoreWpfTests
         {
             string packagesDirectory = Path.Combine(TestDirectory, "pkgs");
 
-            var loader = new PackageLoader(packagesDirectory);
+            var loader = new PackageLoader(packagesDirectory,ViewModel.Model.PathManager);
             loader.LoadAll(new LoadPackageParams
             {
                 Preferences = ViewModel.Model.PreferenceSettings

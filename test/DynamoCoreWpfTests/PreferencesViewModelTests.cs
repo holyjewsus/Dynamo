@@ -21,6 +21,7 @@ namespace DynamoCoreWpfTests
             preferencesVM.SelectedPackagePathForInstall = Path.GetTempPath();
 
             var packageLoader = ViewModel.PackageManagerClientViewModel.PackageManagerExtension.PackageLoader;
+            //TODO get rid of use of this property.
             Assert.Null(packageLoader.DefaultPackagesDirectory);
         }
     }

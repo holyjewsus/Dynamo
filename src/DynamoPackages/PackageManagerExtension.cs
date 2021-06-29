@@ -21,7 +21,7 @@ namespace Dynamo.PackageManager
         //TODO should we add a new handler specifically for packages? this is the package manager afterall so maybe not.
         private event Func<string, PackageInfo, IEnumerable<CustomNodeInfo>> RequestLoadCustomNodeDirectoryHandler;
         private Action<IEnumerable<Assembly>> LoadPackagesHandler;
-       
+
         public event Func<string, IExtension> RequestLoadExtension;
         public event Action<IExtension> RequestAddExtension;
 
@@ -132,7 +132,10 @@ namespace Dynamo.PackageManager
             }
 
             //Initialize the PackageLoader with the CommonDataDirectory so that packages found here are checked first for dll's with signed certificates
-            PackageLoader = new PackageLoader(startupParams.PathManager.PackagesDirectories, new [] {startupParams.PathManager.CommonDataDirectory});
+            PackageLoader = new PackageLoader(startupParams.PathManager.PackagesDirectories,
+                new[] { startupParams.PathManager.CommonDataDirectory },
+                startupParams.PathManager);
+
             PackageLoader.MessageLogged += OnMessageLogged;
             PackageLoader.PackgeLoaded += OnPackageLoaded;
             PackageLoader.PackageRemoved += OnPackageRemoved;
@@ -142,7 +145,7 @@ namespace Dynamo.PackageManager
             customNodeManager = (startupParams.CustomNodeManager as Core.CustomNodeManager);
 
             //TODO - in 3.0 we can add the other overload of AddUninitializedCustomNodesInPath to the ICustomNodeManager interface.
-            RequestLoadCustomNodeDirectoryHandler = (dir,pkgInfo) => customNodeManager
+            RequestLoadCustomNodeDirectoryHandler = (dir, pkgInfo) => customNodeManager
                     .AddUninitializedCustomNodesInPath(dir, DynamoModel.IsTestMode, pkgInfo);
 
             //when the customNodeManager requests to know the owner of a customNode handle this query.
@@ -154,7 +157,7 @@ namespace Dynamo.PackageManager
             PackageLoader.PackagesLoaded += LoadPackagesHandler;
             PackageLoader.RequestLoadNodeLibrary += RequestLoadNodeLibraryHandler;
             PackageLoader.RequestLoadCustomNodeDirectory += RequestLoadCustomNodeDirectoryHandler;
-                
+
             var dirBuilder = new PackageDirectoryBuilder(
                 new MutatingFileSystem(),
                 new CustomNodePathRemapper(startupParams.CustomNodeManager, DynamoModel.IsTestMode));
@@ -167,14 +170,12 @@ namespace Dynamo.PackageManager
             string packageUploadDirectory;
             if (startupParams.Preferences is PreferenceSettings preferences)
             {
-                //TODO remove use of packageLoader here and use PathManager instead!
-                
-                packageUploadDirectory = string.IsNullOrEmpty(preferences.SelectedPackagePathForInstall) ? 
-                    PackageLoader.DefaultPackagesDirectory : preferences.SelectedPackagePathForInstall;
+                packageUploadDirectory = string.IsNullOrEmpty(preferences.SelectedPackagePathForInstall) ?
+                  startupParams.PathManager.DefaultPackagesDirectory : preferences.SelectedPackagePathForInstall;
             }
             else
             {
-                packageUploadDirectory = PackageLoader.DefaultPackagesDirectory;
+                packageUploadDirectory = startupParams.PathManager.DefaultPackagesDirectory;
             }
             PackageManagerClient = new PackageManagerClient(
                 new GregClient(startupParams.AuthProvider, url),
@@ -225,7 +226,7 @@ namespace Dynamo.PackageManager
                 this.MessageLogged(msg);
             }
         }
-        
+
         private void OnCurrentWorkspaceChanged(IWorkspaceModel ws)
         {
             if (ws is WorkspaceModel)
@@ -235,13 +236,13 @@ namespace Dynamo.PackageManager
                     (currentWorkspace as WorkspaceModel).CollectingCustomNodePackageDependencies -= GetCustomNodePackageFromID;
                     (currentWorkspace as WorkspaceModel).CollectingNodePackageDependencies -= GetNodePackageFromAssemblyName;
                 }
-                
+
                 (ws as WorkspaceModel).CollectingCustomNodePackageDependencies += GetCustomNodePackageFromID;
                 (ws as WorkspaceModel).CollectingNodePackageDependencies += GetNodePackageFromAssemblyName;
                 currentWorkspace = ws;
             }
         }
-        
+
         private PackageInfo GetNodePackageFromAssemblyName(AssemblyName assemblyName)
         {
             if (NodePackageDictionary != null && NodePackageDictionary.ContainsKey(assemblyName.FullName))
@@ -356,7 +357,7 @@ namespace Dynamo.PackageManager
 
         #endregion
     }
-    
+
 
 
     public static class DynamoModelExtensions

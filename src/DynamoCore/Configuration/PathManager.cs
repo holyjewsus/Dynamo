@@ -95,10 +95,13 @@ namespace Dynamo.Core
 
         private IEnumerable<string> RootDirectories
         {
-            get { return Preferences != null ? Preferences.CustomPackageFolders.Where(path => path != DynamoModel.StandardLibraryToken) : rootDirectories; }
+            get { return Preferences != null ?
+                    //replace %stdLib% token with actual path
+                    Preferences.CustomPackageFolders.Select((path)=> path == DynamoModel.StandardLibraryToken? stdLibDirectory: path)
+                    : rootDirectories; }
         }
 
-        //Todo in Dynamo 3.0, Add this to the IPathManager interface
+        //Todo remove.
         /// <summary>
         /// The local directory that contains package directory created by all users.
         /// </summary>
@@ -225,6 +228,31 @@ namespace Dynamo.Core
         public int MinorFileVersion
         {
             get { return minorFileVersion; }
+        }
+
+        private const string stdLibName = @"Standard Library";
+        private string stdLibDirectory = null;
+
+        //Todo in Dynamo 3.0, Add this to the IPathManager interface
+        /// <summary>
+        /// The standard library directory is located in the same directory as the DynamoCore.dll
+        /// Property should only be set during testing.
+        /// </summary>
+        internal string StandardLibraryDirectory
+        {
+            get
+            {
+                return stdLibDirectory == null ?
+                    Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(GetType()).Location), stdLibName, @"Packages")
+                    : stdLibDirectory;
+            }
+            set
+            {
+                if (stdLibDirectory != value)
+                {
+                    stdLibDirectory = value;
+                }
+            }
         }
 
         public void AddResolutionPath(string path)
