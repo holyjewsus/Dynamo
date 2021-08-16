@@ -39,7 +39,7 @@ namespace NodeDocumentationMarkdownGenerator
 
             var resolver = new PathAssemblyResolver(paths);
             var mlc = new MetadataLoadContext(resolver);
-
+            Program.DynamoDirectoryAssemblyPaths.AddRange(paths.Select(x=> new FileInfo(x)));
             return Scan(assemblyPaths, mlc, resolver);
         }
 
@@ -51,10 +51,11 @@ namespace NodeDocumentationMarkdownGenerator
 
             Console.WriteLine($"Starting scan of following assemblies: {string.Join(", ", assemblyPaths)}");
 
-            using (mlc)
+            //using (mlc)
             {
-                var dynamoCoreAss = resolver.Resolve(mlc, new AssemblyName("DynamoCore"));
-                var nodeModelType = dynamoCoreAss.GetType("Dynamo.Graph.Nodes.NodeModel");
+                //var dynamoCoreAss = resolver.Resolve(mlc, new AssemblyName("DynamoCore"));
+                //var nodeModelType = dynamoCoreAss.GetType("Dynamo.Graph.Nodes.NodeModel");
+                var nodeModelType = typeof(NodeModel);
 
                 var functionGroups = new Dictionary<string, Dictionary<string, FunctionGroup>>(new LibraryPathComparer());
                 
@@ -75,10 +76,11 @@ namespace NodeDocumentationMarkdownGenerator
 
                         else
                         {
-                            Assembly asm = mlc.LoadFromAssemblyPath(path);
+                            //Assembly asm = mlc.LoadFromAssemblyPath(path);
+                            var asm = Assembly.LoadFrom(path);
                             AssemblyName name = asm.GetName();
 
-                            if (NodeModelAssemblyLoader.ContainsNodeModelSubTypeReflectionLoaded(asm, nodeModelType))
+                            if (NodeModelAssemblyLoader.ContainsNodeModelSubType(asm))
                             {
                                 AddNodeModelsToSearchModel(asm, nodeModelType, nodeSearchModel);
                                 continue;
@@ -142,7 +144,7 @@ namespace NodeDocumentationMarkdownGenerator
 
             // Getting ZT imports from CLRModuleTypes
             var dllModule = new CLRDLLModule(asm.GetName().Name, asm);
-            dllModule.ScanModule(true);
+            dllModule.ScanModule(false);
             List<CLRModuleType> moduleTypes = CLRModuleType.GetTypes((CLRModuleType mtype) => { return mtype.Module == dllModule; });
 
             var customizationFile = LibraryCustomizationServices.GetForAssembly(asm.Location, pathManager);
@@ -183,7 +185,7 @@ namespace NodeDocumentationMarkdownGenerator
 
                     foreach (var node in associativeNodes)
                     {
-                        if (TryGetFunctionDescriptor(node, asm, asm.Location, className, customizationFile, out ReflectionFunctionDescriptor des))
+                        if (TryGetFunctionDescriptor(node, asm, asm.Location, className, customizationFile, out FunctionDescriptor des))
                         {
                             descriptors.Add(des);
                         }
@@ -203,7 +205,7 @@ namespace NodeDocumentationMarkdownGenerator
         {
             var descriptors = new List<FunctionDescriptor>();
             //we need to put CLRModuleType into reflection mode because importing DS may import some CLR modules as a side effect.
-            CLRModuleType.IsReflectionContext = true;
+            //CLRModuleType.IsReflectionContext = true;
             var importModuleHandler = new ImportModuleHandler(new ProtoCore.Core(new ProtoCore.Options()));
             var dsCodeNode = importModuleHandler.Import(dsFilePath, "", "");
             var classNodes = dsCodeNode.CodeNode.Body.OfType<ClassDeclNode>();
@@ -223,7 +225,7 @@ namespace NodeDocumentationMarkdownGenerator
             allFunctionTuples.AddRange(dsCodeNode.CodeNode.Body.OfType<FunctionDefinitionNode>().Select(func=>(ClassName:"",Procedure:func as AssociativeNode)));
             foreach (var tuple in allFunctionTuples)
             {
-                if (TryGetFunctionDescriptor(tuple.Procedure, null, dsFilePath, tuple.ClassName, customizationFile, out ReflectionFunctionDescriptor des))
+                if (TryGetFunctionDescriptor(tuple.Procedure, null, dsFilePath, tuple.ClassName, customizationFile, out FunctionDescriptor des))
                 {
                     descriptors.Add(des);
                 }
@@ -277,8 +279,8 @@ namespace NodeDocumentationMarkdownGenerator
             }
 
             var nodeTypes = typesInAsm
-                .Where(x => NodeModelAssemblyLoader.IsNodeSubTypeReflectionLoaded(x, nodeModelType))
-                .Select(t => new TypeLoadData(t, t.GetAttributesFromReflectionContext().ToArray()))
+                .Where(x => NodeModelAssemblyLoader.IsNodeSubType(x))
+                .Select(t => new TypeLoadData(t))
                 .Where(type => type != null && !type.IsDeprecated && !type.IsHidden)
                 .ToList();
 
@@ -302,7 +304,7 @@ namespace NodeDocumentationMarkdownGenerator
         private static bool TryGetFunctionDescriptor(
             AssociativeNode associativeNode, Assembly asm, string asmPath,
             string className, LibraryCustomization customization,
-            out ReflectionFunctionDescriptor descriptor)
+            out FunctionDescriptor descriptor)
         {
             descriptor = null;
             string name = associativeNode.Name;
@@ -325,8 +327,8 @@ namespace NodeDocumentationMarkdownGenerator
                 default:
                     break;
             }
-
-            descriptor = new ReflectionFunctionDescriptor(functionParams, customization, asm);
+            descriptor = new FunctionDescriptor(functionParams);
+            //descriptor = new ReflectionFunctionDescriptor(functionParams, customization, asm);
             return true;
         }
 

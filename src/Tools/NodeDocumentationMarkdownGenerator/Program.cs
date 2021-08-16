@@ -10,14 +10,14 @@ namespace NodeDocumentationMarkdownGenerator
 {
     class Program
     {
-        internal static IEnumerable<FileInfo> DynamoDirectoryAssemblyPaths;
+        internal static List<FileInfo> DynamoDirectoryAssemblyPaths;
         static void Main(string[] args)
         {
             Program.DynamoDirectoryAssemblyPaths = new DirectoryInfo(
                 Path.GetFullPath(
                     Path.Combine(
                         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\..\..\..\..\bin\AnyCPU\Debug")))
-                .EnumerateFiles("*.dll", SearchOption.TopDirectoryOnly);
+                .EnumerateFiles("*.dll", SearchOption.AllDirectories).ToList();
 
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
@@ -29,6 +29,10 @@ namespace NodeDocumentationMarkdownGenerator
                     (FromDirectoryOptions opts) => CommandHandler.HandleFromDirectory(opts),
                     (FromPackageOptions opts) => CommandHandler.HandleFromPackage(opts),
                     err => "1");
+
+#if DEBUG
+            Console.ReadLine();
+#endif
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
