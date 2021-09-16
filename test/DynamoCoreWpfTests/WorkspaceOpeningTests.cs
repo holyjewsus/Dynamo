@@ -1,14 +1,63 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using Dynamo.Events;
 using Dynamo.Graph;
 using Dynamo.Graph.Workspaces;
 using Dynamo.Models;
-
+using DynamoCoreWpfTests;
+using DynamoCoreWpfTests.Utility;
 using NUnit.Framework;
+using SystemTestServices;
 
 namespace Dynamo.Tests
 {
+
+    [TestFixture]
+    public class WorkspaceOpenViewTests: SystemTestBase
+    {
+        public override void Setup()
+        {
+            // Add an assembly resolver to look in the nodes folder.
+            //TODO would be nice if we could access / modify the existing assemblyResolver to add another path. (additionalResolutionPaths)
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            base.Setup();
+        }
+
+        public override void TearDown()
+        {
+            base.TearDown();
+            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+        }
+
+        System.Reflection.Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            // Look in the nodes folder
+            string assemblyPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "nodes", new AssemblyName(args.Name).Name + ".dll");
+            return File.Exists(assemblyPath) ? Assembly.LoadFrom(assemblyPath) : null;
+        }
+
+        [Test]
+        [RequiresSTA]
+       public void OpenWorkspaceLayout3()
+        {
+            Console.WriteLine($"mem before: {GC.GetTotalMemory(true)}");
+            DispatcherUtil.DoEvents();
+            var sw = new Stopwatch();
+            sw.Start();
+            var gp= Path.Combine(GetTestDirectory(Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location)), "perf testing ui refresh", "Workspace Layout3.dyn");
+            ViewModel.OpenCommand.Execute(gp);
+            DispatcherUtil.DoEvents();
+         
+            sw.Stop();
+            Console.WriteLine($"time to open: { sw.ElapsedMilliseconds}");
+            Console.WriteLine($"mem after: {GC.GetTotalMemory(true)}");
+
+        }
+    }
+
+
     [TestFixture]
     public class WorkspaceOpeningTests : DynamoViewModelUnitTest
     {
