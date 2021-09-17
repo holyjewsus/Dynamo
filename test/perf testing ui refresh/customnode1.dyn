@@ -1,0 +1,315 @@
+{
+  "Uuid": "d7832011-c64b-4020-ad21-d5f5ed937391",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "customnode1",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Sphere.ByCenterPointRadius@Autodesk.DesignScript.Geometry.Point,double",
+      "Id": "172c86c2eae541b5a0ae0c8aceefd7d1",
+      "Inputs": [
+        {
+          "Id": "a3195ec4177f45e3b05ef7da4a7f7baa",
+          "Name": "centerPoint",
+          "Description": "Point\nDefault value : Autodesk.DesignScript.Geometry.Point.ByCoordinates(0, 0, 0)",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "e9e7218e08cc457cbaa2b2dd29535ab0",
+          "Name": "radius",
+          "Description": "double\nDefault value : 1",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e1df8c757e1a472692d6a2d3df8a4f85",
+          "Name": "Sphere",
+          "Description": "Sphere",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Create a Solid Sphere cetered at the input Point, with given radius.\n\nSphere.ByCenterPointRadius (centerPoint: Point = Autodesk.DesignScript.Geometry.Point.ByCoordinates(0, 0, 0), radius: double = 1): Sphere"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Autodesk.DesignScript.Geometry.Sphere.Radius",
+      "Id": "475de57433af4cf989f521f0253445cb",
+      "Inputs": [
+        {
+          "Id": "c7bbb0125873436fb2e6746f55c18e4e",
+          "Name": "sphere",
+          "Description": "Autodesk.DesignScript.Geometry.Sphere",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "47c1573a4e0042bb84de075e549e8dc8",
+          "Name": "double",
+          "Description": "double",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Return the radius of the Sphere.\n\nSphere.Radius: double"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "+@var[]..[],var[]..[]",
+      "Id": "e5b6cb6623c146c4845826c9819f51ad",
+      "Inputs": [
+        {
+          "Id": "54457e84fb43464d9b714ab983276678",
+          "Name": "x",
+          "Description": "Integer value, double value or string\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c13aff08b3624a06bc206093ffcf1a56",
+          "Name": "y",
+          "Description": "Integer value, double value or string\n\nvar[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a511146668d14eeeb3f2a7482def69bf",
+          "Name": "var",
+          "Description": "The sum of two input numbers, or the concatenation of two strings",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Returns addition of x and y\n\n+ (x: var[]..[], y: var[]..[]): var[]..[]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CustomNodes.Function, DynamoCore",
+      "FunctionSignature": "0b9ede67-9eec-43d3-b73e-15330f9d03be",
+      "FunctionType": "Graph",
+      "NodeType": "FunctionNode",
+      "Id": "52b03845337c4bf9adc832a1728dbcf5",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "720ac48349b1495daac049d3833effca",
+          "Name": "Point",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "c28daae48ad1464fbe0de1d08405151c",
+          "Name": "",
+          "Description": "return value",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": ""
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "e1df8c757e1a472692d6a2d3df8a4f85",
+      "End": "c7bbb0125873436fb2e6746f55c18e4e",
+      "Id": "d7e1040fe94d46bdb01a8e6ccb2fc293",
+      "IsDisplayed": "True"
+    },
+    {
+      "Start": "47c1573a4e0042bb84de075e549e8dc8",
+      "End": "54457e84fb43464d9b714ab983276678",
+      "Id": "a688f659a5104eed933c6a6b4e8b56d2",
+      "IsDisplayed": "True"
+    },
+    {
+      "Start": "720ac48349b1495daac049d3833effca",
+      "End": "a3195ec4177f45e3b05ef7da4a7f7baa",
+      "Id": "ab154717698f4aa4a1e83f08595f8e93",
+      "IsDisplayed": "True"
+    },
+    {
+      "Start": "c28daae48ad1464fbe0de1d08405151c",
+      "End": "c13aff08b3624a06bc206093ffcf1a56",
+      "Id": "d28b35cdf34040898992dd8e3cf83669",
+      "IsDisplayed": "True"
+    }
+  ],
+  "Dependencies": [
+    "0b9ede67-9eec-43d3-b73e-15330f9d03be"
+  ],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "ProtoGeometry.dll",
+      "ReferenceType": "ZeroTouch",
+      "Nodes": [
+        "172c86c2eae541b5a0ae0c8aceefd7d1",
+        "475de57433af4cf989f521f0253445cb"
+      ]
+    },
+    {
+      "Name": "Operators",
+      "ReferenceType": "ZeroTouch",
+      "Nodes": [
+        "e5b6cb6623c146c4845826c9819f51ad"
+      ]
+    },
+    {
+      "Name": "test1.dyf",
+      "ReferenceType": "DYFFile",
+      "Nodes": [
+        "52b03845337c4bf9adc832a1728dbcf5"
+      ]
+    }
+  ],
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.13",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "None",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.13.0.2585",
+      "RunType": "Automatic",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Name": "Sphere.ByCenterPointRadius",
+        "ShowGeometry": true,
+        "Id": "172c86c2eae541b5a0ae0c8aceefd7d1",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 452.0,
+        "Y": 240.0
+      },
+      {
+        "Name": "Sphere.Radius",
+        "ShowGeometry": true,
+        "Id": "475de57433af4cf989f521f0253445cb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 825.35311572700311,
+        "Y": 241.87240356083089
+      },
+      {
+        "Name": "+",
+        "ShowGeometry": true,
+        "Id": "e5b6cb6623c146c4845826c9819f51ad",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 902.2250007456563,
+        "Y": 491.13056379821967
+      },
+      {
+        "Name": "test1",
+        "ShowGeometry": true,
+        "Id": "52b03845337c4bf9adc832a1728dbcf5",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 20.304155219193035,
+        "Y": 321.35558654041313
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "158ad1cc20fa4f7c8a6ba7017d26f465",
+        "Title": "<Double click here to edit group title>",
+        "DescriptionText": "<Double click here to edit group description>",
+        "IsExpanded": true,
+        "WidthAdjustment": 0.0,
+        "HeightAdjustment": 0.0,
+        "Nodes": [
+          "172c86c2eae541b5a0ae0c8aceefd7d1",
+          "475de57433af4cf989f521f0253445cb",
+          "e5b6cb6623c146c4845826c9819f51ad"
+        ],
+        "HasNestedGroups": false,
+        "Left": 442.0,
+        "Top": 167.0,
+        "Width": 665.22500074565642,
+        "Height": 490.13056379821967,
+        "FontSize": 36.0,
+        "InitialTop": 240.0,
+        "InitialHeight": 396.13056379821967,
+        "TextblockHeight": 63.0,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": 162.01605994065272,
+    "Y": 31.165986887982115,
+    "Zoom": 0.70823125000000009
+  }
+}
