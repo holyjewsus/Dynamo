@@ -2,6 +2,8 @@
 using Dynamo.Models;
 using Analytics.NET.ADP;
 using Autodesk.Analytics.Core;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Dynamo.Logging
 {
@@ -86,6 +88,10 @@ namespace Dynamo.Logging
         internal static void ShutDown()
         {
             Analytics.ShutDown();
+        }
+        internal static Dictionary<string,object> GetDialogStrings()
+        {
+           return (adpAnalyticsUI as ADPAnalyticsUI).GetDADialogStrings(Thread.CurrentThread.CurrentUICulture.Name);
         }
     }
 }

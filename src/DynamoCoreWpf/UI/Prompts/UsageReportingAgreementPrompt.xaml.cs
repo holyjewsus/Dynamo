@@ -1,4 +1,10 @@
-﻿using System.Windows;
+﻿using System.Collections;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using Dynamo.Logging;
 using Dynamo.Services;
@@ -34,24 +40,62 @@ namespace Dynamo.UI.Prompts
             if (viewModel.Model.PathManager.ResolveDocumentPath(ref googleAnalyticsFile))
                 GoogleAnalyticsConsent.File = googleAnalyticsFile;
 
-            var adpAnalyticsFile = "ADPAnalyticsConsent.rtf";
+            var dialogStrings = AnalyticsService.GetDialogStrings();
+            var html = @"<html>
+<head>
+<style>
+body {
+  color: #BFBFBF;
+  background-color: #363636;
+  font-family: 'Veranda', Arial, sans-serif;
+  font-size: 10pt;
+  overflow:auto;
+}
+</style>
+</head>
+<body>
 
-            if (viewModel.Model.PathManager.ResolveDocumentPath(ref adpAnalyticsFile))
-                ADPAnalyticsConsent.File = adpAnalyticsFile;
+REPLACE_ME
+</ body >
+</ html >";
 
-            AcceptADPAnalyticsTextBlock.Text =
-                string.Format(Wpf.Properties.Resources.ConsentFormADPAnalyticsCheckBoxContent,
-                    dynamoViewModel.BrandingResourceProvider.ProductName);
-            AcceptADPAnalyticsCheck.Visibility = System.Windows.Visibility.Visible;
-            AcceptADPAnalyticsCheck.IsChecked = AnalyticsService.IsADPOptedIn;
+            html = html.Replace("REPLACE_ME",dialogStrings["DialogIntroduction"] as string);
+             ADPAnalyticsConsent.NavigateToString(html);
+            ADPAnalyticsConsent.Navigating += ADPAnalyticsConsent_Navigating;
+
+            //build adp ui from dialog strings;
+            foreach(var consent in dialogStrings["copies"] as IEnumerable)
+            {
+                var checkbox = new CheckBox();
+                checkbox.Margin = new Thickness(15, 16, 15, 14);
+                checkbox.Foreground = new SolidColorBrush(Color.FromArgb(255, 71, 144, 205));
+                checkbox.Background = new SolidColorBrush(Colors.White);
+                checkbox.VerticalAlignment = VerticalAlignment.Center;
+                checkbox.FontSize = 13.333;
+                var childtb = new TextBlock();
+                childtb.Text = (consent as IDictionary)["consentName"] as string;
+                childtb.Text += System.Environment.NewLine;
+                childtb.Text += (consent as IDictionary)["consentText"] as string;
+                childtb.TextWrapping = TextWrapping.Wrap;
+                checkbox.Content = childtb;
+                adpStackPanel.Children.Add(checkbox);
+            }
+
+
+
+           // AcceptADPAnalyticsTextBlock.Text =
+          //      string.Format(Wpf.Properties.Resources.ConsentFormADPAnalyticsCheckBoxContent,
+          //          dynamoViewModel.BrandingResourceProvider.ProductName);
+          //  AcceptADPAnalyticsCheck.Visibility = System.Windows.Visibility.Visible;
+         //   AcceptADPAnalyticsCheck.IsChecked = AnalyticsService.IsADPOptedIn;
 
             AcceptGoogleAnalyticsCheck.IsChecked = UsageReportingManager.Instance.IsAnalyticsReportingApproved;
 
             if (Analytics.DisableAnalytics)
             {
-                AcceptADPAnalyticsCheck.IsChecked = false;
-                AcceptADPAnalyticsTextBlock.IsEnabled = false;
-                AcceptADPAnalyticsCheck.IsEnabled = false;
+            //    AcceptADPAnalyticsCheck.IsChecked = false;
+            //    AcceptADPAnalyticsTextBlock.IsEnabled = false;
+            //    AcceptADPAnalyticsCheck.IsEnabled = false;
 
                 AcceptGoogleAnalyticsCheck.IsChecked = false;
                 AcceptGoogleAnalyticsTextBlock.IsEnabled = false;
@@ -59,11 +103,19 @@ namespace Dynamo.UI.Prompts
             }
         }
 
-        private void ToggleIsADPAnalyticsChecked(object sender, RoutedEventArgs e)
+        private void ADPAnalyticsConsent_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
         {
-            AnalyticsService.IsADPOptedIn = (
-                AcceptADPAnalyticsCheck.IsChecked.HasValue &&
-                AcceptADPAnalyticsCheck.IsChecked.Value);
+
+            //cancel the current event
+            e.Cancel = true;
+            try { 
+            //this opens the URL in the user's default browser
+            Process.Start(e.Uri.ToString());
+                }
+            catch
+            {
+
+            }
         }
 
         private void ToggleIsUsageReportingChecked(object sender, RoutedEventArgs e)
@@ -84,7 +136,7 @@ namespace Dynamo.UI.Prompts
         private void OnContinueClick(object sender, RoutedEventArgs e)
         {
             // Update user agreement
-            AnalyticsService.IsADPOptedIn = AcceptADPAnalyticsCheck.IsChecked.Value;
+        //    AnalyticsService.IsADPOptedIn = AcceptADPAnalyticsCheck.IsChecked.Value;
 
             UsageReportingManager.Instance.SetAnalyticsReportingAgreement(AcceptGoogleAnalyticsCheck.IsChecked.Value);
             Close();
