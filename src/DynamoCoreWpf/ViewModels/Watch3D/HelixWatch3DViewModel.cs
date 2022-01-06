@@ -1417,9 +1417,9 @@ namespace Dynamo.Wpf.ViewModels.Watch3D
             axesColors.Add(Color.Green);
             axesColors.Add(Color.Green);
 
-            Axes.Positions = axesPositions;
-            Axes.Indices = axesIndices;
-            Axes.Colors = axesColors;
+            //Axes.Positions = axesPositions;
+            //Axes.Indices = axesIndices;
+            //Axes.Colors = axesColors;
         }
 
         private void SetGridVisibility()
