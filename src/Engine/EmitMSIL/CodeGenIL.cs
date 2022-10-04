@@ -28,7 +28,7 @@ namespace EmitMSIL
         /// counter for local variables, should only be used directly during GatherTypeInfo phase.
         /// It will be incorrect during other compiler phases.
         /// </summary>
-        private int localVarIndex = -1;
+        //private int localVarIndex = -1;
         private Dictionary<string, Tuple<int, Type>> variables = new Dictionary<string, Tuple<int, Type>>();
         /// <summary>
         /// AST node to type info map, filled in the GatherTypeInfo compiler phase.
@@ -151,6 +151,14 @@ namespace EmitMSIL
 
         private Type EmitCoercionCode(AssociativeNode arg, Type argType, Type param)
         {
+            if (argType == null) return argType;
+
+            if(param == typeof(object) && argType.IsValueType)
+            {
+                EmitOpCode(OpCodes.Box, argType);
+                return typeof(object);
+            }
+
             if (param.IsAssignableFrom(argType)) return argType;
 
             if(argType == typeof(double) && param == typeof(long))
@@ -173,6 +181,11 @@ namespace EmitMSIL
             {
                 EmitOpCode(OpCodes.Conv_I4);
                 return typeof(int);
+            }
+            if (argType == typeof(long) && param == typeof(double))
+            {
+                EmitOpCode(OpCodes.Conv_R8);
+                return typeof(double);
             }
 
             if (argType == typeof(double[]) && typeof(IEnumerable<int>).IsAssignableFrom(param))
@@ -225,7 +238,7 @@ namespace EmitMSIL
 
             LocalBuilder localBuilder;
             // Load array to be coerced.
-            int currentVarIndex = localVarIndex;
+            int currentVarIndex = -1;
             if (arg is IdentifierNode ident)
             {
                 currentVarIndex = variables[ident.Value].Item1;
@@ -266,7 +279,9 @@ namespace EmitMSIL
             // Emit for loop to loop over array and convert.
 
             // i = 0;
-            var counterIndex = newArrIndex + 1;
+            //var counterIndex = newArrIndex + 1;
+            localBuilder = DeclareLocal(typeof(int), "for loop counter");
+            var counterIndex = localBuilder.LocalIndex;
             EmitOpCode(OpCodes.Ldc_I4_0);
             EmitOpCode(OpCodes.Stloc, counterIndex);
 
@@ -346,7 +361,7 @@ namespace EmitMSIL
             }
             LocalBuilder localBuilder;
             // Load array to be coerced.
-            int currentVarIndex = localVarIndex;
+            int currentVarIndex = -1;
             if (arg is IdentifierNode ident)
             {
                 currentVarIndex = variables[ident.Value].Item1;
@@ -375,7 +390,9 @@ namespace EmitMSIL
             // Emit for loop to loop over array and convert.
 
             // i = 0;
-            var counterIndex = newArrIndex + 1;
+            //var counterIndex = newArrIndex + 1;
+            localBuilder = DeclareLocal(typeof(int), "for loop counter");
+            var counterIndex = localBuilder.LocalIndex;
             EmitOpCode(OpCodes.Ldc_I4_0);
             EmitOpCode(OpCodes.Stloc, counterIndex);
 
@@ -924,15 +941,16 @@ namespace EmitMSIL
                         // variable being assigned already exists in dictionary.
                         throw new Exception("Variable redefinition is not allowed.");
                     }
-                    variables.Add(lNode.Value, new Tuple<int, Type>(++localVarIndex, t));
+                    variables.Add(lNode.Value, new Tuple<int, Type>(-1, t));
                 }
-                var builder = DeclareLocal(t,lNode.Value);
-                var currentLocalVarIndex = -1;
-                if (builder != null)
+                var localBuilder = DeclareLocal(t, lNode.Value);
+                //var currentLocalVarIndex = variables[lNode.Value].Item1;
+                int currentLocalVarIndex = -1;
+                if (localBuilder != null)
                 {
-                    currentLocalVarIndex = builder.LocalIndex;
+                    currentLocalVarIndex = localBuilder.LocalIndex;
+                    variables[lNode.Value] = new Tuple<int, Type>(currentLocalVarIndex, variables[lNode.Value].Item2);
                 }
-               
                 EmitOpCode(OpCodes.Stloc, currentLocalVarIndex);
                 // Add variable to output dictionary: output.Add("varName", variable);
                 EmitOpCode(OpCodes.Ldarg_2);

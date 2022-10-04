@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ProtoCore.DSASM;
@@ -447,7 +447,8 @@ namespace ProtoCore.Utils
         {
             if (!sv.IsEnumerable)
                 return sv.IsDouble;
-
+            //TODO do we really need a list here? Can't we use an array or span to avoid copying and calling tolist on all results?
+            //get this running first, then modify all these runtime introspection methods to use spans,memory,arrays etc.
             var svArr = sv.Value as IList<CLRStackValue>;
             return svArr.Any(v => ContainsDoubleElement(v));
         }

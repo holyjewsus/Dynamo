@@ -672,7 +672,8 @@ namespace EmitMSIL
                     retSVs[i] = ExecWithRISlowPath(finalFep, newFormalParams, newRIs, runtimeCore);
                 }
                 //TODO will this always be array?
-                //TODO call tolist?
+                //TODO can we avoid calling toList() - would be nice to avoid iterating and copying..
+                //span?
                 return new CLRStackValue(retSVs,(int)ProtoCore.PrimitiveType.Array);
             }
             else
@@ -699,7 +700,7 @@ namespace EmitMSIL
                     suppressArray = true;
                 }
 
-                object[] retSVs = new object[retSize];
+                CLRStackValue[] retSVs = new CLRStackValue[retSize];
 
                 //Build the call
                 List<CLRStackValue> newFormalParams = formalParameters.ToList();
@@ -720,7 +721,8 @@ namespace EmitMSIL
                 }
 
                 //TODO will this always be array?
-                //TODO call tolist?
+                //TODO can we avoid calling toList() - would be nice to avoid iterating and copying..
+                //span?
                 return new CLRStackValue(retSVs, (int)ProtoCore.PrimitiveType.Array);
             }
         }
