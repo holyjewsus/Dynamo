@@ -105,7 +105,7 @@ namespace EmitMSIL
             // 1. Create assembly builder (dynamic assembly)
             var asm = BuilderHelper.CreateAssemblyBuilder("DynamicAssembly", false, access);
             // 2. Create module builder
-            var mod = BuilderHelper.CreateDLLModuleBuilder(asm, "DynamicModule");
+            var mod = BuilderHelper.CreateDLLModuleBuilder(asm, "DynamicAssembly");
             // 3. Create type builder (name it "ExecuteIL")
             var type = BuilderHelper.CreateType(mod, "ExecuteIL");
             // 4. Create method ("Execute"), get ILGenerator 
@@ -1121,8 +1121,8 @@ namespace EmitMSIL
             //builtin DS dict is a wrapper
             else if (typeof(DesignScript.Builtin.Dictionary).IsAssignableFrom(t))
             {
-                //TODO
-                //emit function call for ValueAtKey or fallback to replication.
+                EmitILComment("falling back to reflection for builtin dict index");
+                return (false, null);
             }
 
             else if (t.IsArray)
