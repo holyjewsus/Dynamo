@@ -79,13 +79,11 @@ namespace EmitMSIL
             var t = compileResult.tbuilder.CreateType();
             var mi = t.GetMethod("Execute", BindingFlags.NonPublic | BindingFlags.Static);
             var output = new Dictionary<string, object>();
-
+            compileResult.asmbuilder.Save("DynamicAssembly.dll");
             // null can be replaced by an 'input' dictionary if available.
             var obj = mi.Invoke(null, new object[] { null, methodCache, output, runtimeCore });
             timer.Stop();
             CompileAndExecutionTime.executionTime = timer.Elapsed;
-
-            compileResult.asmbuilder.Save("DynamicAssembly.dll");
 
             return output;
         }
@@ -113,7 +111,7 @@ namespace EmitMSIL
             // 1. Create assembly builder (dynamic assembly)
             var asm = BuilderHelper.CreateAssemblyBuilder("DynamicAssembly", false, access);
             // 2. Create module builder
-            var mod = BuilderHelper.CreateDLLModuleBuilder(asm, "DynamicModule");
+            var mod = BuilderHelper.CreateDLLModuleBuilder(asm, "DynamicAssembly");
             // 3. Create type builder (name it "ExecuteIL")
             var type = BuilderHelper.CreateType(mod, "ExecuteIL");
             // 4. Create method ("Execute"), get ILGenerator 
@@ -928,8 +926,13 @@ namespace EmitMSIL
                     }
                     variables.Add(lNode.Value, new Tuple<int, Type>(++localVarIndex, t));
                 }
-                DeclareLocal(t,lNode.Value);
-                var currentLocalVarIndex = variables[lNode.Value].Item1;
+                var builder = DeclareLocal(t,lNode.Value);
+                var currentLocalVarIndex = -1;
+                if (builder != null)
+                {
+                    currentLocalVarIndex = builder.LocalIndex;
+                }
+               
                 EmitOpCode(OpCodes.Stloc, currentLocalVarIndex);
                 // Add variable to output dictionary: output.Add("varName", variable);
                 EmitOpCode(OpCodes.Ldarg_2);
@@ -1266,7 +1269,9 @@ namespace EmitMSIL
             // number of args = number of parameters if static.
             // num args = num params + 1 if instance as first arg is this pointer.
             var isStatic = mBase.IsStatic;
-            
+
+            EmitILComment("emit args array start");
+
             // Emit args for input to call to ReplicationLogic
             EmitArray(typeof(object), args, (AssociativeNode n, int index) =>
             {
@@ -1287,12 +1292,23 @@ namespace EmitMSIL
                     EmitOpCode(OpCodes.Box, t);
                 }
             });
+            EmitILComment("emit args array done");
+            EmitILComment("emit call to marshal start");
+
+            // Emit call to load the runtimeCore argument
+            EmitOpCode(OpCodes.Ldarg_3);
+            //TODO cache this at start.
+            //now call marshall to convert the plain c# objs to CLRStackValues
+            var marhshallMethod = typeof(Replication).GetMethod(nameof(Replication.MarshalFunctionArguments), BindingFlags.Static | BindingFlags.Public);
+            EmitOpCode(OpCodes.Call, marhshallMethod);
+            EmitILComment("emit call to marshal done");
+            EmitILComment("emit call to guides array");
 
             // Emit guides
             EmitArray(typeof(string[]), args, (AssociativeNode n, int idx) =>
             {
                 if (n is ArrayNameNode argIdent)
-                {
+                {//TODO profile replacing repguideNode.ToString with byte.
                     var argGuides = argIdent.ReplicationGuides;
                     EmitArray(typeof(string), argGuides, (AssociativeNode gn, int gidx) =>
                     {
@@ -1306,6 +1322,7 @@ namespace EmitMSIL
                     EmitArray<string>(arrType: typeof(string), items: null, itemEmitter: null);
                 }
             });
+            EmitILComment("emit call to guides done");
 
             // Emit call to load the runtimeCore argument
             EmitOpCode(OpCodes.Ldarg_3);
@@ -1313,8 +1330,9 @@ namespace EmitMSIL
             // Emit call to ReplicationLogic
             keygen = typeof(Replication).GetMethod(nameof(Replication.ReplicationLogic), BindingFlags.Public | BindingFlags.Static);
             EmitOpCode(OpCodes.Call, keygen);
-
-            return typeof(object);
+            //TODO this won't always be a CLRSTACKValue -
+            //consider direct function calls, indexing etc.
+            return typeof(DSASM.CLRStackValue);
         }
 
         private void EmitFunctionDefinitionNode(AssociativeNode node)
