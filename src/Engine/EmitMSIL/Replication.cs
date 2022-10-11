@@ -674,7 +674,7 @@ namespace EmitMSIL
                 //TODO will this always be array?
                 //TODO can we avoid calling toList() - would be nice to avoid iterating and copying..
                 //span?
-                return new CLRStackValue(retSVs,(int)ProtoCore.PrimitiveType.Array);
+                return new CLRStackValue(retSVs,(int)ProtoCore.PrimitiveType.Array,finalFep.CLRReturnType);
             }
             else
             {

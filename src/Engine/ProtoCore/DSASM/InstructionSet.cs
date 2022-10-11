@@ -140,11 +140,15 @@ namespace ProtoCore.DSASM
         // TODO_MSIL: Figure out how bad boxing/unboxing is for performance
         public object Value { get; set; }
 
+        //TODO move this - it's a waste of space, store it for the entire callsite to ReplicationLogic somewhere higher up.
+        public System.Type CLRFEPReturnType { get; private set; }
 
-        internal CLRStackValue(object value, int protoType)
+
+        internal CLRStackValue(object value, int protoType, System.Type FEPReturnType = null)
         {
             this.Value = value;
             this.TypeUID = protoType;
+            this.CLRFEPReturnType = FEPReturnType;
         }
 
         internal static CLRStackValue Null => new CLRStackValue(null, (int)PrimitiveType.Null);

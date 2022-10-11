@@ -1155,6 +1155,7 @@ namespace ProtoFFI
             }*/
 
             //Search in the DSObjectMap, for corresponding clrObject.
+            //TODO how to improve performance of this lookup.
             object clrObject = null;
             if (MSILDSObjectMap.TryGetValue(dsObject, out clrObject))
                 return clrObject;
@@ -1828,6 +1829,8 @@ namespace ProtoFFI
 #endif
             lock (MSILDSObjectMap)
             {
+                //TODO instead of using the dsobj as a key, can't we just use 2 ids, or two sorted arrays?
+                //should be faster than doing byte by byte or reflection based comparison that is done now for structs.
                 MSILDSObjectMap[dsobj] = obj;
                 MSILCLRObjectMap[obj] = dsobj;
             }
