@@ -18,6 +18,7 @@ namespace EmitMSIL
     {
         static public List<CLRStackValue> MarshalFunctionArguments(IList args, MSILRuntimeCore runtimeCore)
         {
+
             var marshaller = ProtoFFI.CLRDLLModule.GetMarshaler(runtimeCore);
             List<CLRStackValue> stackValues = new List<CLRStackValue>();
             foreach (var arg in args)
@@ -25,8 +26,16 @@ namespace EmitMSIL
                 CLRStackValue dsObj;
                 if (arg != null)
                 {
-                    var protoType = ProtoFFI.CLRObjectMarshaler.GetProtoCoreType(arg.GetType());
-                    dsObj = marshaller.Marshal(arg, protoType, runtimeCore);
+                    //if it's already a wrapper - just return, no need to find type or marshal.
+                    if (arg is CLRStackValue clrArg)
+                    {
+                        dsObj = clrArg;
+                    }
+                    else
+                    {
+                        var protoType = ProtoFFI.CLRObjectMarshaler.GetProtoCoreType(arg.GetType());
+                        dsObj = marshaller.Marshal(arg, protoType, runtimeCore);
+                    }
                 }
                 else
                 {
@@ -201,7 +210,7 @@ namespace EmitMSIL
             // Construct replicationGuides from replicationAttrs
             var replicationGuides = ConstructRepGuides(replicationAttrs);
             //TODO how to avoid this...
-            var stackValues = args.Cast<CLRStackValue>().ToList();
+            var stackValues = MarshalFunctionArguments(args, runtimeCore);
 
             var partialReplicationGuides = PerformRepGuideDemotion(stackValues, replicationGuides);
 

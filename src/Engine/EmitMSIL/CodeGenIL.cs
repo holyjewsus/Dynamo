@@ -951,30 +951,12 @@ namespace EmitMSIL
                     currentLocalVarIndex = localBuilder.LocalIndex;
                     variables[lNode.Value] = new Tuple<int, Type>(currentLocalVarIndex, variables[lNode.Value].Item2);
                 }
-                //TODO... this is just a test.
-                //if the value is a CLRStackValue - unmarshal it before storing it.
-                //we can try doing this unmarshal lazily if we use a more complex data structure as our output
-                //or we can emit a loop through the output dictionary at program completion instead of here - 
-                // if we wait until later we can likely do the unmarshal in parallel.
+               
                 EmitOpCode(OpCodes.Stloc, currentLocalVarIndex);
 
-                // object UnMarshal(CLRStackValue dsObject, System.Type expectedCLRType, ProtoCore.MSILRuntimeCore runtimeCore)
-
                 //load runtime
                 EmitOpCode(OpCodes.Ldarg_3);
 
-                //call unmarshal
-
-
-                //load dsvalue
-                EmitOpCode(OpCodes.Ldloc, currentLocalVarIndex);
-                EmitOpCode(OpCodes.Dup);
-                //load expected type from ds 
-                EmitOpCode(OpCodes.Call, typeof(DSASM.CLRStackValue).GetProperty(nameof(DSASM.CLRStackValue.CLRFEPReturnType), BindingFlags.Public).GetMethod);
-                //load runtime
-                EmitOpCode(OpCodes.Ldarg_3);
-                //unmarshal the value.
-                EmitOpCode(OpCodes.Callvirt, typeof(DSASM.clro).GetMethod(nameof(DSASM.CLRStackValue.unmarh), BindingFlags.Public))
 
                 // Add variable to output dictionary: output.Add("varName", variable);
                 EmitOpCode(OpCodes.Ldarg_2);
@@ -1335,15 +1317,6 @@ namespace EmitMSIL
                 }
             });
             EmitILComment("emit args array done");
-            EmitILComment("emit call to marshal start");
-
-            // Emit call to load the runtimeCore argument
-            EmitOpCode(OpCodes.Ldarg_3);
-            //TODO cache this at start.
-            //now call marshall to convert the plain c# objs to CLRStackValues
-            var marhshallMethod = typeof(Replication).GetMethod(nameof(Replication.MarshalFunctionArguments), BindingFlags.Static | BindingFlags.Public);
-            EmitOpCode(OpCodes.Call, marhshallMethod);
-            EmitILComment("emit call to marshal done");
             EmitILComment("emit call to guides array");
 
             // Emit guides
