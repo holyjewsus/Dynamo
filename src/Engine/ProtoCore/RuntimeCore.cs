@@ -393,6 +393,7 @@ namespace ProtoCore
 
         private static MSILRuntimeCore instance;
         internal static MSILRuntimeCore Instance;
+        public Stopwatch UnMarshalTimer = new Stopwatch();
 
         public MSILRuntimeCore(RuntimeCore oldVmRuntimeCore)
         {

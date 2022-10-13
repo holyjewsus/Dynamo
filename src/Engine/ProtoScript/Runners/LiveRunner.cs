@@ -1218,7 +1218,7 @@ namespace ProtoScript.Runners
     {
         private IDictionary<string, object> graphOutput;
         internal bool DSExecutionEngine = true;
-        internal (TimeSpan compileTime, TimeSpan executionTime) CompileAndExecutionTime;
+        internal (TimeSpan compileTime, TimeSpan executionTime, TimeSpan unmarshal) CompileAndExecutionTime;
 
         internal class DebugByteCodeMode : IDisposable
         {
@@ -1277,7 +1277,7 @@ namespace ProtoScript.Runners
             var codeGenIL = new EmitMSIL.CodeGenIL(input, Path.Combine(assemblyPath, "opCodes.txt"), msilRuntimeCore);
             
             graphOutput = codeGenIL.Emit(finalDeltaAstList);
-            CompileAndExecutionTime = codeGenIL.CompileAndExecutionTime;
+            CompileAndExecutionTime = (codeGenIL.CompileAndExecutionTime.compileTime,codeGenIL.CompileAndExecutionTime.executionTime,msilRuntimeCore.UnMarshalTimer.Elapsed);
         }
 
         internal object GetNodeValue(string variableName)
@@ -1709,7 +1709,7 @@ namespace ProtoScript.Runners
             CompileAndExecute(dispatchASTList);
             PostExecution();
             timer.Stop();
-            CompileAndExecutionTime = (new TimeSpan(0), timer.Elapsed);
+            CompileAndExecutionTime = (new TimeSpan(0), timer.Elapsed,new TimeSpan(0));
         }
 
         private List<Guid> PreviewInternal(GraphSyncData syncData)

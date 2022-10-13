@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Dynamo.Logging;
@@ -65,7 +65,7 @@ namespace Dynamo.Engine
                 return liveRunner.RuntimeCore;
             }
         }
-        internal (TimeSpan compileTime, TimeSpan executionTime) CompileAndExecutionTime => (liveRunner as LiveRunner).CompileAndExecutionTime;
+        internal (TimeSpan compileTime, TimeSpan executionTime, TimeSpan unmarshal) CompileAndExecutionTime => (liveRunner as LiveRunner).CompileAndExecutionTime;
 
         /// <summary>
         /// TPDP

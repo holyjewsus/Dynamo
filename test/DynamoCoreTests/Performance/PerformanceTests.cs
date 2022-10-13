@@ -11,7 +11,7 @@ namespace Dynamo.Tests
     [TestFixture, Category("Performance")]
     public class PerformanceTests : DynamoModelTestBase
     {
-        private List<(string graph, TimeSpan oldEngineExecutionTime, TimeSpan newEngineCompileTime, TimeSpan newEngineExecutionTime)> executionData;
+        private List<(string graph, TimeSpan oldEngineExecutionTime, TimeSpan newEngineCompileTime, TimeSpan newEngineExecutionTime, TimeSpan unmarhsl)> executionData;
 
         protected override void GetLibrariesToPreload(List<string> libraries)
         {
@@ -38,7 +38,7 @@ namespace Dynamo.Tests
         [TestFixtureSetUp]
         public void SetupPerformanceTests()
         {
-            executionData = new List<(string, TimeSpan, TimeSpan, TimeSpan)>();
+            executionData = new List<(string, TimeSpan, TimeSpan, TimeSpan,TimeSpan)>();
         }
 
         [TestFixtureTearDown]
@@ -47,11 +47,11 @@ namespace Dynamo.Tests
             Console.WriteLine("{0,50}{1,11}{2,9}{3,9}{4,11}", "Graph", "Old C+E", "New C", "New E", "New C+E");
             executionData.ForEach(item =>
             {
-                var (graph, oldEngineCompileAndExecutionTime, newEngineCompileTime, newEngineExecutionTime) = item;
-                Console.WriteLine("{0,50}{1,11}{2,9}{3,9}{4,11}", graph,
+                var (graph, oldEngineCompileAndExecutionTime, newEngineCompileTime, newEngineExecutionTime, unmarshal) = item;
+                Console.WriteLine("{0,50}{1,11}{2,9}{3,9}{4,11}{5,11}", graph,
                     oldEngineCompileAndExecutionTime.Milliseconds, newEngineCompileTime.Milliseconds,
                     newEngineExecutionTime.Milliseconds,
-                    newEngineCompileTime.Milliseconds + newEngineExecutionTime.Milliseconds);
+                    newEngineCompileTime.Milliseconds + newEngineExecutionTime.Milliseconds,unmarshal.Milliseconds);
             });
             executionData.Clear();
         }
@@ -120,7 +120,7 @@ namespace Dynamo.Tests
                 newEngineCompileAndExecutionTime.compileTime.Milliseconds,
                 newEngineCompileAndExecutionTime.executionTime.Milliseconds);
             var execution = (Path.GetFileName(filePath), oldEngineCompileAndExecutionTime.executionTime,
-                newEngineCompileAndExecutionTime.compileTime, newEngineCompileAndExecutionTime.executionTime);
+                newEngineCompileAndExecutionTime.compileTime, newEngineCompileAndExecutionTime.executionTime,newEngineCompileAndExecutionTime.unmarshal);
             executionData.Add(execution);
         }
 

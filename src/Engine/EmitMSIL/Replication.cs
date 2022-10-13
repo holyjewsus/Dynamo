@@ -543,9 +543,9 @@ namespace EmitMSIL
             {
                 dsRetValue = CallSite.PerformReturnTypeCoerce(finalFep.ProtoCoreReturnType, dsRetValue, runtimeCore);
             }
-
+            runtimeCore.UnMarshalTimer.Start();
             var returnVal = marshaller.UnMarshal(dsRetValue, finalFep.CLRReturnType, runtimeCore);
-
+            runtimeCore.UnMarshalTimer.Stop();
             return returnVal;
         }
 
