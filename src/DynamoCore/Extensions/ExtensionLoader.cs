@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using Dynamo.Core;
+using Dynamo.Engine;
 using Dynamo.Logging;
 using DynamoUtilities;
 
@@ -30,7 +32,16 @@ namespace Dynamo.Extensions
                     CertificateVerification.CheckAssemblyForValidCertificate(extension.AssemblyPath);
                 }
 
-                var assembly = Assembly.LoadFrom(extension.AssemblyPath);
+                Assembly assembly;
+                //only load our test extension into an assembly context.
+                if (!extension.AssemblyPath.ToLower().Contains (PathManager.Instance.DynamoCoreDirectory.ToLower()) && extension.TypeName.ToLower().Contains("isolatedextension")){
+                    var context = new DynamoLoadContext(extension.AssemblyPath);
+                    assembly = context.LoadFromAssemblyPath(extension.AssemblyPath);
+                }   
+                else
+                {
+                    assembly = Assembly.LoadFrom(extension.AssemblyPath);
+                }
                 var result = assembly.CreateInstance(extension.TypeName) as IExtension;
                 ExtensionLoading?.Invoke(result);
                 
