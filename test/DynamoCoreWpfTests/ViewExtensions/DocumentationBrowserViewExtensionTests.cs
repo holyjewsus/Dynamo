@@ -721,7 +721,7 @@ namespace DynamoCoreWpfTests
             //https://github.com/nunit/nunit/issues/1200
             //we somehow need use single threaded sync context to force webview2 async initalization on this thread.
             //unfortunately it passes locally but then still fails on master-15.
-            var testDirectory = GetTestDirectory(ExecutingDirectory);
+            var testDirectory = GetTestDirectory (ExecutingDirectory);
             var tempDynDirectory = Path.Combine(testDirectory, "Temp Test Path");
             var dynFileName = Path.Combine(testDirectory, @"UI\BasicAddition.dyn");
             var insertDynFilePath = Path.Combine(tempDynDirectory, @"BasicAddition.dyn");
