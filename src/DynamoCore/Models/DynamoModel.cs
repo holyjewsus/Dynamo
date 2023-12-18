@@ -102,7 +102,7 @@ namespace Dynamo.Models
         public Version HostVersion;
         // Dynamo host parent id for analytics purpose.
         public string ParentId;
-        // Dynamo host session id for analytics purpose.
+        // Dynamo host session id for analytics purpose....
         public string SessionId;
     }
 
