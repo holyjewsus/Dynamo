@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Windows.Threading;
 using Dynamo.Utilities;
 using NUnit.Framework;
 
