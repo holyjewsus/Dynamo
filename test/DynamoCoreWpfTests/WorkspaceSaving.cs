@@ -695,6 +695,9 @@ namespace Dynamo.Tests
             var valueWithIPAddress = PIIDetector.GetNodeValue(workspaceWithPIIData, nodeWithIPAddressId, "InputValue");
             var valueWithDates = PIIDetector.GetNodeValue(workspaceWithPIIData, nodeWithDatesId, "InputValue");
 
+            Console.WriteLine(string.Join(",", valueWhitEmail, valueWithWebPage, valueWithDirectory, valueWithDirectory2, valueWithCreditCards, valueWithSSNs, valueWithIPAddress, valueWithDates));
+
+
             Tuple<JObject, bool> workspaceWithoutPIIDataResult = PIIDetector.RemovePIIData(ViewModel.CurrentSpaceViewModel.GetJsonRepresentation());
             Assert.IsTrue(workspaceWithoutPIIDataResult.Item2);
 
@@ -707,7 +710,7 @@ namespace Dynamo.Tests
             var valueWithoutIPAddress = PIIDetector.GetNodeValue(workspaceWithoutPIIDataResult.Item1, nodeWithIPAddressId, "InputValue");
             var valueWithoutDates = PIIDetector.GetNodeValue(workspaceWithoutPIIDataResult.Item1, nodeWithDatesId, "InputValue");
 
-            Console.WriteLine(string.Join(",",valueWhitEmail, valueWithoutWebPage, valueWithoutDirectory, valueWithoutDirectory2, valueWithoutCreditCards, valueWithoutSSNs, valueWithoutIPAddress, valueWithoutDates ));
+            Console.WriteLine(string.Join(",", valueWithoutEmail, valueWithoutWebPage, valueWithoutDirectory, valueWithoutDirectory2, valueWithoutCreditCards, valueWithoutSSNs, valueWithoutIPAddress, valueWithoutDates ));
 
             Assert.IsTrue(PIIDetector.ContainsEmail((string)valueWhitEmail));
             Assert.IsTrue(PIIDetector.ContainsWebsite((string)valueWithWebPage));
