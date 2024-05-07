@@ -28,7 +28,6 @@ using Newtonsoft.Json;
 
 namespace Dynamo.LibraryViewExtensionWebView2
 {
-    [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     [ComVisibleAttribute(true)]
 
     /// <summary>
@@ -207,10 +206,12 @@ namespace Dynamo.LibraryViewExtensionWebView2
         /// This method will read the layoutSpecs.json and layoutType and then pass the info to javacript so all the resources can be loaded
         /// </summary>
         /// <param name="browser"></param>
-        internal void RefreshLibraryView(WebView2 browser)
+        internal void RefreshLibraryView(WebView2 browser = null)
         {
-            string layoutSpecsjson = String.Empty;
-            string loadedTypesjson = String.Empty;
+            if(browser is null && this.browser != null)
+            {
+                browser = this.browser;
+            }
             if (!dynamoViewModel.Model.IsServiceMode)
             {
                 dynamoWindow.Dispatcher.BeginInvoke(
@@ -640,6 +641,7 @@ namespace Dynamo.LibraryViewExtensionWebView2
             if (elements != null)
             {
                 var includes = elements
+               .Where(el=>el.IsVisibleInSearch)
                .Select(NodeItemDataProvider.GetFullyQualifiedName)
                .Select(name => name.Split('.').First())
                .Distinct()

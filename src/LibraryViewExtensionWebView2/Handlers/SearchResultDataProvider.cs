@@ -48,6 +48,8 @@ namespace Dynamo.LibraryViewExtensionWebView2.Handlers
         {
             var text = Uri.UnescapeDataString(searchText);
             var elements = model.Search(text, LuceneSearch.LuceneUtilityNodeSearch);
+            //filter out entries that are not currently visible.
+            elements = elements.Where(x => x.IsVisibleInSearch);
             extension = "json";
             return GetNodeItemDataStream(elements, true);
         }

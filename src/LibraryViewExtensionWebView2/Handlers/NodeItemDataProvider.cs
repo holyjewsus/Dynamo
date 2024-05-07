@@ -77,6 +77,8 @@ namespace Dynamo.LibraryViewExtensionWebView2
             var sw = new StreamWriter(ms);
             var serializer = new JsonSerializer();
             var stringBuilder = new StringBuilder();
+            //filter out entries that are not currently visible.
+            entries = entries.Where(x => x.IsVisibleInSearch);
             var data = CreateObjectForSerialization(entries);
 
             if (replaceIconURLWithData)

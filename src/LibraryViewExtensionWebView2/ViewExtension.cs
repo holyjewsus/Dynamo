@@ -36,8 +36,15 @@ namespace Dynamo.LibraryViewExtensionWebView2
                 viewParams = viewLoadedParams;
                 controller = new LibraryViewController(viewLoadedParams.DynamoWindow, viewLoadedParams.CommandExecutive, customization);
                 (viewLoadedParams.DynamoWindow.DataContext as DynamoViewModel).PropertyChanged += handleDynamoViewPropertyChanges;
+                viewLoadedParams.CurrentWorkspaceChanged += ViewLoadedParams_CurrentWorkspaceChanged;
+
             }
-            
+
+        }
+
+        private void ViewLoadedParams_CurrentWorkspaceChanged(Graph.Workspaces.IWorkspaceModel obj)
+        {
+            controller.RefreshLibraryView();
         }
 
         //hide browser directly when startpage is shown to deal with air space problem.
@@ -74,7 +81,10 @@ namespace Dynamo.LibraryViewExtensionWebView2
 
             if (controller != null) controller.Dispose();
             if (customization != null) customization.Dispose();
-            if(viewParams != null && viewParams.DynamoWindow.DataContext as DynamoViewModel != null)
+            if(viewParams != null){
+                viewParams.CurrentWorkspaceChanged -= ViewLoadedParams_CurrentWorkspaceChanged;
+            }
+            if (viewParams != null && viewParams.DynamoWindow.DataContext as DynamoViewModel != null)
             {
                 (viewParams.DynamoWindow.DataContext as DynamoViewModel).PropertyChanged -= handleDynamoViewPropertyChanges;
             }
